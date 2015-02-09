@@ -4,6 +4,8 @@
 // get all the tools we need
 var express  = require('express');
 var app      = express();
+var appcheck = express();
+var userrouter = express.Router();
 var port     = process.env.PORT || 3000;
 //var mongoose = require('mongoose');
 var passport = require('passport');
@@ -37,6 +39,10 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 
 // routes ======================================================================
 require('./app/routes.js')(app, passport); // load our routes and pass in our app and fully configured passport
+
+//check user route
+require('./app/checkUser.js') (app);
+//app.use('/api',userrouter);
 
 // launch ======================================================================
 app.listen(port);

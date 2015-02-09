@@ -63,7 +63,8 @@ module.exports = function(app, passport) {
 
 	var mysql = require('mysql');
 	var dbconfig = require('../config/database');
-	var connection = mysql.createConnection(dbconfig.connection);
+	//var connection = mysql.createConnection(dbconfig.connection);
+	var connection = require('../config/ConnectConstant.js');
 	connection.query('USE ' + dbconfig.database);
 
 	// github -------------------------------

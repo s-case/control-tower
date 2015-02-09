@@ -4,8 +4,8 @@ var GithubStrategy   = require('passport-github').Strategy;
 var mysql = require('mysql');
 var bcrypt = require('bcrypt-nodejs');
 var dbconfig = require('./database');
-var connection = mysql.createConnection(dbconfig.connection);
-
+//var connection = mysql.createConnection(dbconfig.connection);
+var connection = require('../config/ConnectConstant.js');
 connection.query('USE ' + dbconfig.database);
 
 // load the auth variables

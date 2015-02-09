@@ -2,8 +2,8 @@
 module.exports = {
     'connection': {
         'host': 'localhost',
-        'user': 'root',
-        'password': '843647'
+        'user': 'scaseAdmin',
+        'password': 'scase2015.'
     },
     'database': 'CTDB',
     'users_table': 'users'
