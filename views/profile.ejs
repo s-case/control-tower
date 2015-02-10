@@ -34,8 +34,13 @@
 						<strong>name</strong>: <%= user.github_name %><br>
 						<strong>S-Case token</strong>: <%= user.scase_token %><br>
 					</p>
-
+					<% if (user.Message!=null && user.Message.length>1) { %>
+						<p>
+							<strong>Alert</strong>: <%= user.Message %><br>
+						</p>
+					<% } %>
 					<a href="/unlink/github" class="btn btn-primary"><span class="fa fa-chain-broken"></span>Unlink</a>
+					<a href="/delete/github" class="btn btn-primary"><span class="fa fa-chain-bomb"></span>Delect Account</a>
 				<% } else { %>
 					<a href="/connect/github" class="btn btn-primary">Connect Github</a>
 				<% } %>

@@ -39,7 +39,7 @@ app.get('/api',function(req,res){
 									role="owner";
 								}
 								if(role!=="nothing"){
-									var userInfo = [{"userValid" : "true"},{"userRole" : role}];             						+ ']';
+									var userInfo = [{"userValid" : "true"},{"userRole" : role}];             						//+ ']';
 									//var Jobj=JSON.parse(userInfo);
 									res.send(userInfo);
 								}
@@ -62,12 +62,12 @@ app.get('/api',function(req,res){
 								role="collaborator";
 							}
 							if(role!=="nothing"){
-								var userInfo = [{"userValid" : "true"},{"userRole" : role}];             						+ ']';
+								var userInfo = [{"userValid" : "true"},{"userRole" : role}];             						//+ ']';
 								//var Jobj=JSON.parse(userInfo);
 								res.send(userInfo);
 							}
 							else {
-								var userInfo = [{"userValid" : "false"},{"userRole" : role}];             						+ ']';
+								var userInfo = [{"userValid" : "false"},{"userRole" : role}];             						//+ ']';
 								//var Jobj=JSON.parse(userInfo);
 								res.send(userInfo);
 								
