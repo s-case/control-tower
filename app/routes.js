@@ -202,9 +202,7 @@ module.exports = function(app, passport) {
 		// =============================================================================
 		// Display Projects I own and allow to remove =============================================================
 		// =============================================================================
-		// used to unlink accounts. for social accounts, just remove the token
-		// for local account, remove email and password
-		// user account will stay active in case they want to reconnect in the future
+		
 		var mysql = require('mysql');
 		var dbconfig = require('../config/database');
 		//var connection = mysql.createConnection(dbconfig.connection);
@@ -227,12 +225,9 @@ module.exports = function(app, passport) {
 
 
 		});
-		/*// =============================================================================
-		// Display Projects I own and allow to remove =============================================================
 		// =============================================================================
-		// used to unlink accounts. for social accounts, just remove the token
-		// for local account, remove email and password
-		// user account will stay active in case they want to reconnect in the future
+		// Delete Projects I own  =============================================================
+		// =============================================================================
 		var mysql = require('mysql');
 		var dbconfig = require('../config/database');
 		//var connection = mysql.createConnection(dbconfig.connection);
@@ -240,7 +235,7 @@ module.exports = function(app, passport) {
 		connection.query('USE ' + dbconfig.database);
 
 		// github -------------------------------
-		app.get('/manageprojects/github', isLoggedIn, function(req, res) {
+		app.get('/deleteprojects/github', isLoggedIn, function(req, res) {
 			var user            = req.user;
 			connection.query("SELECT CTDB.`projects`.`project_name` FROM " + "CTDB.`projects` "+ "JOIN " + "CTDB.`owners` ON CTDB.`projects`.project_id = CTDB.`owners`.project_id "+" WHERE `owners`.`user_id` = '" + user.id + "'", function(err, rows){
 						
@@ -253,7 +248,7 @@ module.exports = function(app, passport) {
 	        });
 
 
-		});*/
+		});
 
 
 

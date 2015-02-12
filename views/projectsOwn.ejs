@@ -29,7 +29,8 @@
 				<!-- check if the user has this token (is the user authenticated with this social account) -->
 				<% for (var i in projectnames) { %>
 					<p> 
-						<a href="/manageprojects/github" class="btn btn-default"><span class="fa fa-cogs"></span> <%=projectnames[i].project_name%></a>
+						<% var url="/manageprojects/github?"+ projectnames[i].project_name%>
+						<a href=<% url %> class="btn btn-default"><span class="fa fa-cogs"></span> <%=projectnames[i].project_name%></a>
 						<a href="/manageprojects/github" class="btn btn-danger"><span class="fa fa-times"></span> Delete <%=projectnames[i].project_name%></a><br>
 					</p>
 					
