@@ -13,7 +13,7 @@
 
 	<div class="page-header text-center">
 		<img src="http://www.scasefp7.eu/wp-content/themes/scase/img/scase_logo.png" alt="S-Case logo">
-		<h1><span class="fa fa-user-secret"></span> Profile Page</h1>
+		<h1><span class="fa fa-user-secret"></span> Projects Ownership Page</h1>
 		<a href="/logout" class="btn btn-default btn-sm">Logout</a>
 	</div>
 
@@ -25,26 +25,14 @@
 		<div class="col-sm-6">
 			<div class="well">
 				<h3 class="text-primary"><span class="fa fa-github"></span> Github</h3>
-
+				<h3 class="text-primary">I own the following project(s):</h3>
 				<!-- check if the user has this token (is the user authenticated with this social account) -->
-				<% if (user.github_token!=='undefined') { %>
-					<p>
-						<strong>id</strong>: <%= user.github_id %><br>
-						<strong>Github token</strong>: <%= user.github_token %><br>
-						<strong>name</strong>: <%= user.github_name %><br>
-						<strong>S-Case token</strong>: <%= user.scase_token %><br>
+				<% for (var i in projectnames) { %>
+					<p> 
+						<a href="/manageprojects/github" class="btn btn-default"><span class="fa fa-cogs"></span> <%=projectnames[i].project_name%></a>
+						<a href="/manageprojects/github" class="btn btn-danger"><span class="fa fa-times"></span> Delete <%=projectnames[i].project_name%></a><br>
 					</p>
-					<% if (user.Message!=null && user.Message!=undefined) { %>
-						<p>
-							<strong style="color:red">Alert</strong>: You still own <%= user.Message %><br>
-						</p>
-					<% } %>
-					<a href="/unlink/github" class="btn btn-primary"><span class="fa fa-chain-broken"></span>Unlink</a>
-					<a href="/delete/github" class="btn btn-primary"><span class="fa fa-chain-bomb"></span>Delete Account</a>
-					<a href="/refresh/github" class="btn btn-primary"><span class="fa fa-refresh"></span>Refresh S-Case Token</a>
-					<a href="/manageprojects/github" class="btn btn-warning"><span class="fa fa-cogs"></span>Manage My Projects</a>
-				<% } else { %>
-					<a href="/connect/github" class="btn btn-primary">Connect Github</a>
+					
 				<% } %>
 
 			</div>

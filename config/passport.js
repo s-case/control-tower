@@ -5,8 +5,7 @@ var mysql = require('mysql');
 var bcrypt = require('bcrypt-nodejs');
 var dbconfig = require('./database');
 //var connection = mysql.createConnection(dbconfig.connection);
-var connection = require('../config/ConnectConstant.js');
-connection.query('USE ' + dbconfig.database);
+
 
 // load the auth variables
 var configAuth = require('./auth'); // use this one for testing
@@ -19,6 +18,8 @@ function scasetokenCreate(size){
 
 }
 module.exports = function(passport) {
+    var connection = require('../config/ConnectConstant.js');
+    connection.query('USE ' + dbconfig.database);
 
     // =========================================================================
     // passport session setup ==================================================

@@ -6,5 +6,8 @@ module.exports = {
         'password': 'scase2015.'
     },
     'database': 'CTDB',
-    'users_table': 'users'
+    'users_table': 'users',
+    'projects_table' : 'projects',
+    'owners_table' : 'owners',
+    'collaborators_table' : 'collaborators'
 };

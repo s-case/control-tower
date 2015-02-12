@@ -105,9 +105,10 @@ module.exports = function(app, passport) {
 		
 		var user            = req.user;
 
-		var CheckOwnQuery = "SELECT CTDB.`projects`.`project_name`, owners.`user_id` FROM CTDB.`projects` JOIN CTDB.`owners` ON projects.`project_id`=owners.`project_id` " +
-								"WHERE `owners`.`user_id`="+"'"+user.id+"'";
-
+		var CheckOwnQuery = " SELECT " + dbconfig.projects_table+".`project_name`, "+ dbconfig.owners_table+".`user_id` FROM "+ dbconfig.projects_table +
+							" JOIN "+ dbconfig.owners_table+ " ON "+ dbconfig.projects_table + ".`project_id`="+dbconfig.owners_table+".`project_id` " +
+								" WHERE " +dbconfig.owners_table+".`user_id`="+"'"+user.id+"'";
+		console.log(CheckOwnQuery);
 		connection.query(CheckOwnQuery, function(err, rows) {
                          	if (err) throw err;
                          	var newmessage;
@@ -198,6 +199,62 @@ module.exports = function(app, passport) {
 
 
 		});
+		// =============================================================================
+		// Display Projects I own and allow to remove =============================================================
+		// =============================================================================
+		// used to unlink accounts. for social accounts, just remove the token
+		// for local account, remove email and password
+		// user account will stay active in case they want to reconnect in the future
+		var mysql = require('mysql');
+		var dbconfig = require('../config/database');
+		//var connection = mysql.createConnection(dbconfig.connection);
+		var connection = require('../config/ConnectConstant.js');
+		connection.query('USE ' + dbconfig.database);
+
+		// github -------------------------------
+		app.get('/manageprojects/github', isLoggedIn, function(req, res) {
+			var user            = req.user;
+			connection.query("SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
+				".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'", function(err, rows){
+						
+	                    if (rows.length > 0) {
+	                    	console.log(rows);
+	                    	res.render('projectsOwn.ejs', {
+								projectnames : rows
+							});
+	                    }
+	        });
+
+
+		});
+		/*// =============================================================================
+		// Display Projects I own and allow to remove =============================================================
+		// =============================================================================
+		// used to unlink accounts. for social accounts, just remove the token
+		// for local account, remove email and password
+		// user account will stay active in case they want to reconnect in the future
+		var mysql = require('mysql');
+		var dbconfig = require('../config/database');
+		//var connection = mysql.createConnection(dbconfig.connection);
+		var connection = require('../config/ConnectConstant.js');
+		connection.query('USE ' + dbconfig.database);
+
+		// github -------------------------------
+		app.get('/manageprojects/github', isLoggedIn, function(req, res) {
+			var user            = req.user;
+			connection.query("SELECT CTDB.`projects`.`project_name` FROM " + "CTDB.`projects` "+ "JOIN " + "CTDB.`owners` ON CTDB.`projects`.project_id = CTDB.`owners`.project_id "+" WHERE `owners`.`user_id` = '" + user.id + "'", function(err, rows){
+						
+	                    if (rows.length > 0) {
+	                    	console.log(rows);
+	                    	res.render('projectsOwn.ejs', {
+								projectnames : rows
+							});
+	                    }
+	        });
+
+
+		});*/
+
 
 
 
