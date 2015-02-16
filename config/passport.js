@@ -55,7 +55,8 @@ module.exports = function(passport) {
 
             // check if the user is already logged in
             if (!req.user) {
-
+                connection = require('../config/ConnectConstant.js');
+                connection.query('USE ' + dbconfig.database);
                 connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE github_id = '" + profile.id + "'", function(err, rows){
                     if (err)
                         return done(err);
@@ -114,6 +115,8 @@ module.exports = function(passport) {
                 });
             } else {
                 // user already exists and is logged in, we have to link accounts
+                connection = require('../config/ConnectConstant.js');
+                connection.query('USE ' + dbconfig.database);
                 var user            = req.user; // pull the user out of the session
                 user.github_id    = profile.id;
                 user.github_token = token;
