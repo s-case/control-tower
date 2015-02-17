@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+<head>
+	<title>S-CASE Authentication</title>
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	<style>
+		body 		{ padding-top:80px; word-wrap:break-word; }
+	</style>
+</head>
+<body>
+<div class="container">
+
+	<div class="page-header text-center">
+		<img src="http://www.scasefp7.eu/wp-content/themes/scase/img/scase_logo.png" alt="S-Case logo">
+		<h1><span class="fa fa-user-secret"></span> Projects Ownership Page</h1>
+		<a href="/logout" class="btn btn-default btn-sm">Logout</a>
+	</div>
+
+	<div class="row">
+
+		
+
+		<!-- Github INFORMATION -->
+		<div class="col-sm-6">
+			<div class="well">
+				<h3 class="text-primary"><span class="fa fa-github"></span> Github</h3>
+				<h3 class="btn btn-primary btn-lg btn-block">Project Panel of: <%=projectname%><br></h3>
+				<h3 class="text-primary">Owners:<br></h3>
+				<div class="alert alert-danger" role="alert">if every owner is removed, the project is deleted!</div>
+				<!-- check if the user has this token (is the user authenticated with this social account) -->
+				<% var ownerflag %>
+				<% for (var i in ownersnames) { %>
+						<% if (ownersnames[i].github_name==username) { 
+								ownerflag=true;
+							}%>
+				<% } %>
+				<% if (ownerflag) { %>
+					<% for (var i in ownersnames) { %>
+						<p class="glyphicon glyphicon-user"> 
+						<%=ownersnames[i].github_name%><br>
+						</p>
+						<p>
+						<% var myOwnflag = false;%>
+						<% if (ownersnames[i].github_name==username) { 
+								myOwnflag=true;
+							}%>
+						
+						<% if (myOwnflag==true) { %>
+							<% var removeOwnerurl="/removeOwner/github?owner_id="+ ownersnames[i].owner_id+"&project_name="+projectname+"&project_id="+ownersnames[i].project_id%>
+								<a href=<%= removeOwnerurl %> class="btn btn-warning"><span class="fa fa-times"></span> Remove Myself</a><br>
+						<% } %>
+						<% if (myOwnflag==false) { %>
+							<% var removeOwnerurl="/removeOwner/github?owner_id="+ ownersnames[i].owner_id+"&project_name="+projectname+"&project_id="+ownersnames[i].project_id%>
+								<a href=<%= removeOwnerurl %> class="btn btn-warning"><span class="fa fa-times"></span> <%= ownersnames[i].github_name%></a><br>
+						<% } %>
+						</p>
+					<% } %>
+				<% } %>
+				<% if (!ownerflag) { %>
+					<% for (var i in ownersnames) { %>
+						<p class="glyphicon glyphicon-user"> 
+						<%=ownersnames[i].github_name%><br>
+						</p>
+					<% } %>
+				<% } %>
+				
+
+				<h3 class="text-primary">Collaborators:<br></h3>
+				<% for (var i in collaboratorsnames) { %>
+					<p> 
+						<%=collaboratorsnames[i].github_name%>
+						<% var myCollabflag = false;%>
+						<% if (collaboratorsnames[i].github_name==username) { 
+								myCollabflag=true;
+							}%>
+						<% if (myCollabflag==true) { %>
+							<% var removeCollaburl="/removeCollab/github?collab_id="+ collaboratorsnames[i].collab_id+"&project_name="+projectname%>
+							<a href=<%= removeCollaburl %> class="btn btn-warning"><span class="fa fa-times"></span> Remove Myself</a><br>
+						<% } %>
+						<% if (ownerflag) { %>
+							<% var removeCollaburl="/removeCollab/github?collab_id="+ collaboratorsnames[i].collab_id+"&project_name="+projectname%>
+							<a href=<%= removeCollaburl %> class="btn btn-warning"><span class="fa fa-times"></span> <%=collaboratorsnames[i].github_name%></a><br>
+						<% } %>
+					</p>
+					
+				<% } %>
+				<% if (ownerflag) { %>
+					<% var deleteurl="/deleteprojects/github?project_name="+ projectname%>
+					<a href=<%= deleteurl %> class="btn btn-danger"><span class="fa fa-times"></span> Delete <%= projectname%></a><br>
+				<% } %>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+
+	</div>
+
+	<div class="text-center">
+		<p>For more info about S-CASE visit: <a href="http://www.scasefp7.eu">http://www.scasefp7.eu</a>.</p>
+		<p> <a href="http://www.scasefp7.eu/news-blog/">S-CASE blog</a>.</p>
+	</div>
+
+</div>
+</body>
+</html>

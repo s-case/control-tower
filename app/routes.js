@@ -74,6 +74,7 @@ module.exports = function(app, passport) {
 	var connection = require('../config/ConnectConstant.js');
 	connection.query('USE ' + dbconfig.database);
 
+
 	// github -------------------------------
 	app.get('/unlink/github', isLoggedIn, function(req, res) {
 
@@ -82,6 +83,8 @@ module.exports = function(app, passport) {
 		var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
                                 "`github_token` = '" + undefined + "' " +                               
                                 "WHERE `github_id` = " + user.github_id + " LIMIT 1";
+        var connection = require('../config/ConnectConstant.js');
+		connection.query('USE ' + dbconfig.database);
 		connection.query(updateQuery, function(err, rows) {
                                 res.redirect('/profile');
                             });
@@ -109,6 +112,8 @@ module.exports = function(app, passport) {
 							" JOIN "+ dbconfig.owners_table+ " ON "+ dbconfig.projects_table + ".`project_id`="+dbconfig.owners_table+".`project_id` " +
 								" WHERE " +dbconfig.owners_table+".`user_id`="+"'"+user.id+"'";
 		console.log(CheckOwnQuery);
+		var connection = require('../config/ConnectConstant.js');
+		connection.query('USE ' + dbconfig.database);
 		connection.query(CheckOwnQuery, function(err, rows) {
                          	if (err) throw err;
                          	var newmessage;
@@ -122,6 +127,8 @@ module.exports = function(app, passport) {
 							}
 							if(newmessage!=null){
 								newmessage = newmessage.substring(0,newmessage.length-4);
+								var connection = require('../config/ConnectConstant.js');
+								connection.query('USE ' + dbconfig.database);
 								connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'", function(err, rows){
 					                    if (err)
 					                        return done(err);
@@ -145,6 +152,8 @@ module.exports = function(app, passport) {
 								var DeleteQuery = "DELETE FROM" + dbconfig.users_table + " SET " +
 						                                "`github_token` = '" + undefined + "' " +                               
 						                                "WHERE `github_id` = " + user.github_id + " LIMIT 1";
+                                var connection = require('../config/ConnectConstant.js');
+								connection.query('USE ' + dbconfig.database);
 								connection.query(DeleteQuery, function(err, rows) {
 						                                
 						                            });
@@ -180,6 +189,8 @@ module.exports = function(app, passport) {
 		// github -------------------------------
 		app.get('/refresh/github', isLoggedIn, function(req, res) {
 			var user            = req.user;
+			var connection = require('../config/ConnectConstant.js');
+			connection.query('USE ' + dbconfig.database);
 			connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'", function(err, rows){
 						
 	                    if (rows.length > 0) {
@@ -200,7 +211,7 @@ module.exports = function(app, passport) {
 
 		});
 		// =============================================================================
-		// Display Projects I own and allow to remove =============================================================
+		// Display Projects I own, allow to manage and allow to remove =============================================================
 		// =============================================================================
 		
 		var mysql = require('mysql');
@@ -210,8 +221,11 @@ module.exports = function(app, passport) {
 		connection.query('USE ' + dbconfig.database);
 
 		// github -------------------------------
-		app.get('/manageprojects/github', isLoggedIn, function(req, res) {
+		app.get('/displayOwnprojects/github', isLoggedIn, function(req, res) {
 			var user            = req.user;
+			var proj_name = req.project_name;//if I want
+			var connection = require('../config/ConnectConstant.js');
+			connection.query('USE ' + dbconfig.database);
 			connection.query("SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 				".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'", function(err, rows){
 						
@@ -223,11 +237,92 @@ module.exports = function(app, passport) {
 	                    }
 	        });
 
-
 		});
 		// =============================================================================
-		// Delete Projects I own  =============================================================
+		// Project panel of a Project I own, along with the other owners and collaborators to remove =============================================================
 		// =============================================================================
+		
+		var mysql = require('mysql');
+		var dbconfig = require('../config/database');
+		//var connection = mysql.createConnection(dbconfig.connection);
+		var connection = require('../config/ConnectConstant.js');
+		connection.query('USE ' + dbconfig.database);
+
+		// github -------------------------------
+		app.get('/manageprojects/github', isLoggedIn, function(req, res) {
+			var user = req.user;
+			var proj_name = req.param('project_name');//name of the project to manage
+			if(proj_name){
+				var ownerflag;
+				function checkIfOwner(callback){
+					var flag;
+					var connection = require('../config/ConnectConstant.js');
+					connection.query('USE ' + dbconfig.database);
+					connection.query("SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
+					".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'", function(err, rows){
+						if (rows.length > 0) {
+		                    	for(var i in rows){
+	                    			if(rows[i].project_name==proj_name){
+	                    				ownerflag=true;
+	                    			}
+		                    	}
+	                    }
+	                    callback();
+	        		});
+				}
+				checkIfOwner(function(){
+					if(ownerflag){
+						var owners;
+						var collaborators;
+						function displayOwnersCollaborators (callback){
+
+							var selectOwnersQuery = "SELECT `github_name`,"+dbconfig.projects_table+".`project_id`," + dbconfig.owners_table + ".id AS owner_id FROM "  + dbconfig.users_table +" JOIN " + dbconfig.owners_table + 
+							" ON "+ dbconfig.users_table + ".id=" +  dbconfig.owners_table+".user_id "+ "JOIN "+ dbconfig.projects_table+
+							" ON "+ dbconfig.projects_table + ".project_id=" + dbconfig.owners_table + ".project_id" + 
+							" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
+							var connection = require('../config/ConnectConstant.js');
+							connection.query('USE ' + dbconfig.database);
+							connection.query(selectOwnersQuery, function(err, rows){
+				                    if (rows.length > 0) {
+				                    	console.log(rows);
+				                    	owners=rows;
+				                    }
+				                }
+			        		);
+			        		var selectCollaboratorsQuery = "SELECT `github_name`," + dbconfig.collaborators_table + ".id AS `collab_id` FROM " + dbconfig.users_table +" JOIN " + dbconfig.collaborators_table + 
+							" ON "+ dbconfig.users_table + ".id=" +  dbconfig.collaborators_table+".user_id "+ "JOIN "+ dbconfig.projects_table+
+							" ON "+ dbconfig.projects_table + ".project_id=" + dbconfig.collaborators_table + ".project_id" + 
+							" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
+							var connection = require('../config/ConnectConstant.js');
+							connection.query('USE ' + dbconfig.database);
+			        		connection.query(selectCollaboratorsQuery, function(err, rows){
+			                    if (rows.length > 0) {
+			                    	console.log(rows);
+			                    	collaborators=rows;
+			                    }
+			                    callback();
+			        		});
+						}
+						displayOwnersCollaborators(function(){
+							console.log("owners"+owners);
+							console.log("collabs"+collaborators);
+							res.render('projectSpecific.ejs', {
+										ownersnames : owners,
+										collaboratorsnames : collaborators,
+										projectname : proj_name,
+										username : user.github_name
+									});
+
+						});
+					}
+				});	
+			}
+		});
+		// =============================================================================
+		// Delete a Project I own ======================================================
+		// delete it from all the other owners and collaborators too
+		// =============================================================================
+		
 		var mysql = require('mysql');
 		var dbconfig = require('../config/database');
 		//var connection = mysql.createConnection(dbconfig.connection);
@@ -236,18 +331,254 @@ module.exports = function(app, passport) {
 
 		// github -------------------------------
 		app.get('/deleteprojects/github', isLoggedIn, function(req, res) {
+			var user = req.user;
+			var proj_name = req.param('project_name');//name of the project to delete
+			var proj_id = req.param('project_id');
+			if(proj_name){
+				var ownerflag;
+				function deleteIfOwner(callback){
+					var flag;
+					var connection = require('../config/ConnectConstant.js');
+					connection.query('USE ' + dbconfig.database);
+					var selectQuery = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
+					".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
+					console.log(selectQuery);
+					connection.query(selectQuery, function(err, rows){
+						if (rows.length > 0) {
+		                    	for(var i in rows){
+	                    			if(rows[i].project_name==proj_name){
+	                    				ownerflag=true;
+	                    			}
+		                    	}
+	                    }
+	                    callback();
+	        		});
+				}
+				deleteIfOwner(function(){
+					if(ownerflag==true){
+						var deleteProjectQuery = "DELETE FROM " + dbconfig.projects_table+
+							" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
+							connection.query(deleteProjectQuery, function(err, rows){
+				                    res.redirect('/displayOwnprojects/github');
+			                });
+					}
+				});	
+			}
+
+		});
+		// =============================================================================
+		// Display Projects I collaborate =============================================================
+		// =============================================================================
+		
+		var mysql = require('mysql');
+		var dbconfig = require('../config/database');
+		//var connection = mysql.createConnection(dbconfig.connection);
+		var connection = require('../config/ConnectConstant.js');
+		connection.query('USE ' + dbconfig.database);
+
+		// github -------------------------------
+		app.get('/displayCollabprojects/github', isLoggedIn, function(req, res) {
 			var user            = req.user;
-			connection.query("SELECT CTDB.`projects`.`project_name` FROM " + "CTDB.`projects` "+ "JOIN " + "CTDB.`owners` ON CTDB.`projects`.project_id = CTDB.`owners`.project_id "+" WHERE `owners`.`user_id` = '" + user.id + "'", function(err, rows){
+			var proj_name = req.project_name;//if I want
+			var connection = require('../config/ConnectConstant.js');
+			connection.query('USE ' + dbconfig.database);
+			connection.query("SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.collaborators_table + " ON "+ dbconfig.projects_table+
+				".`project_id` = "+ dbconfig.collaborators_table + ".`project_id` "+" WHERE "+ dbconfig.collaborators_table+".`user_id` = '" + user.id + "'", function(err, rows){
 						
 	                    if (rows.length > 0) {
 	                    	console.log(rows);
-	                    	res.render('projectsOwn.ejs', {
+	                    	res.render('projectsCollab.ejs', {
 								projectnames : rows
 							});
 	                    }
 	        });
 
+		});
+		// =============================================================================
+		// Project panel of a Project I collaborate, along with the other owners and collaborators =============================================================
+		// =============================================================================
+		
+		var mysql = require('mysql');
+		var dbconfig = require('../config/database');
+		//var connection = mysql.createConnection(dbconfig.connection);
+		var connection = require('../config/ConnectConstant.js');
+		connection.query('USE ' + dbconfig.database);
 
+		// github -------------------------------
+		app.get('/collabprojects/github', isLoggedIn, function(req, res) {
+			var user = req.user;
+			var proj_name = req.param('project_name');//name of the project to manage
+			if(proj_name){
+				var collabflag;
+				function checkIfCollab(callback){
+					var flag;
+					var connection = require('../config/ConnectConstant.js');
+					connection.query('USE ' + dbconfig.database);
+					connection.query("SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.collaborators_table + " ON "+ dbconfig.projects_table+
+					".`project_id` = "+ dbconfig.collaborators_table + ".`project_id` "+" WHERE "+ dbconfig.collaborators_table+".`user_id` = '" + user.id + "'", function(err, rows){
+						if (rows.length > 0) {
+		                    	for(var i in rows){
+	                    			if(rows[i].project_name==proj_name){
+	                    				collabflag=true;
+	                    			}
+		                    	}
+	                    }
+	                    callback();
+	        		});
+				}
+				checkIfCollab(function(){
+					if(collabflag==true){
+						var owners;
+						var collaborators;
+						function displayOwnersCollaborators (callback){
+							var selectOwnersQuery = "SELECT `github_name` FROM " + dbconfig.users_table +" JOIN " + dbconfig.owners_table + 
+							" ON "+ dbconfig.users_table + ".id=" +  dbconfig.owners_table+".user_id "+ "JOIN "+ dbconfig.projects_table+
+							" ON "+ dbconfig.projects_table + ".project_id=" + dbconfig.owners_table + ".project_id" + 
+							" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
+							var connection = require('../config/ConnectConstant.js');
+							connection.query('USE ' + dbconfig.database);
+							connection.query(selectOwnersQuery, function(err, rows){
+				                    if (rows.length > 0) {
+				                    	console.log(rows);
+				                    	owners=rows;
+				                    }
+				                }
+			        		);
+			        		var selectCollaboratorsQuery = "SELECT `github_name`," + dbconfig.collaborators_table + ".id AS `collab_id` FROM " + dbconfig.users_table +" JOIN " + dbconfig.collaborators_table + 
+							" ON "+ dbconfig.users_table + ".id=" +  dbconfig.collaborators_table+".user_id "+ "JOIN "+ dbconfig.projects_table+
+							" ON "+ dbconfig.projects_table + ".project_id=" + dbconfig.collaborators_table + ".project_id" + 
+							" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
+							var connection = require('../config/ConnectConstant.js');
+							connection.query('USE ' + dbconfig.database);
+			        		connection.query(selectCollaboratorsQuery, function(err, rows){
+			                    if (rows.length > 0) {
+			                    	console.log(rows);
+			                    	collaborators=rows;
+			                    }
+			                    callback();
+			        		});
+						}
+						displayOwnersCollaborators(function(){
+							console.log("owners"+owners);
+							console.log("collabs"+collaborators);
+							res.render('projectSpecific.ejs', {
+										ownersnames : owners,
+										collaboratorsnames : collaborators,
+										projectname : proj_name,
+										username : user.github_name
+									});
+
+						});
+					}
+				});	
+			}
+		});
+
+		// =============================================================================
+		// Remove a Collaborator from a Project I own ======================================================
+		// 
+		// =============================================================================
+		
+		var mysql = require('mysql');
+		var dbconfig = require('../config/database');
+		//var connection = mysql.createConnection(dbconfig.connection);
+		var connection = require('../config/ConnectConstant.js');
+		connection.query('USE ' + dbconfig.database);
+
+		// github -------------------------------
+		app.get('/removeCollab/github', isLoggedIn, function(req, res) {
+			var user = req.user;
+			var collab_id= req.param('collab_id');
+			var ownerflag;
+			var proj_name = req.param('project_name')
+			function removeIfOwner(callback){
+				var flag;
+				var connection = require('../config/ConnectConstant.js');
+				connection.query('USE ' + dbconfig.database);
+				connection.query("SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
+				".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'", function(err, rows){
+					if (rows.length > 0) {
+	                    	for(var i in rows){
+                    			if(rows[i].project_name==proj_name){
+                    				ownerflag=true;
+                    			}
+	                    	}
+                    }
+                    callback();
+        		});
+			}
+			removeIfOwner(function(){
+				if(ownerflag==true){
+	              var removeCollabQuery = "DELETE FROM " + dbconfig.collaborators_table+
+					" WHERE " + dbconfig.collaborators_table + ".id=" + "'" + collab_id + "'";
+					var connection = require('../config/ConnectConstant.js');
+					connection.query('USE ' + dbconfig.database);
+					connection.query(removeCollabQuery, function(err, rows){
+		                    res.redirect('/manageprojects/github'+'?project_name='+proj_name);
+	                });      
+	                
+				}
+			});	
+			
+		});
+		// =============================================================================
+		// Remove an Owner from a Project I own ======================================================
+		// 
+		// =============================================================================
+		
+		var mysql = require('mysql');
+		var dbconfig = require('../config/database');
+		//var connection = mysql.createConnection(dbconfig.connection);
+		var connection = require('../config/ConnectConstant.js');
+		connection.query('USE ' + dbconfig.database);
+
+		// github -------------------------------
+		app.get('/removeOwner/github', isLoggedIn, function(req, res) {
+			var user = req.user;
+			var owner_id= req.param('owner_id');
+			var ownerflag;
+			var proj_name = req.param('project_name')
+			var proj_id = req.param('project_id');
+			function removeIfOwner(callback){
+				var flag;
+				var connection = require('../config/ConnectConstant.js');
+				connection.query('USE ' + dbconfig.database);
+				connection.query("SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
+				".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'", function(err, rows){
+					if (rows.length > 0) {
+	                    	for(var i in rows){
+                    			if(rows[i].project_name==proj_name){
+                    				ownerflag=true;
+                    			}
+	                    	}
+                    }
+                    callback();
+        		});
+			}
+			removeIfOwner(function(){
+				if(ownerflag==true){
+					var checkOwnersAmountQuery = "SELECT * FROM " + dbconfig.owners_table + " WHERE "+ dbconfig.owners_table + ".project_id="+"'"+proj_id+"'";
+					console.log(checkOwnersAmountQuery);
+					var connection = require('../config/ConnectConstant.js');
+					connection.query('USE ' + dbconfig.database);
+					connection.query(checkOwnersAmountQuery, function(err, rows){
+							if(rows.length>1){
+								var removeOwnerQuery = "DELETE FROM " + dbconfig.owners_table+
+								" WHERE " + dbconfig.owners_table + ".id=" + "'" + owner_id + "'";
+								console.log(removeOwnerQuery);
+								connection.query(removeOwnerQuery, function(err, rows){
+									res.redirect('/manageprojects/github'+'?project_name='+proj_name);
+								});
+							}
+							if(rows.length>0){
+								res.redirect('/deleteprojects/github'+'?project_name='+proj_name);
+							}
+		                    
+	                }); 
+	                
+				}
+			});	
+			
 		});
 
 

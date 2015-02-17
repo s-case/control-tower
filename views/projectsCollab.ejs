@@ -25,14 +25,12 @@
 		<div class="col-sm-6">
 			<div class="well">
 				<h3 class="text-primary"><span class="fa fa-github"></span> Github</h3>
-				<h3 class="text-primary">I own the following project(s):</h3>
+				<h3 class="text-primary">I collaborate on the following project(s):</h3>
 				<!-- check if the user has this token (is the user authenticated with this social account) -->
 				<% for (var i in projectnames) { %>
 					<p> 
-						<% var manageurl="/manageprojects/github?project_name="+ projectnames[i].project_name%>
-						<a href=<%= manageurl %> class="btn btn-default"><span class="fa fa-cogs"></span> <%= projectnames[i].project_name%></a>
-						<% var deleteurl="/deleteprojects/github?project_name="+ projectnames[i].project_name%>
-						<a href=<%= deleteurl %> class="btn btn-danger"><span class="fa fa-times"></span> Delete <%= projectnames[i].project_name%></a><br>
+						<% var manageurl="/collabprojects/github?project_name="+ projectnames[i].project_name%>
+						<a href=<%= manageurl %> class="btn btn-default"><span class="fa fa-cogs"></span> <%=projectnames[i].project_name%></a>
 					</p>
 					
 				<% } %>
