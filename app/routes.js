@@ -1,5 +1,33 @@
 module.exports = function(app, passport) {
+	
+	var mysql = require('mysql');
+	var dbconfig = require('../config/database');
+	//var connection = mysql.createConnection(dbconfig.connection);
+	var connection = require('../config/ConnectConstant.js');
+	connection.query('USE ' + dbconfig.database);
 
+	function handleDisconnect() {
+	  connection = mysql.createConnection(dbconfig.connection); // Recreate the connection, since
+	                                                  // the old one cannot be reused.
+
+	  connection.connect(function(err) {              // The server is either down
+	    if(err) {                                     // or restarting (takes a while sometimes).
+	      console.log('error when connecting to db:', err);
+	      setTimeout(handleDisconnect, 10000); // We introduce a delay before attempting to reconnect,
+	    }                                     // to avoid a hot loop, and to allow our node script to
+	  });                                     // process asynchronous requests in the meantime.
+	                                          // If you're also serving http, display a 503 error.
+	  connection.on('error', function(err) {
+	    console.log('db error', err);
+	    if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+	      handleDisconnect();                         // lost due to either server restart, or a
+	    } else {                                      // connnection idle timeout (the wait_timeout
+	      throw err;                                  // server variable configures this)
+	    }
+	  });
+		
+	  //console.log('new mysql connection');
+	}
 // normal routes ===============================================================
 
 	// show the home page (will also have our login links)
@@ -68,13 +96,6 @@ module.exports = function(app, passport) {
 // for local account, remove email and password
 // user account will stay active in case they want to reconnect in the future
 
-	var mysql = require('mysql');
-	var dbconfig = require('../config/database');
-	//var connection = mysql.createConnection(dbconfig.connection);
-	var connection = require('../config/ConnectConstant.js');
-	connection.query('USE ' + dbconfig.database);
-
-
 	// github -------------------------------
 	app.get('/unlink/github', isLoggedIn, function(req, res) {
 
@@ -95,13 +116,6 @@ module.exports = function(app, passport) {
 // used to unlink accounts. for social accounts, just remove the token
 // for local account, remove email and password
 // user account will stay active in case they want to reconnect in the future
-
-	var mysql = require('mysql');
-	var dbconfig = require('../config/database');
-	//var connection = mysql.createConnection(dbconfig.connection);
-	var connection = require('../config/ConnectConstant.js');
-	connection.query('USE ' + dbconfig.database);
-
 	// github -------------------------------
 	app.get('/delete/github', isLoggedIn, function(req, res) {
 
@@ -140,6 +154,8 @@ module.exports = function(app, passport) {
 				                            var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
 				                                "`message` = '" + userProfile.Message + "' " +
 				                                "WHERE `id` = '" + user.id + "' LIMIT 1";
+			                                var connection = require('../config/ConnectConstant.js');
+											connection.query('USE ' + dbconfig.database);
 				                            connection.query(updateQuery, function(err, rows) {
 				                              
 				                            });
@@ -180,11 +196,6 @@ module.exports = function(app, passport) {
 		    return base64url(crypto.randomBytes(size));
 
 		}
-		var mysql = require('mysql');
-		var dbconfig = require('../config/database');
-		//var connection = mysql.createConnection(dbconfig.connection);
-		var connection = require('../config/ConnectConstant.js');
-		connection.query('USE ' + dbconfig.database);
 
 		// github -------------------------------
 		app.get('/refresh/github', isLoggedIn, function(req, res) {
@@ -200,6 +211,8 @@ module.exports = function(app, passport) {
 	                        var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
 	                                "`scase_token` = '" + user.scase_token + "' " +
 	                                "WHERE `id` = '" + user.id + "' LIMIT 1";
+                            var connection = require('../config/ConnectConstant.js');
+							connection.query('USE ' + dbconfig.database);
 	                        connection.query(updateQuery, function(err, rows) {
 	                          
 	                        });
@@ -213,18 +226,12 @@ module.exports = function(app, passport) {
 		// =============================================================================
 		// Display Projects I own, allow to manage and allow to remove =============================================================
 		// =============================================================================
-		
-		var mysql = require('mysql');
-		var dbconfig = require('../config/database');
-		//var connection = mysql.createConnection(dbconfig.connection);
-		var connection = require('../config/ConnectConstant.js');
-		connection.query('USE ' + dbconfig.database);
 
 		// github -------------------------------
 		app.get('/displayOwnprojects/github', isLoggedIn, function(req, res) {
 			var user            = req.user;
 			var proj_name = req.project_name;//if I want
-			var connection = require('../config/ConnectConstant.js');
+			handleDisconnect();
 			connection.query('USE ' + dbconfig.database);
 			connection.query("SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 				".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'", function(err, rows){
@@ -241,12 +248,6 @@ module.exports = function(app, passport) {
 		// =============================================================================
 		// Project panel of a Project I own, along with the other owners and collaborators to remove =============================================================
 		// =============================================================================
-		
-		var mysql = require('mysql');
-		var dbconfig = require('../config/database');
-		//var connection = mysql.createConnection(dbconfig.connection);
-		var connection = require('../config/ConnectConstant.js');
-		connection.query('USE ' + dbconfig.database);
 
 		// github -------------------------------
 		app.get('/manageprojects/github', isLoggedIn, function(req, res) {
@@ -256,7 +257,7 @@ module.exports = function(app, passport) {
 				var ownerflag;
 				function checkIfOwner(callback){
 					var flag;
-					var connection = require('../config/ConnectConstant.js');
+					handleDisconnect();
 					connection.query('USE ' + dbconfig.database);
 					connection.query("SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 					".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'", function(err, rows){
@@ -280,7 +281,7 @@ module.exports = function(app, passport) {
 							" ON "+ dbconfig.users_table + ".id=" +  dbconfig.owners_table+".user_id "+ "JOIN "+ dbconfig.projects_table+
 							" ON "+ dbconfig.projects_table + ".project_id=" + dbconfig.owners_table + ".project_id" + 
 							" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
-							var connection = require('../config/ConnectConstant.js');
+							handleDisconnect();
 							connection.query('USE ' + dbconfig.database);
 							connection.query(selectOwnersQuery, function(err, rows){
 				                    if (rows.length > 0) {
@@ -293,7 +294,7 @@ module.exports = function(app, passport) {
 							" ON "+ dbconfig.users_table + ".id=" +  dbconfig.collaborators_table+".user_id "+ "JOIN "+ dbconfig.projects_table+
 							" ON "+ dbconfig.projects_table + ".project_id=" + dbconfig.collaborators_table + ".project_id" + 
 							" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
-							var connection = require('../config/ConnectConstant.js');
+							handleDisconnect();
 							connection.query('USE ' + dbconfig.database);
 			        		connection.query(selectCollaboratorsQuery, function(err, rows){
 			                    if (rows.length > 0) {
@@ -323,12 +324,6 @@ module.exports = function(app, passport) {
 		// delete it from all the other owners and collaborators too
 		// =============================================================================
 		
-		var mysql = require('mysql');
-		var dbconfig = require('../config/database');
-		//var connection = mysql.createConnection(dbconfig.connection);
-		var connection = require('../config/ConnectConstant.js');
-		connection.query('USE ' + dbconfig.database);
-
 		// github -------------------------------
 		app.get('/deleteprojects/github', isLoggedIn, function(req, res) {
 			var user = req.user;
@@ -338,7 +333,7 @@ module.exports = function(app, passport) {
 				var ownerflag;
 				function deleteIfOwner(callback){
 					var flag;
-					var connection = require('../config/ConnectConstant.js');
+					handleDisconnect();
 					connection.query('USE ' + dbconfig.database);
 					var selectQuery = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 					".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
@@ -358,6 +353,8 @@ module.exports = function(app, passport) {
 					if(ownerflag==true){
 						var deleteProjectQuery = "DELETE FROM " + dbconfig.projects_table+
 							" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
+							handleDisconnect();
+							connection.query('USE ' + dbconfig.database);
 							connection.query(deleteProjectQuery, function(err, rows){
 				                    res.redirect('/displayOwnprojects/github');
 			                });
@@ -369,18 +366,12 @@ module.exports = function(app, passport) {
 		// =============================================================================
 		// Display Projects I collaborate =============================================================
 		// =============================================================================
-		
-		var mysql = require('mysql');
-		var dbconfig = require('../config/database');
-		//var connection = mysql.createConnection(dbconfig.connection);
-		var connection = require('../config/ConnectConstant.js');
-		connection.query('USE ' + dbconfig.database);
 
 		// github -------------------------------
 		app.get('/displayCollabprojects/github', isLoggedIn, function(req, res) {
 			var user            = req.user;
 			var proj_name = req.project_name;//if I want
-			var connection = require('../config/ConnectConstant.js');
+			handleDisconnect();
 			connection.query('USE ' + dbconfig.database);
 			connection.query("SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.collaborators_table + " ON "+ dbconfig.projects_table+
 				".`project_id` = "+ dbconfig.collaborators_table + ".`project_id` "+" WHERE "+ dbconfig.collaborators_table+".`user_id` = '" + user.id + "'", function(err, rows){
@@ -397,12 +388,6 @@ module.exports = function(app, passport) {
 		// =============================================================================
 		// Project panel of a Project I collaborate, along with the other owners and collaborators =============================================================
 		// =============================================================================
-		
-		var mysql = require('mysql');
-		var dbconfig = require('../config/database');
-		//var connection = mysql.createConnection(dbconfig.connection);
-		var connection = require('../config/ConnectConstant.js');
-		connection.query('USE ' + dbconfig.database);
 
 		// github -------------------------------
 		app.get('/collabprojects/github', isLoggedIn, function(req, res) {
@@ -412,7 +397,7 @@ module.exports = function(app, passport) {
 				var collabflag;
 				function checkIfCollab(callback){
 					var flag;
-					var connection = require('../config/ConnectConstant.js');
+					handleDisconnect();
 					connection.query('USE ' + dbconfig.database);
 					connection.query("SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.collaborators_table + " ON "+ dbconfig.projects_table+
 					".`project_id` = "+ dbconfig.collaborators_table + ".`project_id` "+" WHERE "+ dbconfig.collaborators_table+".`user_id` = '" + user.id + "'", function(err, rows){
@@ -435,7 +420,7 @@ module.exports = function(app, passport) {
 							" ON "+ dbconfig.users_table + ".id=" +  dbconfig.owners_table+".user_id "+ "JOIN "+ dbconfig.projects_table+
 							" ON "+ dbconfig.projects_table + ".project_id=" + dbconfig.owners_table + ".project_id" + 
 							" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
-							var connection = require('../config/ConnectConstant.js');
+							handleDisconnect();
 							connection.query('USE ' + dbconfig.database);
 							connection.query(selectOwnersQuery, function(err, rows){
 				                    if (rows.length > 0) {
@@ -448,7 +433,7 @@ module.exports = function(app, passport) {
 							" ON "+ dbconfig.users_table + ".id=" +  dbconfig.collaborators_table+".user_id "+ "JOIN "+ dbconfig.projects_table+
 							" ON "+ dbconfig.projects_table + ".project_id=" + dbconfig.collaborators_table + ".project_id" + 
 							" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
-							var connection = require('../config/ConnectConstant.js');
+							handleDisconnect();
 							connection.query('USE ' + dbconfig.database);
 			        		connection.query(selectCollaboratorsQuery, function(err, rows){
 			                    if (rows.length > 0) {
@@ -478,12 +463,6 @@ module.exports = function(app, passport) {
 		// Remove a Collaborator from a Project I own ======================================================
 		// 
 		// =============================================================================
-		
-		var mysql = require('mysql');
-		var dbconfig = require('../config/database');
-		//var connection = mysql.createConnection(dbconfig.connection);
-		var connection = require('../config/ConnectConstant.js');
-		connection.query('USE ' + dbconfig.database);
 
 		// github -------------------------------
 		app.get('/removeCollab/github', isLoggedIn, function(req, res) {
@@ -493,7 +472,7 @@ module.exports = function(app, passport) {
 			var proj_name = req.param('project_name')
 			function removeIfOwner(callback){
 				var flag;
-				var connection = require('../config/ConnectConstant.js');
+				handleDisconnect();
 				connection.query('USE ' + dbconfig.database);
 				connection.query("SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 				".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'", function(err, rows){
@@ -511,7 +490,7 @@ module.exports = function(app, passport) {
 				if(ownerflag==true){
 	              var removeCollabQuery = "DELETE FROM " + dbconfig.collaborators_table+
 					" WHERE " + dbconfig.collaborators_table + ".id=" + "'" + collab_id + "'";
-					var connection = require('../config/ConnectConstant.js');
+					handleDisconnect();
 					connection.query('USE ' + dbconfig.database);
 					connection.query(removeCollabQuery, function(err, rows){
 		                    res.redirect('/manageprojects/github'+'?project_name='+proj_name);
@@ -526,11 +505,7 @@ module.exports = function(app, passport) {
 		// 
 		// =============================================================================
 		
-		var mysql = require('mysql');
-		var dbconfig = require('../config/database');
-		//var connection = mysql.createConnection(dbconfig.connection);
-		var connection = require('../config/ConnectConstant.js');
-		connection.query('USE ' + dbconfig.database);
+		
 
 		// github -------------------------------
 		app.get('/removeOwner/github', isLoggedIn, function(req, res) {
@@ -541,7 +516,7 @@ module.exports = function(app, passport) {
 			var proj_id = req.param('project_id');
 			function removeIfOwner(callback){
 				var flag;
-				var connection = require('../config/ConnectConstant.js');
+				handleDisconnect();
 				connection.query('USE ' + dbconfig.database);
 				connection.query("SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 				".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'", function(err, rows){
@@ -559,13 +534,14 @@ module.exports = function(app, passport) {
 				if(ownerflag==true){
 					var checkOwnersAmountQuery = "SELECT * FROM " + dbconfig.owners_table + " WHERE "+ dbconfig.owners_table + ".project_id="+"'"+proj_id+"'";
 					console.log(checkOwnersAmountQuery);
-					var connection = require('../config/ConnectConstant.js');
+					handleDisconnect();
 					connection.query('USE ' + dbconfig.database);
 					connection.query(checkOwnersAmountQuery, function(err, rows){
 							if(rows.length>1){
 								var removeOwnerQuery = "DELETE FROM " + dbconfig.owners_table+
 								" WHERE " + dbconfig.owners_table + ".id=" + "'" + owner_id + "'";
 								console.log(removeOwnerQuery);
+								handleDisconnect();
 								connection.query(removeOwnerQuery, function(err, rows){
 									res.redirect('/manageprojects/github'+'?project_name='+proj_name);
 								});
@@ -580,14 +556,6 @@ module.exports = function(app, passport) {
 			});	
 			
 		});
-
-
-
-
-
-
-
-
 
 };
 

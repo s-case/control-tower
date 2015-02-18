@@ -68,8 +68,9 @@
 
 				<h3 class="text-primary">Collaborators:<br></h3>
 				<% for (var i in collaboratorsnames) { %>
-					<p> 
-						<%=collaboratorsnames[i].github_name%>
+					<p class="glyphicon glyphicon-user">
+						<%=collaboratorsnames[i].github_name%><br>
+					</p>
 						<% var myCollabflag = false;%>
 						<% if (collaboratorsnames[i].github_name==username) { 
 								myCollabflag=true;
@@ -82,7 +83,7 @@
 							<% var removeCollaburl="/removeCollab/github?collab_id="+ collaboratorsnames[i].collab_id+"&project_name="+projectname%>
 							<a href=<%= removeCollaburl %> class="btn btn-warning"><span class="fa fa-times"></span> <%=collaboratorsnames[i].github_name%></a><br>
 						<% } %>
-					</p>
+					
 					
 				<% } %>
 				<% if (ownerflag) { %>

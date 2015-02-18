@@ -3,8 +3,30 @@ module.exports = function(app){
 
 var mysql = require('mysql');
 var dbconfig = require('../config/database');
-var connection = require('../config/ConnectConstant.js');
+var connection;
+function handleDisconnect() {
+  connection = mysql.createConnection(dbconfig.connection); // Recreate the connection, since
+                                                  // the old one cannot be reused.
 
+  connection.connect(function(err) {              // The server is either down
+    if(err) {                                     // or restarting (takes a while sometimes).
+      console.log('error when connecting to db:', err);
+      setTimeout(handleDisconnect, 10000); // We introduce a delay before attempting to reconnect,
+    }                                     // to avoid a hot loop, and to allow our node script to
+  });                                     // process asynchronous requests in the meantime.
+                                          // If you're also serving http, display a 503 error.
+  connection.on('error', function(err) {
+    console.log('db error', err);
+    if(err.code === 'PROTOCOL_CONNECTION_LOST') { // Connection to the MySQL server is usually
+      handleDisconnect();                         // lost due to either server restart, or a
+    } else {                                      // connnection idle timeout (the wait_timeout
+      throw err;                                  // server variable configures this)
+    }
+  });
+	
+  //console.log('new mysql connection');
+
+}
 // ROUTES FOR OUR API
 // =============================================================================
 //var router = express.Router();
@@ -15,6 +37,7 @@ app.get('/api',function(req,res){
 	var scase_token=req.param('scase_token');
 	var project_name=req.param('project_name');
 	if(scase_token && project_name){
+		handleDisconnect();
 		connection.query('USE ' + dbconfig.database);
 		//check if the user is owner		
 		var OwnerSelectQuery = "SELECT COUNT(*) AS usersCount FROM CTDB.users INNER JOIN (owners,projects) "+
@@ -53,7 +76,7 @@ app.get('/api',function(req,res){
 								
 		});
 		
-		
+		handleDisconnect();
 		connection.query(CollaboratorSelectQuery, function(err, rows){
 							if (err) throw err;
 							var userCnt = parseInt(rows[0].usersCount);
@@ -76,6 +99,7 @@ app.get('/api',function(req,res){
 		});
 	}
 	else if(scase_token){
+		handleDisconnect();
 		connection.query('USE ' + dbconfig.database);
 		var selectQuery = "SELECT COUNT(*) AS usersCount FROM CTDB.users WHERE "+
 							"`scase_token` = '" + scase_token + "' ";
