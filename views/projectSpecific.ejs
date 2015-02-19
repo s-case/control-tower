@@ -37,15 +37,16 @@
 				<% } %>
 				<% if (ownerflag) { %>
 					<% for (var i in ownersnames) { %>
-						<p class="glyphicon glyphicon-user"> 
-						<%=ownersnames[i].github_name%><br>
-						</p>
-						<p>
+						<button type="button" class="btn btn-default btn-lg">
+							<p class="glyphicon glyphicon-user"> 
+							<%=ownersnames[i].github_name%><br>
+							</p>
+						</button>
+						
 						<% var myOwnflag = false;%>
 						<% if (ownersnames[i].github_name==username) { 
 								myOwnflag=true;
 							}%>
-						
 						<% if (myOwnflag==true) { %>
 							<% var removeOwnerurl="/removeOwner/github?owner_id="+ ownersnames[i].owner_id+"&project_name="+projectname+"&project_id="+ownersnames[i].project_id%>
 								<a href=<%= removeOwnerurl %> class="btn btn-warning"><span class="fa fa-times"></span> Remove Myself</a><br>
@@ -54,23 +55,26 @@
 							<% var removeOwnerurl="/removeOwner/github?owner_id="+ ownersnames[i].owner_id+"&project_name="+projectname+"&project_id="+ownersnames[i].project_id%>
 								<a href=<%= removeOwnerurl %> class="btn btn-warning"><span class="fa fa-times"></span> <%= ownersnames[i].github_name%></a><br>
 						<% } %>
-						</p>
 					<% } %>
 				<% } %>
 				<% if (!ownerflag) { %>
 					<% for (var i in ownersnames) { %>
-						<p class="glyphicon glyphicon-user"> 
-						<%=ownersnames[i].github_name%><br>
-						</p>
+						<button type="button" class="btn btn-default btn-lg">
+							<p class="glyphicon glyphicon-user"> 
+							<%=ownersnames[i].github_name%><br>
+							</p>
+						</button>
 					<% } %>
 				<% } %>
 				
 
 				<h3 class="text-primary">Collaborators:<br></h3>
 				<% for (var i in collaboratorsnames) { %>
-					<p class="glyphicon glyphicon-user">
-						<%=collaboratorsnames[i].github_name%><br>
-					</p>
+					<button type="button" class="btn btn-default btn-lg">
+						<p class="glyphicon glyphicon-user">
+							<%=collaboratorsnames[i].github_name%><br>
+						</p>
+					</button>
 						<% var myCollabflag = false;%>
 						<% if (collaboratorsnames[i].github_name==username) { 
 								myCollabflag=true;
@@ -88,7 +92,7 @@
 				<% } %>
 				<% if (ownerflag) { %>
 					<% var deleteurl="/deleteprojects/github?project_name="+ projectname%>
-					<a href=<%= deleteurl %> class="btn btn-danger"><span class="fa fa-times"></span> Delete <%= projectname%></a><br>
+					<br><p> <a href=<%= deleteurl %> class="btn btn-danger btn-lg"><span class="fa fa-times"></span> Delete <%= projectname%></a><br></p>
 				<% } %>
 			</div>
 		</div>

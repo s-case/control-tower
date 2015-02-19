@@ -34,11 +34,18 @@
 						<strong>name</strong>: <%= user.github_name %><br>
 						<strong>S-Case token</strong>: <%= user.scase_token %><br>
 					</p>
-					<p><a href="/unlink/github" class="btn btn-primary"><span class="fa fa-chain-broken"></span>Unlink</a></p>
-					<p><a href="/delete/github" class="btn btn-primary"><span class="fa fa-chain-bomb"></span>Delete Account</a></p>
-					<p><a href="/refresh/github" class="btn btn-primary"><span class="fa fa-chain-bomb"></span>Refresh S-Case Token</a></p>
 					<p><a href="/displayOwnprojects/github" class="btn btn-primary"><span class="fa fa-cogs"></span> Manage My Projects</a></p>
 					<p><a href="/displayCollabprojects/github" class="btn btn-primary"><span class="fa fa-cogs"></span> Manage Projects I collaborate</a></p>
+					<p><a href="/unlink/github" class="btn btn-primary"><span class="fa fa-chain-broken"></span>Unlink</a></p>
+					<p><a href="/refresh/github" class="btn btn-primary"><span class="fa fa-chain-bomb"></span>Refresh S-Case Token</a></p>
+					<% if (user.Message!=null && user.Message!=undefined && user.Message.length>1) { %>
+						<div class="alert alert-danger" role="alert"> Alert: You still own <%= user.Message %></div>
+						<% var url = "/delete/github?user_id=" + user.id %>
+						<p><a href=<%= url %> class="btn btn-danger"><span class="fa fa-chain-bomb"></span>Delete Account</a></p>
+					<% } else {%>
+						<p><a href="/delete/github" class="btn btn-danger"><span class="fa fa-chain-bomb"></span>Delete Account</a></p>
+					<% } %>
+
 				<% } else { %>
 					<a href="/connect/github" class="btn btn-primary">Connect Github</a>
 				<% } %>
