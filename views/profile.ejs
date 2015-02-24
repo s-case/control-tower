@@ -38,6 +38,15 @@
 					<p><a href="/displayCollabprojects/github" class="btn btn-primary"><span class="fa fa-cogs"></span> Manage Projects I collaborate</a></p>
 					<p><a href="/unlink/github" class="btn btn-primary"><span class="fa fa-chain-broken"></span>Unlink</a></p>
 					<p><a href="/refresh/github" class="btn btn-primary"><span class="fa fa-chain-bomb"></span>Refresh S-Case Token</a></p>
+					<p><form action="/createProject" method="post"> 
+						<fieldset>
+							<label for="name"></label>
+							<input type="text" id="name" name="name" placeholder="Enter your project's name" />
+							<button type="submit" class="btn btn-success">Create project</button>
+
+        				</fieldset>
+        				</form>
+        				</p>
 					<% if (user.Message!=null && user.Message!=undefined && user.Message.length>1) { %>
 						<div class="alert alert-danger" role="alert"> Alert: You still own <%= user.Message %></div>
 						<% var url = "/delete/github?user_id=" + user.id %>
