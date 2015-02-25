@@ -18,16 +18,12 @@
 	</div>
 
 	<div class="row">
-
-		
-
 		<!-- Github INFORMATION -->
-		<div class="col-sm-6">
-			<div class="well">
+		<div class="col-sm-6 col-sm-offset-3">
+			<div class="well well-lg">
 				<h3 class="text-primary"><span class="fa fa-github"></span> Github</h3>
 				<h3 class="btn btn-primary btn-lg btn-block">Project Panel of: <%=projectname%><br></h3>
 				<h3 class="text-primary">Owners:<br></h3>
-				<div class="alert alert-danger" role="alert">if every owner is removed, the project is deleted!</div>
 				<!-- check if the user has this token (is the user authenticated with this social account) -->
 				<% var ownerflag %>
 				<% for (var i in ownersnames) { %>
@@ -36,6 +32,7 @@
 							}%>
 				<% } %>
 				<% if (ownerflag) { %>
+					<div class="alert alert-danger" role="alert">if every owner is removed, the project is deleted!</div>
 					<% for (var i in ownersnames) { %>
 						<button type="button" class="btn btn-default btn-lg">
 							<p class="glyphicon glyphicon-user"> 
@@ -66,7 +63,17 @@
 						</button>
 					<% } %>
 				<% } %>
-				
+				<% if (ownerflag) { %>
+					<p><form action="/addOwner/github" method="post"> 
+						<fieldset>
+							<label for="name"></label>
+							<input type="hidden" id="project_name" name="project_name" value=<%= projectname%>>
+							<input type="text" id="name" name="name" size="35" placeholder="Enter the Owner's Github name"/>
+							<button type="submit" class="btn btn-success">Add Owner</button>
+        				</fieldset>
+    				</form>
+    				</p>
+				<% } %>
 
 				<h3 class="text-primary">Collaborators:<br></h3>
 				<% for (var i in collaboratorsnames) { %>
@@ -89,6 +96,17 @@
 						<% } %>
 					
 					
+				<% } %>
+				<% if (ownerflag) { %>
+					<p><form action="/addCollaborator/github" method="post"> 
+						<fieldset>
+							<label for="name"></label>
+							<input type="hidden" id="project_name" name="project_name" value=<%= projectname%>>
+							<input type="text" id="name" name="name" size="35" placeholder="Enter the Collaborator's Github name"/>
+							<button type="submit" class="btn btn-success">Add Collaborator</button>
+        				</fieldset>
+    				</form>
+    				</p>
 				<% } %>
 				<% if (ownerflag) { %>
 					<% var deleteurl="/deleteprojects/github?project_name="+ projectname%>
