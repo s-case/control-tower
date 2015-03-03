@@ -5,8 +5,7 @@ module.exports = function(app, passport) {
 	//var connection = mysql.createConnection(dbconfig.connection);
 	//var connection = require('../config/ConnectConstant.js');
 	var connection;
-	// 
-
+	//function to handle the disconnects from the MySQL db
 	function handleDisconnect() {
 	  connection = mysql.createConnection(dbconfig.connection); // Recreate the connection, since
 	                                                  // the old one cannot be reused.
@@ -26,29 +25,28 @@ module.exports = function(app, passport) {
 	    }
 	  });
 	  connection.query('USE ' + dbconfig.database);
-	  //console.log('new mysql connection');
 	}
-	var ownerflag;
+	var ownerflag;//flag used to check if the user is an owner
+	//function to check if the user is owner of a specific project
 	function checkIfOwner(user,proj_name,callback){
-		
 		handleDisconnect();
 		var selectProjects = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 		".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
 		console.log(selectProjects)
 		connection.query(selectProjects, function(err, rows){
-			console.log(rows);
 			if (rows.length > 0) {
-	            	for(var i in rows){
-	        			if(rows[i].project_name==proj_name){
-	        				ownerflag=true;
-	        			}
-	            	}
+            	for(var i in rows){
+        			if(rows[i].project_name==proj_name){
+        				ownerflag=true;
+        			}
+            	}
 	        }
 	        console.log(ownerflag);
 	        callback(ownerflag);
 		});
 	}
-// normal routes ===============================================================
+	
+	// normal routes ===============================================================
 
 	// show the home page (will also have our login links)
 	app.get('/', function(req, res) {
@@ -78,35 +76,33 @@ module.exports = function(app, passport) {
 // AUTHENTICATE (FIRST LOGIN) ==================================================
 // =============================================================================
 
-	
 	// github -------------------------------
 
-		// send to github to do the authentication
-		app.get('/auth/github', passport.authenticate('github', { scope : 'email' }));
+	// send to github to do the authentication
+	app.get('/auth/github', passport.authenticate('github', { scope : 'email' }));
 
-		// handle the callback after github has authenticated the user
-		app.get('/auth/github/callback',
-			passport.authenticate('github', {
-				successRedirect : '/displayOwnprojects/github',
-				failureRedirect : '/'
-			}));
+	// handle the callback after github has authenticated the user
+	app.get('/auth/github/callback',
+		passport.authenticate('github', {
+			successRedirect : '/displayOwnprojects/github',
+			failureRedirect : '/'
+		}));
 
 // =============================================================================
 // AUTHORIZE (ALREADY LOGGED IN / CONNECTING OTHER SOCIAL ACCOUNT) =============
 // =============================================================================
 
-	
 	// github -------------------------------
 
-		// send to github to do the authentication
-		app.get('/connect/github', passport.authorize('github', { scope : 'email' }));
+	// send to github to do the authentication
+	app.get('/connect/github', passport.authorize('github', { scope : 'email' }));
 
-		// handle the callback after github has authorized the user
-		app.get('/connect/github/callback',
-			passport.authorize('github', {
-				successRedirect : '/displayOwnprojects/github',
-				failureRedirect : '/'
-			}));
+	// handle the callback after github has authorized the user
+	app.get('/connect/github/callback',
+		passport.authorize('github', {
+			successRedirect : '/displayOwnprojects/github',
+			failureRedirect : '/'
+		}));
 
 // =============================================================================
 // UNLINK ACCOUNTS =============================================================
@@ -138,8 +134,7 @@ module.exports = function(app, passport) {
 		var ownerflag;//flag to check if I am owner
 		var CheckOwnershipQuery = " SELECT " + dbconfig.projects_table+".`project_name`, "+ dbconfig.owners_table+".`user_id` FROM "+ dbconfig.projects_table +
 							" JOIN "+ dbconfig.owners_table+ " ON "+ dbconfig.projects_table + ".`project_id`="+dbconfig.owners_table+".`project_id` " +
-								" WHERE " +dbconfig.owners_table+".`user_id`="+"'"+user.id+"'";
-		//console.log(CheckOwnQuery);
+								" WHERE " +dbconfig.owners_table+".`user_id`="+"'"+user.id+"'";//Query to select all the project names that the user owns
 		handleDisconnect();
 		if(!user_id){
 			connection.query(CheckOwnershipQuery, function(err, rows) {
@@ -153,65 +148,60 @@ module.exports = function(app, passport) {
 						newmessage =newmessage+rows[i].project_name + " and ";
 					}
 				}
-				if(newmessage!=null){//we are going to insert this message in the DB, in order to know that the user attempted to delete
-					//the profile
+				if(newmessage!=null){//we are going to insert this message in the DB, in order to know that the user attempted to delete the profile
 					newmessage = newmessage.substring(0,newmessage.length-4);
 					handleDisconnect();
-					 
-					connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'", function(err, rows){
-		                    if (err)
-		                        return done(err);
-
-		                    if (rows.length > 0) {
-		                        var userProfile = rows[0];
-		                        userProfile.Message=newmessage;
-	                            var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
-	                                "`message` = '" + userProfile.Message + "' " +
-	                                "WHERE `id` = '" + user.id + "' LIMIT 1";
-	                            handleDisconnect();
-	                            connection.query(updateQuery, function(err, rows) {
-	                            	res.redirect('/profile');
-	                            });
-		                    }
-						
+					var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'";
+					connection.query(selectUsersQuery, function(err, rows){
+	                    if (err)
+	                        return done(err);
+	                    if (rows.length > 0) {
+	                        var userProfile = rows[0];
+	                        userProfile.Message=newmessage;
+                            var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
+                                "`message` = '" + userProfile.Message + "' " +
+                                "WHERE `id` = '" + user.id + "' LIMIT 1";//query to insert the alert message in the user's profile in the db
+                            handleDisconnect();
+                            connection.query(updateQuery, function(err, rows) {
+                            	res.redirect('/profile');
+                            });
+	                    }
 					});
 				}	
-				if(!rows[0]){
+				if(!rows[0]){//if the user does not own any project we are going to delete the account
 					res.redirect('/delete/github?user_id='+user.id);
 				}
 			});
 		}
 		if(user_id){
-			
-            //delete any project I am the only owner
-        	var DeleteProjectsOnlyOwnerQuery = "DELETE FROM " + dbconfig.projects_table + " WHERE " +
-        	dbconfig.projects_table + ".project_id IN (SELECT project_id "+
-        	"FROM (SELECT * FROM " + dbconfig.owners_table + 
-        	" WHERE " +dbconfig.owners_table +".project_id IN (SELECT project_id FROM " +
-        	dbconfig.owners_table + " WHERE "+ dbconfig.owners_table + ".user_id=" + user_id +
-        	")) AS projectsofuser GROUP BY project_id HAVING COUNT(project_id)=1)";
+            //delete any project I am the only owner (the only large SQL statement)
+        	var DeleteProjectsOnlyOwnerQuery = "DELETE FROM " + dbconfig.projects_table + 
+        		" WHERE " + dbconfig.projects_table + ".project_id IN (SELECT project_id "+
+	        	"FROM (SELECT * FROM " + dbconfig.owners_table + 
+	        	" WHERE " +dbconfig.owners_table +".project_id IN (SELECT project_id FROM " +
+	        	dbconfig.owners_table + " WHERE "+ dbconfig.owners_table + ".user_id=" + user_id +
+	        	")) AS projectsofuser GROUP BY project_id HAVING COUNT(project_id)=1)";
 			console.log(DeleteProjectsOnlyOwnerQuery);
             handleDisconnect();
             connection.query(DeleteProjectsOnlyOwnerQuery, function(err, rows) {
-
                 //delete from owners
 				var DeleteFromOwnerQuery = "DELETE FROM " + dbconfig.owners_table +                          
 	                                " WHERE `user_id` = " + user_id;
                 console.log(DeleteFromOwnerQuery);
                 handleDisconnect();
                 connection.query(DeleteFromOwnerQuery, function(err, rows) {
-                		var DeleteFromCollabQuery = "DELETE FROM " + dbconfig.collaborators_table +                          
-	                                " WHERE `user_id` = " + user_id;
-                        console.log(DeleteFromCollabQuery);
-                        handleDisconnect();
-                        connection.query(DeleteFromCollabQuery, function(err, rows) {
-                        	var DeleteFromUsersQuery = "DELETE FROM " + dbconfig.users_table +                          
-                    			" WHERE `id` = " + user_id;
-                			console.log(DeleteFromUsersQuery);
-        				  	connection.query(DeleteFromUsersQuery, function(err, rows) {
-                                	res.redirect('/'); 
-                            });
+            		var DeleteFromCollabQuery = "DELETE FROM " + dbconfig.collaborators_table +                          
+                                " WHERE `user_id` = " + user_id;
+                    console.log(DeleteFromCollabQuery);
+                    handleDisconnect();
+                    connection.query(DeleteFromCollabQuery, function(err, rows) {
+                    	var DeleteFromUsersQuery = "DELETE FROM " + dbconfig.users_table +                          
+                			" WHERE `id` = " + user_id;
+            			console.log(DeleteFromUsersQuery);
+    				  	connection.query(DeleteFromUsersQuery, function(err, rows) {
+                            	res.redirect('/'); 
                         });
+                    });
                 });
         	});
 
@@ -223,26 +213,25 @@ module.exports = function(app, passport) {
 	//we create a new scase token
 	var crypto = require('crypto');
 	var base64url = require('base64url');
-
+	//function to crete an S-CASE token
 	function scasetokenCreate(size){
 	    return base64url(crypto.randomBytes(size));
-
 	}
 	//we create the route to refresh the token
 	app.get('/refresh/github', isLoggedIn, function(req, res) {
 		var user            = req.user;
 		handleDisconnect();
-		 
+		//we select the user from the user's table (just to check if the user exists)
 		connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'", function(err, rows){
             if (rows.length > 0) {
                 user = rows[0];
-                var scasetoken = scasetokenCreate(35)
+                var scasetoken = scasetokenCreate(35)//we create a new scase token
                 user.scase_token=scasetoken;
+                //we update the token
                 var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
                         "`scase_token` = '" + user.scase_token + "' " +
                         "WHERE `id` = '" + user.id + "' LIMIT 1";
                 handleDisconnect();
-				 
                 connection.query(updateQuery, function(err, rows) {
                   	res.redirect('/profile');//we redirect back to the profile
                 });
@@ -258,21 +247,19 @@ module.exports = function(app, passport) {
 		var user            = req.user;
 		var proj_name = req.project_name;//if I want
 		handleDisconnect();
-		 
 		//query for the projects I own
 		var projectsOwnedQuery = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 			".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
 		connection.query(projectsOwnedQuery, function(err, rows){
             if (rows.length > 0) {
             	res.render('projectsOwn.ejs', {
-					projectnames : rows,//I return the project names
+					projectnames : rows,//I return the project names in order to be able to remove them
 					user: user
 				});
             }
             else{
-                	res.redirect('/profile');
+            	res.redirect('/profile');
             }
-
         });
 	});
 	// ====================================================================================================================
@@ -299,7 +286,6 @@ module.exports = function(app, passport) {
 						handleDisconnect();
 						connection.query(selectOwnersQuery, function(err, rows){
 		                    if (rows.length > 0) {
-		                    	//console.log(rows);
 		                    	owners=rows;
 		                    }
 		                    callback();
@@ -320,19 +306,17 @@ module.exports = function(app, passport) {
 		                    callback();//callback at the end of the second query
 		        		});
 					}
-		        		
-					
 					displayOwners(function(){
 						//console.log("owners"+owners);
 						//console.log("collabs"+collaborators);
 						displayCollaborators(function(){
 							res.render('projectSpecific.ejs', {
-									ownersnames : owners,//we return owners
-									collaboratorsnames : collaborators,//we return collaborators
-									projectname : proj_name,//we return project name
-									username : user.github_name,//we return the active's User name (it is used in order be able to remove your own account from the project)
-									user: user
-								});
+								ownersnames : owners,//we return owners
+								collaboratorsnames : collaborators,//we return collaborators
+								projectname : proj_name,//we return project name
+								username : user.github_name,//we return the active's User name (it is used in order be able to remove your own account from the project)
+								user: user
+							});
 						});
 					});
 				}
@@ -343,7 +327,6 @@ module.exports = function(app, passport) {
 	// Delete a Project I own ======================================================
 	// delete it from all the other owners and collaborators too
 	// =============================================================================
-	
 	app.get('/deleteprojects/github', isLoggedIn, function(req, res) {
 		var user = req.user;
 		var proj_name = req.param('project_name');//name of the project to delete
@@ -367,14 +350,13 @@ module.exports = function(app, passport) {
 	// =============================================================================
 	// Display Projects I collaborate ==============================================
 	// =============================================================================
-
 	app.get('/displayCollabprojects/github', isLoggedIn, function(req, res) {
 		var user = req.user;
 		var proj_name = req.project_name;
 		handleDisconnect();
-		connection.query("SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.collaborators_table + " ON "+ dbconfig.projects_table+
-			".`project_id` = "+ dbconfig.collaborators_table + ".`project_id` "+" WHERE "+ dbconfig.collaborators_table+".`user_id` = '" + user.id + "'", function(err, rows){
-                
+		var selectProjectCollab = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.collaborators_table + " ON "+ dbconfig.projects_table+
+			".`project_id` = "+ dbconfig.collaborators_table + ".`project_id` "+" WHERE "+ dbconfig.collaborators_table+".`user_id` = '" + user.id + "'";
+		connection.query(selectProjectCollab, function(err, rows){
                 if (rows.length > 0) {//if there are projects I collaborate I show them
                 	res.render('projectsCollab.ejs', {
 						projectnames : rows,
@@ -388,9 +370,9 @@ module.exports = function(app, passport) {
         });
 
 	});
-	// =============================================================================
-	// Project panel of a Project I collaborate, along with the other owners and collaborators =============================================================
-	// =============================================================================
+	// ============================================================================================================================================
+	// Project panel of a Project I collaborate, along with the other owners and collaborators ====================================================
+	// ============================================================================================================================================
 
 	// github -------------------------------
 	app.get('/collabprojects/github', isLoggedIn, function(req, res) {
@@ -433,7 +415,6 @@ module.exports = function(app, passport) {
 			                    callback(owners);
 			            });
 					}
-					
 					function displayCollaborators (callback){
 		        		var selectCollaboratorsQuery = "SELECT `github_name`," + dbconfig.collaborators_table + ".id AS `collab_id` FROM " + dbconfig.users_table +" JOIN " + dbconfig.collaborators_table + 
 						" ON "+ dbconfig.users_table + ".id=" +  dbconfig.collaborators_table+".user_id "+ "JOIN "+ dbconfig.projects_table+
@@ -449,7 +430,6 @@ module.exports = function(app, passport) {
 		                    callback(collaborators);
 		        		});
 					}
-					
 					displayOwners(function(){
 						//console.log("owners"+owners);
 						//console.log("collabs"+collaborators);
@@ -468,7 +448,7 @@ module.exports = function(app, passport) {
 		}
 	});
 	// =============================================================================
-	// Remove a Collaborator from a Project I own or If I want to remove myself ==================================
+	// Remove a Collaborator from a Project I own or If I want to remove myself ====
 	// =============================================================================
 	app.get('/removeCollab/github', isLoggedIn, function(req, res) {
 		var user = req.user;
@@ -484,14 +464,14 @@ module.exports = function(app, passport) {
 	                    res.redirect('/manageprojects/github'+'?project_name='+proj_name);
                 });
 			}
-			else{
+			else{//check if I am a collaborator in the project, so I can remove myself!
 				var getCollabInfo = "SELECT user_id FROM " + dbconfig.collaborators_table +
 					" WHERE " + dbconfig.collaborators_table + ".id=" + "'" + collab_id + "'";
 				console.log(getCollabInfo);
 				handleDisconnect();
 				connection.query(getCollabInfo, function(err, rows){
 						if(rows.length>0){
-							if(rows[0].user_id==user.id){
+							if(rows[0].user_id==user.id){//if I am a collaborator in the project I can remove myself!
 								 var removeCollabQuery = "DELETE FROM " + dbconfig.collaborators_table+
 									" WHERE " + dbconfig.collaborators_table + ".id=" + "'" + collab_id + "'";
 								handleDisconnect();
@@ -524,7 +504,7 @@ module.exports = function(app, passport) {
 				console.log(checkOwnersAmountQuery);
 				handleDisconnect();
 				connection.query(checkOwnersAmountQuery, function(err, rows){
-						//if there are more than 1 owners, I remove the owner
+						//if there are more than 1 owners, I just remove the owner
 						if(rows.length>1){
 							var removeOwnerQuery = "DELETE FROM " + dbconfig.owners_table+
 							" WHERE " + dbconfig.owners_table + ".id=" + "'" + owner_id + "'";
@@ -533,7 +513,7 @@ module.exports = function(app, passport) {
 							connection.query(removeOwnerQuery, function(err, rows){
 								res.redirect('/manageprojects/github'+'?project_name='+proj_name);
 							});
-						}//if there is only 1 owner, I delete the project
+						}//if there is only 1 owner, I delete the whole project
 						else{
 							res.redirect('/deleteprojects/github'+'?project_name='+proj_name);
 						}
@@ -544,9 +524,9 @@ module.exports = function(app, passport) {
 		});	
 		
 	});
-	// =============================================================================
+	// ===============================================================
 	// Create a Project I own ========================================
-	// =============================================================================
+	// ===============================================================
 	app.post('/createProject', isLoggedIn, function(req, res) {
 		var proj_name = req.body.name;
 		console.log('projectname to create'+proj_name);
@@ -555,13 +535,13 @@ module.exports = function(app, passport) {
 		//var proj_name = req.param('project_name');
 		var createProjectQuery = "INSERT INTO " + dbconfig.projects_table +
 				" (project_name)" +
-				" VALUES ("+ "'" + proj_name+"'"+")";
+				" VALUES ("+ "'" + proj_name+"'"+")";//query to create the project
 		console.log(createProjectQuery);
 		handleDisconnect();
 		connection.query(createProjectQuery, function(err, rows){
 			if(rows){
 				var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
-							+ proj_name +"'";
+							+ proj_name +"'";//query to get the project's ID to insert in the Owners table as a project the user owns
 				handleDisconnect();
 				console.log(getProjectId);
 				connection.query(getProjectId, function(err, rows){
@@ -596,17 +576,17 @@ module.exports = function(app, passport) {
 		checkIfOwner(user,proj_name,function(ownerflag){
 			if(ownerflag==true){
 				var checkIfUserExistsQuery = "SELECT id FROM " + dbconfig.users_table + " WHERE " +
-					dbconfig.users_table +".github_name=" + "'" + github_name +"'";
+					dbconfig.users_table +".github_name=" + "'" + github_name +"'";//check if the user's githubname exists
 				handleDisconnect();
 				connection.query(checkIfUserExistsQuery, function(err,rows){
 					if(rows.length>0){
 						var user_id = rows[0].id
 						var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
-										+ proj_name +"'";
+										+ proj_name +"'";//if the user exists, get the project's id
 						handleDisconnect();
 						connection.query(getProjectId, function(err, rows){
 							var createOwnerQuery = "INSERT INTO " +dbconfig.owners_table+ "(user_id,project_id)" +
-								" VALUES (" + "'"+ user_id + "'"+ ",'"+rows[0].project_id+"')";
+								" VALUES (" + "'"+ user_id + "'"+ ",'"+rows[0].project_id+"')";//then insert the user as an owner in the owner's table
 							handleDisconnect();
 							console.log(createOwnerQuery);
 							connection.query(createOwnerQuery, function(err, rows){
@@ -633,17 +613,17 @@ module.exports = function(app, passport) {
 		checkIfOwner(user,proj_name,function(ownerflag){
 			if(ownerflag==true){
 				var checkIfUserExistsQuery = "SELECT id FROM " + dbconfig.users_table + " WHERE " +
-					dbconfig.users_table +".github_name=" + "'" + github_name +"'";
+					dbconfig.users_table +".github_name=" + "'" + github_name +"'";////check if the user's githubname exists
 				handleDisconnect();
 				connection.query(checkIfUserExistsQuery, function(err,rows){
 					if(rows.length>0){
 						var user_id = rows[0].id
 						var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
-										+ proj_name +"'";
+										+ proj_name +"'";//if the user exists, get the project's id
 						handleDisconnect();
 						connection.query(getProjectId, function(err, rows){
 							var createCollabQuery = "INSERT INTO " +dbconfig.collaborators_table+ "(user_id,project_id)" +
-								" VALUES (" + "'"+ user_id + "'"+ ",'"+rows[0].project_id+"')";
+								" VALUES (" + "'"+ user_id + "'"+ ",'"+rows[0].project_id+"')";//then insert the user as a collaborator in the collaborators' table
 							handleDisconnect();
 							console.log(createCollabQuery);
 							connection.query(createCollabQuery, function(err, rows){
@@ -659,8 +639,6 @@ module.exports = function(app, passport) {
 		});
 	});
 };
-
-
 
 // route middleware to ensure user is logged in
 function isLoggedIn(req, res, next) {
