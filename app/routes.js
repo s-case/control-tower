@@ -130,6 +130,7 @@ module.exports = function(app, passport) {
 	app.get('/delete/github', isLoggedIn, function(req, res) {
 		var user = req.user;
 		var user_id = req.param('user_id');
+		var api = req.param('api');//flag to know if the request is coming from /api/deleteUser/
 		//the query checks if the user owns a project
 		var ownerflag;//flag to check if I am owner
 		var CheckOwnershipQuery = " SELECT " + dbconfig.projects_table+".`project_name`, "+ dbconfig.owners_table+".`user_id` FROM "+ dbconfig.projects_table +
@@ -199,7 +200,18 @@ module.exports = function(app, passport) {
                 			" WHERE `id` = " + user_id;
             			console.log(DeleteFromUsersQuery);
     				  	connection.query(DeleteFromUsersQuery, function(err, rows) {
-                            	res.redirect('/'); 
+    				  			if(api=='true'){//if we have used the API
+    				  				res.setHeader('Content-Type', 'application/json');
+										var obj = '{'
+												+ '"userDeleted" : "true"'
+												+ '}';
+										var Jobj=JSON.parse(obj);
+										res.send(Jobj);
+    				  			}
+    				  			else {
+    				  				res.redirect('/'); 
+    				  			}
+                            	
                         });
                     });
                 });
