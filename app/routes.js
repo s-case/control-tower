@@ -87,7 +87,7 @@ module.exports = function(app, passport) {
 		// handle the callback after github has authenticated the user
 		app.get('/auth/github/callback',
 			passport.authenticate('github', {
-				successRedirect : '/profile',
+				successRedirect : '/displayOwnprojects/github',
 				failureRedirect : '/'
 			}));
 
@@ -104,7 +104,7 @@ module.exports = function(app, passport) {
 		// handle the callback after github has authorized the user
 		app.get('/connect/github/callback',
 			passport.authorize('github', {
-				successRedirect : '/profile',
+				successRedirect : '/displayOwnprojects/github',
 				failureRedirect : '/'
 			}));
 
@@ -265,7 +265,8 @@ module.exports = function(app, passport) {
 		connection.query(projectsOwnedQuery, function(err, rows){
             if (rows.length > 0) {
             	res.render('projectsOwn.ejs', {
-					projectnames : rows//I return the project names
+					projectnames : rows,//I return the project names
+					user: user
 				});
             }
             else{
@@ -329,7 +330,8 @@ module.exports = function(app, passport) {
 									ownersnames : owners,//we return owners
 									collaboratorsnames : collaborators,//we return collaborators
 									projectname : proj_name,//we return project name
-									username : user.github_name//we return the active's User name (it is used in order be able to remove your own account from the project)
+									username : user.github_name,//we return the active's User name (it is used in order be able to remove your own account from the project)
+									user: user
 								});
 						});
 					});
@@ -375,7 +377,8 @@ module.exports = function(app, passport) {
                 
                 if (rows.length > 0) {//if there are projects I collaborate I show them
                 	res.render('projectsCollab.ejs', {
-						projectnames : rows
+						projectnames : rows,
+						user : user
 					});
                 }
                 else{
@@ -455,7 +458,8 @@ module.exports = function(app, passport) {
 									ownersnames : owners,//we return owners
 									collaboratorsnames : collaborators,//we return collaborators
 									projectname : proj_name,//we return project name
-									username : user.github_name//we return the active's User name (it is used in order be able to remove your own account from the project)
+									username : user.github_name,//we return the active's User name (it is used in order be able to remove your own account from the project)
+									user: user
 								});
 						});
 					});

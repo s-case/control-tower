@@ -1,76 +1,58 @@
 <!doctype html>
 <html>
-<head>
-	<title>S-CASE Authentication</title>
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-	<style>
-		body 		{ padding-top:80px; word-wrap:break-word; }
-	</style>
-</head>
+<% include header %>
+<% include navbar %>
 <body>
-<div class="container">
+	
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-6 col-sm-offset-3">
+				<div class="well">
+					<h3 class="text-primary"><span class="fa fa-github"></span> My S-CASE Github profile</h3>
+					<!-- check if the user has this token (is the user authenticated with this social account) -->
+					<% if (user.github_token!=='undefined') { %>
+						<p>
+							<strong>Github_id</strong>: <%= user.github_id %><br>
+							<strong>Github_name </strong>:<%= user.github_name %><br>
+							<strong>Github token</strong>: <%= user.github_token %><br>
+							<strong>S-Case token</strong>: <%= user.scase_token %><br>
+						</p>
+						<!-- form to create a Project -->
+						<p><form action="/createProject" method="post"> 
+							<fieldset>
+								<label for="name"></label>
+								<input type="text" id="name" size="35" name="name" placeholder="Enter your project's name" />
+								<button type="submit" class="btn btn-success">Create project</button>
 
-	<div class="page-header text-center">
-		<img src="http://www.scasefp7.eu/wp-content/themes/scase/img/scase_logo.png" alt="S-Case logo">
-		<h1><span class="fa fa-user-secret"></span> Profile Page</h1>
-		<a href="/logout" class="btn btn-default btn-sm">Logout</a>
-	</div>
-
-	<div class="row">
-
-		
-
-		<!-- Github INFORMATION -->
-		<div class="col-sm-6 col-sm-offset-3">
-			<div class="well">
-				<h3 class="text-primary"><span class="fa fa-github"></span> Github</h3>
-
-				<!-- check if the user has this token (is the user authenticated with this social account) -->
-				<% if (user.github_token!=='undefined') { %>
-					<p>
-						<strong>id</strong>: <%= user.github_id %><br>
-						<strong>Github token</strong>: <%= user.github_token %><br>
-						<strong>name</strong>: <%= user.github_name %><br>
-						<strong>S-Case token</strong>: <%= user.scase_token %><br>
-					</p>
-					<p><a href="/displayOwnprojects/github" class="btn btn-primary"><span class="fa fa-cogs"></span> Manage My Projects</a></p>
-					<p><a href="/displayCollabprojects/github" class="btn btn-primary"><span class="fa fa-cogs"></span> Manage Projects I collaborate</a></p>
-					<p><a href="/unlink/github" class="btn btn-primary"><span class="fa fa-chain-broken"></span>Unlink</a></p>
-					<p><a href="/refresh/github" class="btn btn-primary"><span class="fa fa-chain-bomb"></span>Refresh S-Case Token</a></p>
-					<p><form action="/createProject" method="post"> 
-						<fieldset>
-							<label for="name"></label>
-							<input type="text" id="name" size="35" name="name" placeholder="Enter your project's name" />
-							<button type="submit" class="btn btn-success">Create project</button>
-
-        				</fieldset>
-        				</form>
+	        				</fieldset>
+	        				</form>
         				</p>
-					<% if (user.Message!=null && user.Message!=undefined && user.Message.length>1) { %>
-						<div class="alert alert-danger" role="alert"> Alert: You still own <%= user.Message %></div>
-						<% var url = "/delete/github?user_id=" + user.id %>
-						<p><a href=<%= url %> class="btn btn-danger"><span class="fa fa-chain-bomb"></span>Delete Account</a></p>
-					<% } else {%>
-						<p><a href="/delete/github" class="btn btn-danger"><span class="fa fa-chain-bomb"></span>Delete Account</a></p>
+        				<!-- Alert that I own some project(s) -->
+						<% if (user.Message!=null && user.Message!=undefined && user.Message.length>1) { %>
+							<div class="alert alert-danger" role="alert"> Alert: You still own <%= user.Message %></div>
+							<% var url = "/delete/github?user_id=" + user.id %>
+							<a href=<%= url %> class="btn btn-danger"><span class="fa fa-chain-bomb"></span>Delete Account</a>
+						<!-- Delete account -->
+						<% } else {%>
+							<a href="/delete/github" class="btn btn-danger"><span class="fa fa-chain-bomb"></span>Delete Account</a>
+						<% } %>
+						<!-- Unlink account -->
+						<a href="/unlink/github" class="btn btn-warning"><span class="fa fa-chain-broken"> Unlink</span></a>
+						<!-- Refresh S-Case token-->
+        				<a href="/refresh/github" class="btn btn-info"><span class="fa fa-refresh"></span> Refresh S-Case Token</a>
+					<!--if the account is disconnected, show only the connect option-->	
+					<% } else { %>
+						<a href="/connect/github" class="btn btn-primary">Connect Github</a>
 					<% } %>
-
-				<% } else { %>
-					<a href="/connect/github" class="btn btn-primary">Connect Github</a>
-				<% } %>
-
+				</div>
 			</div>
 		</div>
-	</div>
-	<div class="row">
 
-	</div>
-
-	<div class="text-center">
-		<p>For more info about S-CASE visit: <a href="http://www.scasefp7.eu">http://www.scasefp7.eu</a>.</p>
-		<p> <a href="http://www.scasefp7.eu/news-blog/">S-CASE blog</a>.</p>
-	</div>
-
+		<div class="text-center">
+			<p>For more info about S-CASE visit: <a href="http://www.scasefp7.eu">http://www.scasefp7.eu</a>.</p>
+			<p> <a href="http://www.scasefp7.eu/news-blog/">S-CASE blog</a>.</p>
+		</div>
 </div>
+<% include javascriptLoad %>
 </body>
 </html>

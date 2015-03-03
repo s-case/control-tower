@@ -1,54 +1,59 @@
 <!doctype html>
 <html>
-<head>
-	<title>S-CASE Authentication</title>
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-	<style>
-		body 		{ padding-top:80px; word-wrap:break-word; }
-	</style>
-</head>
+<% include header %>
+<% include navbar %>
 <body>
+
 <div class="container">
-
-	<div class="page-header text-center">
-		<img src="http://www.scasefp7.eu/wp-content/themes/scase/img/scase_logo.png" alt="S-Case logo">
-		<h1><span class="fa fa-user-secret"></span> Projects Ownership Page</h1>
-		<a href="/logout" class="btn btn-default btn-sm">Logout</a>
-	</div>
-
 	<div class="row">
-
-		
-
-		<!-- Github INFORMATION -->
-		<div class="col-sm-6 col-sm-offset-3">
+		<div class="col-sm-8 col-sm-offset-2">
 			<div class="well">
-				<h3 class="text-primary"><span class="fa fa-github"></span> Github</h3>
-				<h3 class="text-primary">I own the following project(s):</h3>
-				<!-- check if the user has this token (is the user authenticated with this social account) -->
-				<% for (var i in projectnames) { %>
-					<p> 
-						<% var manageurl="/manageprojects/github?project_name="+ projectnames[i].project_name%>
-						<a href=<%= manageurl %> class="btn btn-default"><span class="fa fa-cogs"></span> <%= projectnames[i].project_name%></a>
-						<% var deleteurl="/deleteprojects/github?project_name="+ projectnames[i].project_name%>
-						<a href=<%= deleteurl %> class="btn btn-danger"><span class="fa fa-times"></span> Delete <%= projectnames[i].project_name%></a><br>
-					</p>
-					
-				<% } %>
-
+				<div class="panel panel-default">
+				  	<div class="panel-heading">
+					  	<h3><span class="fa fa-github"></span> Projects Owned by <%= user.github_name %></h3>
+					  	<!--form to create a Project-->
+					  	<form action="/createProject" method="post"> 
+							<fieldset>
+								<input type="text" id="name" size="35" name="name" placeholder="Enter your project's name" />
+								<button type="submit" class="btn btn-success">Create project</button>
+		    				</fieldset>
+	    				</form>
+    				</div>
+				  	<!-- Table of the Projects I own-->
+				  	<table class="table">
+					   	<thead>
+				          <tr>
+				            <th>#</th>
+				            <th>Project Name</th>
+				            <th></th>
+				            <th></th>
+				          </tr>
+				        </thead>
+			        	<tbody>
+				          	<% for (var i in projectnames) { %>
+								<tr>
+								<td><%= i%></td>
+								<td><%= projectnames[i].project_name%></td>
+								<!-- button to edit the project's details-->
+								<% var manageurl="/manageprojects/github?project_name="+ projectnames[i].project_name%>
+								 <td><a href=<%= manageurl %> class="btn btn-success btn-sm" style="color:white"><span class="fa fa-pencil"></span> Edit <%= projectnames[i].project_name%></a></td>
+								<!-- button to delete the project -->
+								<% var deleteurl="/deleteprojects/github?project_name="+ projectnames[i].project_name%>
+								<td><a href=<%= deleteurl %> class="btn btn-danger btn-sm" style="color:white"><span class="fa fa-times"></span> Delete <%= projectnames[i].project_name%></a></td>
+								</tr>
+							<% } %>
+			         </tbody>
+				  </table>
+				</div>
 			</div>
 		</div>
 	</div>
-	<div class="row">
-
-	</div>
-
 	<div class="text-center">
 		<p>For more info about S-CASE visit: <a href="http://www.scasefp7.eu">http://www.scasefp7.eu</a>.</p>
 		<p> <a href="http://www.scasefp7.eu/news-blog/">S-CASE blog</a>.</p>
 	</div>
 
 </div>
+<% include javascriptLoad %>
 </body>
 </html>
