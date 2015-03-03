@@ -130,7 +130,6 @@ module.exports = function(app, passport) {
 	app.get('/delete/github', isLoggedIn, function(req, res) {
 		var user = req.user;
 		var user_id = req.param('user_id');
-		var api = req.param('api');//flag to know if the request is coming from /api/deleteUser/
 		//the query checks if the user owns a project
 		var ownerflag;//flag to check if I am owner
 		var CheckOwnershipQuery = " SELECT " + dbconfig.projects_table+".`project_name`, "+ dbconfig.owners_table+".`user_id` FROM "+ dbconfig.projects_table +
@@ -200,18 +199,7 @@ module.exports = function(app, passport) {
                 			" WHERE `id` = " + user_id;
             			console.log(DeleteFromUsersQuery);
     				  	connection.query(DeleteFromUsersQuery, function(err, rows) {
-    				  			if(api=='true'){//if we have used the API
-    				  				res.setHeader('Content-Type', 'application/json');
-										var obj = '{'
-												+ '"userDeleted" : "true"'
-												+ '}';
-										var Jobj=JSON.parse(obj);
-										res.send(Jobj);
-    				  			}
-    				  			else {
-    				  				res.redirect('/'); 
-    				  			}
-                            	
+                            	res.redirect('/'); 
                         });
                     });
                 });
@@ -231,19 +219,10 @@ module.exports = function(app, passport) {
 	}
 	//we create the route to refresh the token
 	app.get('/refresh/github', isLoggedIn, function(req, res) {
-		var user = req.user;
-		var user_id_api = req.param('user_id');
-		var api = req.param('api');
+		var user            = req.user;
 		handleDisconnect();
-		var user_id;
-		if(api=='true'&&user_id_api){
-			user_id=user_id_api;
-		}
-		else{
-			user_id=user.id;
-		}
 		//we select the user from the user's table (just to check if the user exists)
-		connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user_id + "'", function(err, rows){
+		connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'", function(err, rows){
             if (rows.length > 0) {
                 user = rows[0];
                 var scasetoken = scasetokenCreate(35)//we create a new scase token
@@ -251,24 +230,15 @@ module.exports = function(app, passport) {
                 //we update the token
                 var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
                         "`scase_token` = '" + user.scase_token + "' " +
-                        "WHERE `id` = '" + user_id + "' LIMIT 1";
+                        "WHERE `id` = '" + user.id + "' LIMIT 1";
                 handleDisconnect();
                 connection.query(updateQuery, function(err, rows) {
-    				if(api=='true'){//if we have used the API
-		  				res.setHeader('Content-Type', 'application/json');
-							var obj = '{'
-									+ '"newScaseToken" : "'+scasetoken+'"}';
-							console.log(obj);
-							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
-		  			}
-		  			else {
-		  				res.redirect('/profile');//we redirect back to the profile
-		  			}
-                  	
+                  	res.redirect('/profile');//we redirect back to the profile
                 });
             }
         });
+
+
 	});
 	// =============================================================================
 	// Display Projects I own, allow to manage and allow to remove =================
@@ -670,7 +640,7 @@ module.exports = function(app, passport) {
 	});
 };
 
-// route middleware to ensure user is logged in
+// route middleware to ensure user is logged i
 function isLoggedIn(req, res, next) {
 	if (req.isAuthenticated())
 		return next();

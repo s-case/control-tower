@@ -36,13 +36,54 @@ function handleDisconnect() {
 				   	if (err)
                         return done(err);
                     if (rows.length > 0) {
-                    	var userProfile = rows[0];
-                    	res.redirect('/delete/github?user_id='+userProfile.id+"&api=true");
+                    	var user_id = rows[0].id;
+                    	//delete any project I am the only owner (the only large SQL statement)
+			        	var DeleteProjectsOnlyOwnerQuery = "DELETE FROM " + dbconfig.projects_table + 
+			        		" WHERE " + dbconfig.projects_table + ".project_id IN (SELECT project_id "+
+				        	"FROM (SELECT * FROM " + dbconfig.owners_table + 
+				        	" WHERE " +dbconfig.owners_table +".project_id IN (SELECT project_id FROM " +
+				        	dbconfig.owners_table + " WHERE "+ dbconfig.owners_table + ".user_id=" + user_id +
+				        	")) AS projectsofuser GROUP BY project_id HAVING COUNT(project_id)=1)";
+						console.log(DeleteProjectsOnlyOwnerQuery);
+			            handleDisconnect();
+			            connection.query(DeleteProjectsOnlyOwnerQuery, function(err, rows) {
+			                //delete from owners
+							var DeleteFromOwnerQuery = "DELETE FROM " + dbconfig.owners_table +                          
+				                                " WHERE `user_id` = " + user_id;
+			                console.log(DeleteFromOwnerQuery);
+			                handleDisconnect();
+			                connection.query(DeleteFromOwnerQuery, function(err, rows) {
+			            		var DeleteFromCollabQuery = "DELETE FROM " + dbconfig.collaborators_table +                          
+			                                " WHERE `user_id` = " + user_id;
+			                    console.log(DeleteFromCollabQuery);
+			                    handleDisconnect();
+			                    connection.query(DeleteFromCollabQuery, function(err, rows) {
+			                    	var DeleteFromUsersQuery = "DELETE FROM " + dbconfig.users_table +                          
+			                			" WHERE `id` = " + user_id;
+			            			console.log(DeleteFromUsersQuery);
+			    				  	connection.query(DeleteFromUsersQuery, function(err, rows) {
+			                            	res.setHeader('Content-Type', 'application/json');
+											var obj = '{'
+													+ '"userDeleted" : "true"'
+													+ '}';
+											var Jobj=JSON.parse(obj);
+											res.send(Jobj);
+			                        });
+			                    });
+			                });
+			        	});
                     }
 			});
 		}
 	});
-	//route to delete a User
+	//route to refresh the S-CASE token
+	//we create a new scase token
+	var crypto = require('crypto');
+	var base64url = require('base64url');
+	//function to crete an S-CASE token
+	function scasetokenCreate(size){
+	    return base64url(crypto.randomBytes(size));
+	}
 	app.get('/api/refreshSCASEtoken',function(req,res){
 		var scase_token=req.param('scase_token');
 		if(scase_token){
@@ -52,8 +93,28 @@ function handleDisconnect() {
 				   	if (err)
                         return done(err);
                     if (rows.length > 0) {
-                    	var userProfile = rows[0];
-                    	res.redirect('/refresh/github?user_id='+userProfile.id+"&api=true");
+                    	var user = rows[0];
+                    	handleDisconnect();
+						//we select the user from the user's table (just to check if the user exists)
+						connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'", function(err, rows){
+				            if (rows.length > 0) {
+				                user = rows[0];
+				                var scasetoken = scasetokenCreate(35)//we create a new scase token
+				                user.scase_token=scasetoken;
+				                //we update the token
+				                var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
+				                        "`scase_token` = '" + user.scase_token + "' " +
+				                        "WHERE `id` = '" + user.id + "' LIMIT 1";
+				                handleDisconnect();
+				                connection.query(updateQuery, function(err, rows) {
+				                  	res.setHeader('Content-Type', 'application/json');
+											var obj = '{'
+													+ '"newSCASEtoken" : "'+scasetoken+'"}';
+											var Jobj=JSON.parse(obj);
+											res.send(Jobj);
+				                });
+				            }
+				        });
                     }
 			});
 		}
