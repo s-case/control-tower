@@ -231,10 +231,19 @@ module.exports = function(app, passport) {
 	}
 	//we create the route to refresh the token
 	app.get('/refresh/github', isLoggedIn, function(req, res) {
-		var user            = req.user;
+		var user = req.user;
+		var user_id_api = req.param('user_id');
+		var api = req.param('api');
 		handleDisconnect();
+		var user_id;
+		if(api=='true'&&user_id_api){
+			user_id=user_id_api;
+		}
+		else{
+			user_id=user.id;
+		}
 		//we select the user from the user's table (just to check if the user exists)
-		connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'", function(err, rows){
+		connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user_id + "'", function(err, rows){
             if (rows.length > 0) {
                 user = rows[0];
                 var scasetoken = scasetokenCreate(35)//we create a new scase token
@@ -242,15 +251,24 @@ module.exports = function(app, passport) {
                 //we update the token
                 var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
                         "`scase_token` = '" + user.scase_token + "' " +
-                        "WHERE `id` = '" + user.id + "' LIMIT 1";
+                        "WHERE `id` = '" + user_id + "' LIMIT 1";
                 handleDisconnect();
                 connection.query(updateQuery, function(err, rows) {
-                  	res.redirect('/profile');//we redirect back to the profile
+    				if(api=='true'){//if we have used the API
+		  				res.setHeader('Content-Type', 'application/json');
+							var obj = '{'
+									+ '"newScaseToken" : "'+scasetoken+'"}';
+							console.log(obj);
+							var Jobj=JSON.parse(obj);
+							res.send(Jobj);
+		  			}
+		  			else {
+		  				res.redirect('/profile');//we redirect back to the profile
+		  			}
+                  	
                 });
             }
         });
-
-
 	});
 	// =============================================================================
 	// Display Projects I own, allow to manage and allow to remove =================

@@ -43,17 +43,17 @@ function handleDisconnect() {
 		}
 	});
 	//route to delete a User
-	app.get('/api/blabla',function(req,res){
+	app.get('/api/refreshSCASEtoken',function(req,res){
 		var scase_token=req.param('scase_token');
 		if(scase_token){
 			handleDisconnect();
-			var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'";
+			var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE scase_token = '" + scase_token + "'";
 				connection.query(selectUsersQuery, function(err, rows){
 				   	if (err)
                         return done(err);
                     if (rows.length > 0) {
                     	var userProfile = rows[0];
-                    	res.redirect('delete/github?user_id='+userProfile.id);
+                    	res.redirect('/refresh/github?user_id='+userProfile.id+"&api=true");
                     }
 			});
 		}
