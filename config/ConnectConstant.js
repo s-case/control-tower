@@ -1,12 +1,9 @@
-module.exports = function handleDisconnect() {
-   var mysql = require('mysql');
-  var dbconfig = require('../config/database');
-    var connection; 
-
+var mysql = require('mysql');
+var dbconfig = require('../config/database');
+var connection; 
+function handleDisconnect() {
 
   connection = mysql.createConnection(dbconfig.connection); // Recreate the connection, since
-                                                  // the old one cannot be reused.
-
   connection.connect(function(err) {              // The server is either down
     if(err) {                                     // or restarting (takes a while sometimes).
       console.log('error when connecting to db:', err);
@@ -23,5 +20,8 @@ module.exports = function handleDisconnect() {
     }
   });
 	connection.query('USE ' + dbconfig.database);
-  connection.log('I connected to the DB!!')
-}
+  console.log('I connected to the DB!!');
+
+};
+handleDisconnect();
+module.exports.connection =connection;
