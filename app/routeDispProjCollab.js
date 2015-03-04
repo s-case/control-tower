@@ -45,34 +45,31 @@ module.exports = function(app, passport) {
 	        callback(ownerflag);
 		});
 	}
-	
-	// normal routes ===============================================================
 
-	// show the home page (will also have our login links)
-	app.get('/', function(req, res) {
-		res.render('index.ejs');
-	});
+	// =============================================================================
+	// Display Projects I collaborate ==============================================
+	// =============================================================================
+	app.get('/displayCollabprojects/github', isLoggedIn, function(req, res) {
+		var user = req.user;
+		var proj_name = req.project_name;
+		handleDisconnect();
+		var selectProjectCollab = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.collaborators_table + " ON "+ dbconfig.projects_table+
+			".`project_id` = "+ dbconfig.collaborators_table + ".`project_id` "+" WHERE "+ dbconfig.collaborators_table+".`user_id` = '" + user.id + "'";
+		connection.query(selectProjectCollab, function(err, rows){
+                if (rows.length > 0) {//if there are projects I collaborate I show them
+                	res.render('projectsCollab.ejs', {
+						projectnames : rows,
+						user : user
+					});
+                }
+                else{
+                	res.redirect('/profile');
+                }//otherwise I do not show anything
+                
+        });
 
-	// PROFILE SECTION =========================
-	app.get('/profile', isLoggedIn, function(req, res) {
-		res.render('profile.ejs', {
-			user : req.user
-		});
-	});
-
-	// PROFILE SECTION =========================
-	app.get('/profile_alert', isLoggedIn, function(req, res) {
-		res.render('profile_alert.ejs', {
-			user : req.user
-		});
-	});
-	// LOGOUT ==============================
-	app.get('/logout', function(req, res) {
-		req.logout();
-		res.redirect('/');
 	});
 };
-
 // route middleware to ensure user is logged i
 function isLoggedIn(req, res, next) {
 	if (req.isAuthenticated())

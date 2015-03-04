@@ -45,34 +45,26 @@ module.exports = function(app, passport) {
 	        callback(ownerflag);
 		});
 	}
-	
-	// normal routes ===============================================================
+// =============================================================================
+// UNLINK ACCOUNTS =============================================================
+// =============================================================================
+// used to unlink accounts. for social accounts, just remove the token
+// for local account
+// user account will stay active in case they want to reconnect in the future
 
-	// show the home page (will also have our login links)
-	app.get('/', function(req, res) {
-		res.render('index.ejs');
-	});
-
-	// PROFILE SECTION =========================
-	app.get('/profile', isLoggedIn, function(req, res) {
-		res.render('profile.ejs', {
-			user : req.user
-		});
-	});
-
-	// PROFILE SECTION =========================
-	app.get('/profile_alert', isLoggedIn, function(req, res) {
-		res.render('profile_alert.ejs', {
-			user : req.user
-		});
-	});
-	// LOGOUT ==============================
-	app.get('/logout', function(req, res) {
-		req.logout();
-		res.redirect('/');
+	// github -------------------------------
+	app.get('/unlink/github', isLoggedIn, function(req, res) {
+		var user            = req.user;
+		var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
+                                "`github_token` = '" + undefined + "' " +                               
+                                "WHERE `github_id` = " + user.github_id + " LIMIT 1";
+        handleDisconnect();
+		connection.query('USE ' + dbconfig.database);
+		connection.query(updateQuery, function(err, rows) {
+                                res.redirect('/profile');
+                            });
 	});
 };
-
 // route middleware to ensure user is logged i
 function isLoggedIn(req, res, next) {
 	if (req.isAuthenticated())

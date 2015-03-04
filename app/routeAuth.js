@@ -45,38 +45,39 @@ module.exports = function(app, passport) {
 	        callback(ownerflag);
 		});
 	}
+// =============================================================================
+// AUTHENTICATE (FIRST LOGIN) ==================================================
+// =============================================================================
+
+	// github -------------------------------
+
+	// send to github to do the authentication
+	app.get('/auth/github', passport.authenticate('github', { scope : 'email' }));
+
+	// handle the callback after github has authenticated the user
+	app.get('/auth/github/callback',
+		passport.authenticate('github', {
+			successRedirect : '/displayOwnprojects/github',
+			failureRedirect : '/'
+		}));
+
 	
-	// normal routes ===============================================================
+// =============================================================================
+// AUTHORIZE (ALREADY LOGGED IN / CONNECTING OTHER SOCIAL ACCOUNT) =============
+// =============================================================================
 
-	// show the home page (will also have our login links)
-	app.get('/', function(req, res) {
-		res.render('index.ejs');
-	});
+	// github -------------------------------
 
-	// PROFILE SECTION =========================
-	app.get('/profile', isLoggedIn, function(req, res) {
-		res.render('profile.ejs', {
-			user : req.user
-		});
-	});
+	// send to github to do the authentication
+	app.get('/connect/github', passport.authorize('github', { scope : 'email' }));
 
-	// PROFILE SECTION =========================
-	app.get('/profile_alert', isLoggedIn, function(req, res) {
-		res.render('profile_alert.ejs', {
-			user : req.user
-		});
-	});
-	// LOGOUT ==============================
-	app.get('/logout', function(req, res) {
-		req.logout();
-		res.redirect('/');
-	});
-};
+	// handle the callback after github has authorized the user
+	app.get('/connect/github/callback',
+		passport.authorize('github', {
+			successRedirect : '/displayOwnprojects/github',
+			failureRedirect : '/'
+		}));
 
-// route middleware to ensure user is logged i
-function isLoggedIn(req, res, next) {
-	if (req.isAuthenticated())
-		return next();
 
-	res.redirect('/');
 }
+

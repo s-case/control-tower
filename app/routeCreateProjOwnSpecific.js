@@ -45,34 +45,47 @@ module.exports = function(app, passport) {
 	        callback(ownerflag);
 		});
 	}
-	
-	// normal routes ===============================================================
-
-	// show the home page (will also have our login links)
-	app.get('/', function(req, res) {
-		res.render('index.ejs');
-	});
-
-	// PROFILE SECTION =========================
-	app.get('/profile', isLoggedIn, function(req, res) {
-		res.render('profile.ejs', {
-			user : req.user
-		});
-	});
-
-	// PROFILE SECTION =========================
-	app.get('/profile_alert', isLoggedIn, function(req, res) {
-		res.render('profile_alert.ejs', {
-			user : req.user
-		});
-	});
-	// LOGOUT ==============================
-	app.get('/logout', function(req, res) {
-		req.logout();
-		res.redirect('/');
+	// ===============================================================
+	// Create a Project I own ========================================
+	// ===============================================================
+	app.post('/createProject', isLoggedIn, function(req, res) {
+		var proj_name = req.body.name;
+		console.log('projectname to create'+proj_name);
+		var user = req.user;
+		console.log(user);
+		//var proj_name = req.param('project_name');
+		var createProjectQuery = "INSERT INTO " + dbconfig.projects_table +
+				" (project_name)" +
+				" VALUES ("+ "'" + proj_name+"'"+")";//query to create the project
+		console.log(createProjectQuery);
+		handleDisconnect();
+		connection.query(createProjectQuery, function(err, rows){
+			if(rows){
+				var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
+							+ proj_name +"'";//query to get the project's ID to insert in the Owners table as a project the user owns
+				handleDisconnect();
+				console.log(getProjectId);
+				connection.query(getProjectId, function(err, rows){
+					if(rows.length>0){
+						var createOwnerQuery = "INSERT INTO " +dbconfig.owners_table+ "(user_id,project_id)" +
+							" VALUES (" + "'"+ user.id + "'"+ ",'"+rows[0].project_id+"')";
+						handleDisconnect();
+						console.log(createOwnerQuery);
+						connection.query(createOwnerQuery, function(err, rows){
+							res.redirect('/manageprojects/github'+'?project_name='+proj_name);
+						});
+					}
+					else{
+						res.redirect('/profile');
+					}
+				});
+			}
+			else{
+				res.redirect('/profile');
+			}
+        }); 
 	});
 };
-
 // route middleware to ensure user is logged i
 function isLoggedIn(req, res, next) {
 	if (req.isAuthenticated())

@@ -45,34 +45,29 @@ module.exports = function(app, passport) {
 	        callback(ownerflag);
 		});
 	}
-	
-	// normal routes ===============================================================
-
-	// show the home page (will also have our login links)
-	app.get('/', function(req, res) {
-		res.render('index.ejs');
-	});
-
-	// PROFILE SECTION =========================
-	app.get('/profile', isLoggedIn, function(req, res) {
-		res.render('profile.ejs', {
-			user : req.user
-		});
-	});
-
-	// PROFILE SECTION =========================
-	app.get('/profile_alert', isLoggedIn, function(req, res) {
-		res.render('profile_alert.ejs', {
-			user : req.user
-		});
-	});
-	// LOGOUT ==============================
-	app.get('/logout', function(req, res) {
-		req.logout();
-		res.redirect('/');
+	// =============================================================================
+	// Display Projects I own, allow to manage and allow to remove =================
+	// =============================================================================
+	app.get('/displayOwnprojects/github', isLoggedIn, function(req, res) {
+		var user            = req.user;
+		var proj_name = req.project_name;//if I want
+		handleDisconnect();
+		//query for the projects I own
+		var projectsOwnedQuery = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
+			".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
+		connection.query(projectsOwnedQuery, function(err, rows){
+            if (rows.length > 0) {
+            	res.render('projectsOwn.ejs', {
+					projectnames : rows,//I return the project names in order to be able to remove them
+					user: user
+				});
+            }
+            else{
+            	res.redirect('/profile');
+            }
+        });
 	});
 };
-
 // route middleware to ensure user is logged i
 function isLoggedIn(req, res, next) {
 	if (req.isAuthenticated())

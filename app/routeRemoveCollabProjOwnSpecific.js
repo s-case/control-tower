@@ -45,34 +45,51 @@ module.exports = function(app, passport) {
 	        callback(ownerflag);
 		});
 	}
+
 	
-	// normal routes ===============================================================
-
-	// show the home page (will also have our login links)
-	app.get('/', function(req, res) {
-		res.render('index.ejs');
-	});
-
-	// PROFILE SECTION =========================
-	app.get('/profile', isLoggedIn, function(req, res) {
-		res.render('profile.ejs', {
-			user : req.user
+	// =============================================================================
+	// Remove a Collaborator from a Project I own or If I want to remove myself ====
+	// =============================================================================
+	app.get('/removeCollab/github', isLoggedIn, function(req, res) {
+		var user = req.user;
+		var collab_id= req.param('collab_id');//collaborator's id
+		var proj_name = req.param('project_name')
+		var ownerflag;//flag to check if I am owner
+		checkIfOwner(user,proj_name,function(ownerflag){
+			if(ownerflag==true){
+              var removeCollabQuery = "DELETE FROM " + dbconfig.collaborators_table+
+				" WHERE " + dbconfig.collaborators_table + ".id=" + "'" + collab_id + "'";
+				handleDisconnect();
+				connection.query(removeCollabQuery, function(err, rows){
+	                    res.redirect('/manageprojects/github'+'?project_name='+proj_name);
+                });
+			}
+			else{//check if I am a collaborator in the project, so I can remove myself!
+				var getCollabInfo = "SELECT user_id FROM " + dbconfig.collaborators_table +
+					" WHERE " + dbconfig.collaborators_table + ".id=" + "'" + collab_id + "'";
+				console.log(getCollabInfo);
+				handleDisconnect();
+				connection.query(getCollabInfo, function(err, rows){
+						if(rows.length>0){
+							if(rows[0].user_id==user.id){//if I am a collaborator in the project I can remove myself!
+								 var removeCollabQuery = "DELETE FROM " + dbconfig.collaborators_table+
+									" WHERE " + dbconfig.collaborators_table + ".id=" + "'" + collab_id + "'";
+								handleDisconnect();
+								connection.query(removeCollabQuery, function(err, rows){
+					                    res.redirect('/profile');
+				                });
+							}
+						}
+						else{
+							res.redirect('/profile');
+						}
+                });
+			}
 		});
-	});
 
-	// PROFILE SECTION =========================
-	app.get('/profile_alert', isLoggedIn, function(req, res) {
-		res.render('profile_alert.ejs', {
-			user : req.user
-		});
-	});
-	// LOGOUT ==============================
-	app.get('/logout', function(req, res) {
-		req.logout();
-		res.redirect('/');
+		
 	});
 };
-
 // route middleware to ensure user is logged i
 function isLoggedIn(req, res, next) {
 	if (req.isAuthenticated())

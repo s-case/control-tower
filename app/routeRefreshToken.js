@@ -45,34 +45,41 @@ module.exports = function(app, passport) {
 	        callback(ownerflag);
 		});
 	}
-	
-	// normal routes ===============================================================
 
-	// show the home page (will also have our login links)
-	app.get('/', function(req, res) {
-		res.render('index.ejs');
-	});
+	// =============================================================================
+	// Refresh S-CASE token ACCOUNTS ===============================================
+	// =============================================================================
+	//we create a new scase token
+	var crypto = require('crypto');
+	var base64url = require('base64url');
+	//function to crete an S-CASE token
+	function scasetokenCreate(size){
+	    return base64url(crypto.randomBytes(size));
+	}
+	//we create the route to refresh the token
+	app.get('/refresh/github', isLoggedIn, function(req, res) {
+		var user            = req.user;
+		handleDisconnect();
+		//we select the user from the user's table (just to check if the user exists)
+		connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'", function(err, rows){
+            if (rows.length > 0) {
+                user = rows[0];
+                var scasetoken = scasetokenCreate(35)//we create a new scase token
+                user.scase_token=scasetoken;
+                //we update the token
+                var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
+                        "`scase_token` = '" + user.scase_token + "' " +
+                        "WHERE `id` = '" + user.id + "' LIMIT 1";
+                handleDisconnect();
+                connection.query(updateQuery, function(err, rows) {
+                  	res.redirect('/profile');//we redirect back to the profile
+                });
+            }
+        });
 
-	// PROFILE SECTION =========================
-	app.get('/profile', isLoggedIn, function(req, res) {
-		res.render('profile.ejs', {
-			user : req.user
-		});
-	});
 
-	// PROFILE SECTION =========================
-	app.get('/profile_alert', isLoggedIn, function(req, res) {
-		res.render('profile_alert.ejs', {
-			user : req.user
-		});
-	});
-	// LOGOUT ==============================
-	app.get('/logout', function(req, res) {
-		req.logout();
-		res.redirect('/');
 	});
 };
-
 // route middleware to ensure user is logged i
 function isLoggedIn(req, res, next) {
 	if (req.isAuthenticated())

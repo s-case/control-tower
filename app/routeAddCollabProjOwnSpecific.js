@@ -45,34 +45,44 @@ module.exports = function(app, passport) {
 	        callback(ownerflag);
 		});
 	}
-	
-	// normal routes ===============================================================
-
-	// show the home page (will also have our login links)
-	app.get('/', function(req, res) {
-		res.render('index.ejs');
-	});
-
-	// PROFILE SECTION =========================
-	app.get('/profile', isLoggedIn, function(req, res) {
-		res.render('profile.ejs', {
-			user : req.user
+	// =============================================================================
+	// Add an Collaborator in a Project I own ======================================
+	// =============================================================================
+	app.post('/addCollaborator/github', isLoggedIn, function(req, res) {
+		var github_name = req.body.name;
+		var proj_name = req.body.project_name;
+		console.log('projectname to add owner '+proj_name);
+		var user = req.user;
+		var ownerflag;//flag to check if I am owner
+		checkIfOwner(user,proj_name,function(ownerflag){
+			if(ownerflag==true){
+				var checkIfUserExistsQuery = "SELECT id FROM " + dbconfig.users_table + " WHERE " +
+					dbconfig.users_table +".github_name=" + "'" + github_name +"'";////check if the user's githubname exists
+				handleDisconnect();
+				connection.query(checkIfUserExistsQuery, function(err,rows){
+					if(rows.length>0){
+						var user_id = rows[0].id
+						var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
+										+ proj_name +"'";//if the user exists, get the project's id
+						handleDisconnect();
+						connection.query(getProjectId, function(err, rows){
+							var createCollabQuery = "INSERT INTO " +dbconfig.collaborators_table+ "(user_id,project_id)" +
+								" VALUES (" + "'"+ user_id + "'"+ ",'"+rows[0].project_id+"')";//then insert the user as a collaborator in the collaborators' table
+							handleDisconnect();
+							console.log(createCollabQuery);
+							connection.query(createCollabQuery, function(err, rows){
+								res.redirect('/manageprojects/github'+'?project_name='+proj_name);
+							});
+						});
+					}
+					else{
+						res.redirect('/manageprojects/github'+'?project_name='+proj_name);
+					}
+				});
+			}
 		});
-	});
-
-	// PROFILE SECTION =========================
-	app.get('/profile_alert', isLoggedIn, function(req, res) {
-		res.render('profile_alert.ejs', {
-			user : req.user
-		});
-	});
-	// LOGOUT ==============================
-	app.get('/logout', function(req, res) {
-		req.logout();
-		res.redirect('/');
 	});
 };
-
 // route middleware to ensure user is logged i
 function isLoggedIn(req, res, next) {
 	if (req.isAuthenticated())

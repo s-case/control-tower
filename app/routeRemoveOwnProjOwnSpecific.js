@@ -45,34 +45,42 @@ module.exports = function(app, passport) {
 	        callback(ownerflag);
 		});
 	}
-	
-	// normal routes ===============================================================
-
-	// show the home page (will also have our login links)
-	app.get('/', function(req, res) {
-		res.render('index.ejs');
-	});
-
-	// PROFILE SECTION =========================
-	app.get('/profile', isLoggedIn, function(req, res) {
-		res.render('profile.ejs', {
-			user : req.user
-		});
-	});
-
-	// PROFILE SECTION =========================
-	app.get('/profile_alert', isLoggedIn, function(req, res) {
-		res.render('profile_alert.ejs', {
-			user : req.user
-		});
-	});
-	// LOGOUT ==============================
-	app.get('/logout', function(req, res) {
-		req.logout();
-		res.redirect('/');
+	// =============================================================================
+	// Remove an Owner from a Project I own ========================================
+	// =============================================================================
+	app.get('/removeOwner/github', isLoggedIn, function(req, res) {
+		var user = req.user;
+		var owner_id= req.param('owner_id');
+		var proj_name = req.param('project_name')
+		var proj_id = req.param('project_id');
+		var ownerflag;//flag to check if I am owner
+		checkIfOwner(user,proj_name,function(ownerflag){
+			if(ownerflag==true){
+				var checkOwnersAmountQuery = "SELECT * FROM " + dbconfig.owners_table + " WHERE "+ dbconfig.owners_table + ".project_id="+"'"+proj_id+"'";
+				console.log(checkOwnersAmountQuery);
+				handleDisconnect();
+				connection.query(checkOwnersAmountQuery, function(err, rows){
+						//if there are more than 1 owners, I just remove the owner
+						if(rows.length>1){
+							var removeOwnerQuery = "DELETE FROM " + dbconfig.owners_table+
+							" WHERE " + dbconfig.owners_table + ".id=" + "'" + owner_id + "'";
+							console.log(removeOwnerQuery);
+							handleDisconnect();
+							connection.query(removeOwnerQuery, function(err, rows){
+								res.redirect('/manageprojects/github'+'?project_name='+proj_name);
+							});
+						}//if there is only 1 owner, I delete the whole project
+						else{
+							res.redirect('/deleteprojects/github'+'?project_name='+proj_name);
+						}
+	                    
+                }); 
+                
+			}
+		});	
+		
 	});
 };
-
 // route middleware to ensure user is logged i
 function isLoggedIn(req, res, next) {
 	if (req.isAuthenticated())
