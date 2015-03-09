@@ -2,8 +2,8 @@ var role = "nothing";
 module.exports = function(app){
 
 var mysql = require('mysql');
-var dbconfig = require('../config/database');
-	var connConstant = require('../config/ConnectConstant');
+var dbconfig = require('../../config/database');
+var connConstant = require('../../config/ConnectConstant');
 var connection;
 // ROUTES FOR OUR API
 // =============================================================================
@@ -31,8 +31,14 @@ app.get('/api/validateUser',function(req,res){
 		var role = "nothing";
 		res.setHeader('Content-Type', 'application/json');
 		connection.query(OwnerSelectQuery, function(err, rows){
-			if (err) throw err;
-			
+			if (err){
+				res.setHeader('Content-Type', 'application/json');
+				var obj = '{'
+						+ '"userValid" : "false"'
+						+ '}';
+				var Jobj=JSON.parse(obj);
+				res.send(Jobj);
+			}
 			var userCnt = parseInt(rows[0].usersCount);
 			console.log("Owners Number:"+userCnt);
 			if(userCnt==1){
@@ -46,7 +52,14 @@ app.get('/api/validateUser',function(req,res){
 		});
 		connection=connConstant.connection;
 		connection.query(CollaboratorSelectQuery, function(err, rows){
-			if (err) throw err;
+			if (err||rows.length==0){
+				res.setHeader('Content-Type', 'application/json');
+				var obj = '{'
+						+ '"userValid" : "false"'
+						+ '}';
+				var Jobj=JSON.parse(obj);
+				res.send(Jobj);
+			}
 			var userCnt = parseInt(rows[0].usersCount);
 			console.log("Collaborators Number:"+userCnt);
 			if(userCnt==1){
@@ -72,7 +85,14 @@ app.get('/api/validateUser',function(req,res){
 		var selectQuery = "SELECT COUNT(*) AS usersCount FROM CTDB.users WHERE "+
 							"`scase_token` = '" + scase_token + "' ";
 		connection.query(selectQuery, function(err, rows){
-			if (err) throw err;
+			if (err||rows.length==0){
+				res.setHeader('Content-Type', 'application/json');
+				var obj = '{'
+						+ '"userValid" : "false"'
+						+ '}';
+				var Jobj=JSON.parse(obj);
+				res.send(Jobj);
+			}
 			
 			var userCnt = parseInt(rows[0].usersCount);
 			console.log(userCnt);
@@ -93,6 +113,12 @@ app.get('/api/validateUser',function(req,res){
 				res.send(Jobj);
 			}
 		});
+	}
+	else{
+			res.setHeader('Content-Type', 'application/json');
+			var obj = '{'+ '"message": "you miss some parameters"}';
+			var Jobj=JSON.parse(obj);
+			res.send(Jobj);
 	}
 });
 };

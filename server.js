@@ -53,12 +53,18 @@ require('./app/routeRemoveOwnProjOwnSpecific.js')(app, passport);//load the rout
 require('./app/routeCreateProjOwnSpecific.js')(app, passport);//load the route for creating a project I own 
 require('./app/routeAddOwnProjOwnSpecific.js')(app, passport);//load the route for adding an owner in a project I own 
 require('./app/routeAddCollabProjOwnSpecific.js')(app, passport);//load the route for adding a collaborator in a project I own 
-//check if a user is Valid (API) route
-require('./app/checkUser.js') (app);
-//functionallities (API) route
-require('./app/functionallitiesAPI.js') (app);
-//app.use('/api',userrouter);
-
+//================API routes=============================
+require('./app/api/checkUserValidityAPI.js') (app);//check if a user is Valid (API) route
+require('./app/api/deleteAccAPI.js') (app);//delete account
+require('./app/api/refreshSCaseAPI.js') (app);//refresh S-CASE token
+require('./app/api/dispProjOwnAPI.js') (app);//display the projects I own
+require('./app/api/dispProjOwnersCollabsAPI.js') (app);//display the owners of a project I own
+require('./app/api/dispProjCollabAPI.js') (app);//display the collaborators of a project I own
+require('./app/api/deleteProjOwnAPI.js') (app);//delete a project I own
+require('./app/api/removeCollabProjOwnAPI.js') (app);//remove a collaborator from a Project I own
+require('./app/api/removeOwnerProjOwnAPI.js') (app);//remove an owner from a project I own
+require('./app/api/addOwnerProjOwnAPI.js') (app);//add an owner to a project I own
+require('./app/api/addCollabProjOwnAPI.js') (app);//add a collaborator to a project I own
 // launch ======================================================================
 app.listen(port);
 console.log('The magic happens on port ' + port);
