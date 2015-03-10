@@ -10,7 +10,7 @@ module.exports = function(app){
 		connection=connConstant.connection;
 		var selectProjects = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 		".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
-		console.log(selectProjects)
+		//console.log(selectProjects)
 		connection.query(selectProjects, function(err, rows){
 			if (rows.length > 0) {
             	for(var i in rows){
@@ -40,10 +40,10 @@ module.exports = function(app){
                 	var ownerflag;
                 	checkIfOwner(user,proj_name,function(ownerflag){
 						if(ownerflag==true){
-							var selectCollabQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE github_name = '" + github_name + "'";
+							var selectCollabQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE github_name = '" + github_name + "'";//query to select the user's details with the provided github name
 			              	connection.query(selectCollabQuery, function(err, rows){
 			              		var removeCollabQuery = "DELETE FROM " + dbconfig.collaborators_table+
-								" WHERE " + dbconfig.collaborators_table + ".user_id=" + "'" + rows[0].id + "'";
+								" WHERE " + dbconfig.collaborators_table + ".user_id=" + "'" + rows[0].id + "'";//query to remove the collaborator
 								connection=connConstant.connection;
 								connection.query(removeCollabQuery, function(err, rows){
 				                    res.setHeader('Content-Type', 'application/json');
@@ -67,7 +67,7 @@ module.exports = function(app){
                 }
                 else {
                     res.setHeader('Content-Type', 'application/json');
-					var obj = '{'+ '"User with scase_token  '+scase_token + '": "do not exist in S-Case"}';
+					var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
 					res.send(Jobj);
 				}

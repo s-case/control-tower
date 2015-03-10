@@ -30,7 +30,7 @@ module.exports = function(app){
 			                user = rows[0];
 			                var scasetoken = scasetokenCreate(35)//we create a new scase token
 			                user.scase_token=scasetoken;
-			                //we update the token
+			                //query to update the token
 			                var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
 			                        "`scase_token` = '" + user.scase_token + "' " +
 			                        "WHERE `id` = '" + user.id + "' LIMIT 1"; 
@@ -39,7 +39,7 @@ module.exports = function(app){
 			                  	res.setHeader('Content-Type', 'application/json');
 								if (err){
 				                    res.setHeader('Content-Type', 'application/json');
-									var obj = '{'+ '"User with scase_token  '+scase_token + '": "do not exist in S-Case"}';
+									var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not exist in S-Case"}';
 									var Jobj=JSON.parse(obj);
 									res.send(Jobj);
 								}
@@ -54,7 +54,7 @@ module.exports = function(app){
                 }
                 else {
                     res.setHeader('Content-Type', 'application/json');
-					var obj = '{'+ '"User with scase_token  '+scase_token + '": "do not exist in S-Case"}';
+					var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
 					res.send(Jobj);
 				}

@@ -23,23 +23,23 @@ module.exports = function(app){
 			        	" WHERE " +dbconfig.owners_table +".project_id IN (SELECT project_id FROM " +
 			        	dbconfig.owners_table + " WHERE "+ dbconfig.owners_table + ".user_id=" + user_id +
 			        	")) AS projectsofuser GROUP BY project_id HAVING COUNT(project_id)=1)";
-					console.log(DeleteProjectsOnlyOwnerQuery);
+					//console.log(DeleteProjectsOnlyOwnerQuery);
 		            connection = connConstant.connection;
 		            connection.query(DeleteProjectsOnlyOwnerQuery, function(err, rows) {
 		                //delete from owners
 						var DeleteFromOwnerQuery = "DELETE FROM " + dbconfig.owners_table +                          
 			                                " WHERE `user_id` = " + user_id;
-		                console.log(DeleteFromOwnerQuery);
+		                //console.log(DeleteFromOwnerQuery);
 		                connection = connConstant.connection;
 		                connection.query(DeleteFromOwnerQuery, function(err, rows) {
 		            		var DeleteFromCollabQuery = "DELETE FROM " + dbconfig.collaborators_table +                          
-		                                " WHERE `user_id` = " + user_id;
-		                    console.log(DeleteFromCollabQuery);
+		                                " WHERE `user_id` = " + user_id;//delete from collaborators
+		                    //console.log(DeleteFromCollabQuery);
 		                    connection = connConstant.connection;
 		                    connection.query(DeleteFromCollabQuery, function(err, rows) {
 		                    	var DeleteFromUsersQuery = "DELETE FROM " + dbconfig.users_table +                          
-		                			" WHERE `id` = " + user_id;
-		            			console.log(DeleteFromUsersQuery);
+		                			" WHERE `id` = " + user_id;//delete from users table
+		            			//console.log(DeleteFromUsersQuery);
 		    				  	connection.query(DeleteFromUsersQuery, function(err, rows) {
 		                            	res.setHeader('Content-Type', 'application/json');
 										var obj = '{'

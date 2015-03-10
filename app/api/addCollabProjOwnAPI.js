@@ -28,30 +28,29 @@ module.exports = function(app){
 	// =============================================================================
 	app.get('/api/addCollabProjOwn', function(req, res) {
 		res.setHeader('Content-Type', 'application/json');
-		var scase_token= req.param('scase_token');
-		var proj_name= req.param('project_name');
-		var github_name = req.param('github_name');
+		var scase_token= req.param('scase_token');//require your scase token in order to authenticate
+		var proj_name= req.param('project_name');//require project name
+		var github_name = req.param('github_name');//require the github name of the user you would like to add as a collaborator
 		if(scase_token&&proj_name&&github_name){
-			connection=connConstant.connection;
+			connection=connConstant.connection;//ensure that there is a connection to the DB
 			//we select the user with the scase_token provided 
-			var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table 
-				+ " WHERE scase_token = '" + scase_token + "'";
+			var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE scase_token = '" + scase_token + "'";//query to get all the info of the user with the provided scase token
 			connection.query(selectUsersQuery, function(err, rows){
                 if (rows.length > 0) {
                 	var user = rows[0];
                 	connection = connConstant.connection;
                 	var ownerflag;
-                	checkIfOwner(user,proj_name,function(ownerflag){
-                		console.log(ownerflag);
+                	checkIfOwner(user,proj_name,function(ownerflag){//we gonna check if the user is owner of the project
+                		//console.log(ownerflag);
 						if(ownerflag==true){//if the user owns the project we proceed
 							var checkIfUserExistsQuery = "SELECT id FROM " + dbconfig.users_table + " WHERE " +
 								dbconfig.users_table +".github_name=" + "'" + github_name +"'";
-							//we are goint to check if the user that we are asked to add exists
+							//we are goint to check if the user that we are asked to add as a collaborator exists
 							connection=connConstant.connection;
 							connection.query(checkIfUserExistsQuery, function(err,rows){
 								if(rows.length>0){
 									var user_id = rows[0].id
-									//if the user exists, we get the project's id
+									//if the user exists, we get the project's id for the provided project name
 									var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
 													+ proj_name +"'";
 									connection=connConstant.connection;
@@ -59,7 +58,7 @@ module.exports = function(app){
 										if(rows.length>0){//clause if the project exists
 											//query to insert a collaborator
 											var createCollabQuery = "INSERT INTO " +dbconfig.collaborators_table+ "(user_id,project_id)" +
-												" VALUES (" + "'"+ user_id + "'"+ ",'"+rows[0].project_id+"')";//then insert the user as an owner in the owner's table
+												" VALUES (" + "'"+ user_id + "'"+ ",'"+rows[0].project_id+"')";//insert the user as an owner in the owner's table
 											connection=connConstant.connection;
 											connection.query(createCollabQuery, function(err, rows){
 												//res.setHeader('Content-Type', 'application/json');
@@ -105,7 +104,7 @@ module.exports = function(app){
 		}
 		else{
 			//res.setHeader('Content-Type', 'application/json');
-			var obj = '{'+ '"message": "you miss some parameters"}';
+			var obj = '{"message": "you miss some parameters"}';
 			var Jobj=JSON.parse(obj);
 			res.send(Jobj);
 		}

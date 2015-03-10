@@ -1,8 +1,8 @@
 module.exports = function(app, passport) {
 	
 	var mysql = require('mysql');
-	var dbconfig = require('../config/database');
-	var connConstant = require('../config/ConnectConstant');
+	var dbconfig = require('../../config/database');
+	var connConstant = require('../../config/ConnectConstant');
 	//var connection = mysql.createConnection(dbconfig.connection);
 	//var connection = require('../config/ConnectConstant.js');
 	var connection;

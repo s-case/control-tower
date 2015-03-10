@@ -10,7 +10,7 @@ module.exports = function(app){
 		connection=connConstant.connection;
 		var selectProjects = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 		".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
-		console.log(selectProjects);
+		//console.log(selectProjects);
 		connection.query(selectProjects, function(err, rows){
 			if (rows.length > 0) {
             	for(var i in rows){
@@ -19,7 +19,7 @@ module.exports = function(app){
         			}
             	}
 	        }
-	        console.log(ownerflag);
+	        //console.log(ownerflag);
 	        callback(ownerflag);
 		});
 	}
@@ -41,8 +41,8 @@ module.exports = function(app){
 					checkIfOwner(user,proj_name,function(ownerflag){
 						if(ownerflag==true){
 							var deleteProjectQuery = "DELETE FROM " + dbconfig.projects_table+
-								" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
-							console.log(deleteProjectQuery);
+								" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";//query to delete project
+							//console.log(deleteProjectQuery);
 							connection=connConstant.connection;
 							connection.query(deleteProjectQuery, function(err, rows){
 			                    res.setHeader('Content-Type', 'application/json');

@@ -27,9 +27,9 @@ module.exports = function(app){
 	// Add an owner in a project I own API===============================================
 	// =============================================================================
 	app.get('/api/addOwnerProjOwn', function(req, res) {
-		var scase_token= req.param('scase_token');
-		var proj_name= req.param('project_name');
-		var github_name = req.param('github_name');
+		var scase_token= req.param('scase_token');//require your scase token in order to authenticate
+		var proj_name= req.param('project_name');//require project name
+		var github_name = req.param('github_name');//require the github name of the user you would like to add as a collaborator
 		if(scase_token&&proj_name&&github_name){
 			connection=connConstant.connection;
 			//we select the user with the scase_token provided 
@@ -39,10 +39,10 @@ module.exports = function(app){
                 	var user = rows[0];
                 	connection = connConstant.connection;
                 	var ownerflag;
-                	checkIfOwner(user,proj_name,function(ownerflag){
+                	checkIfOwner(user,proj_name,function(ownerflag){//check if the user is owner of the project
 						if(ownerflag==true){
 							var checkIfUserExistsQuery = "SELECT id FROM " + dbconfig.users_table + " WHERE " +
-								dbconfig.users_table +".github_name=" + "'" + github_name +"'";//check if the user's githubname exists
+								dbconfig.users_table +".github_name=" + "'" + github_name +"'";//check if the user to be added as an owner exists
 							connection=connConstant.connection;
 							connection.query(checkIfUserExistsQuery, function(err,rows){
 								if(rows.length>0){
@@ -54,7 +54,7 @@ module.exports = function(app){
 										var createOwnerQuery = "INSERT INTO " +dbconfig.owners_table+ "(user_id,project_id)" +
 											" VALUES (" + "'"+ user_id + "'"+ ",'"+rows[0].project_id+"')";//then insert the user as an owner in the owner's table
 										connection=connConstant.connection;
-										console.log(createOwnerQuery);
+										//console.log(createOwnerQuery);
 										connection.query(createOwnerQuery, function(err, rows){
 											res.setHeader('Content-Type', 'application/json');
 											var obj = '{'+ '"owner '+github_name + '": "added"}';

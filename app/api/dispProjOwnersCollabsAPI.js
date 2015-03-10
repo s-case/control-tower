@@ -25,11 +25,9 @@ module.exports = function(app){
 			        }
 				});
             }
-            console.log(ownerflag);
+            //console.log(ownerflag);
 	        callback(ownerflag);
-            
         });
-		
 	}
 	// =============================================================================
 	// Display the owners and collaborators of a project I Own API===============================================
