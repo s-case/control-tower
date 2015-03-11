@@ -2,8 +2,8 @@
 module.exports = {
     'connection': {
         'host': 'localhost',
-        'user': 'scaseAdmin',
-        'password': 'scase2015.'
+        'user': process.env.SCASECT_ADMIN,
+        'password': process.env.SCASECT_PWD
     },
     'database': 'CTDB',
     'users_table': 'users',
