@@ -54,7 +54,7 @@ url: http://scouter.ee.auth.gr:3000
 - parameters
 	- scase_token [to check if a provided token corresponds to a user and the user is an owner of the project]
 	- project_name [the project to add a collaborator]
-	github_name [the github name of the user to add as collaborator]
+	- github_name [the github name of the user to add as collaborator]
 
 ###Add an owner in a project I own
 - endpoint [GET]
@@ -62,7 +62,7 @@ url: http://scouter.ee.auth.gr:3000
 - parameters
 	- scase_token [to check if a provided token corresponds to a user and the user is an owner of the project]
 	- project_name [the project to add an owner]
-	github_name [the github name of the user to add as owner]
+	- github_name [the github name of the user to add as owner]
 
 ###Remove a collaborator a project I own
 - endpoint [GET]
@@ -70,7 +70,7 @@ url: http://scouter.ee.auth.gr:3000
 parameters
 	- scase_token [to check if a provided token corresponds to a user and the user is an owner of the project]
 	- project_name [the project to remove a collaborator]
-	github_name [the github name of the user to remove from collaborator]
+	- github_name [the github name of the user to remove from collaborator]
 
 
 ###Remove an owner from a project I own
@@ -79,5 +79,5 @@ parameters
 - parameters
 	- scase_token [to check if a provided token corresponds to a user and the user is an owner of the project]
 	- project_name [the project to remove owner]
-	github_name [the github name of the user to remove from owner]
+	- github_name [the github name of the user to remove from owner]
 	
