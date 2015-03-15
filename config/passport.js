@@ -21,7 +21,32 @@ function scasetokenCreate(size){
 }
 //============================================================================
 module.exports = function(passport) {
-    connection=connConstant.connection;//we create a connection to the DB
+   
+    var mysql = require('mysql');
+    var dbconfig = require('../config/database');
+    var connection;
+    function handleDisconnect() {
+      connection = mysql.createConnection(dbconfig.connection); // Recreate the connection, since
+      connection.connect(function(err) {              // The server is either down
+        if(err) {                                     // or restarting (takes a while sometimes).
+          console.log('error when connecting to db:', err);
+          setTimeout(handleDisconnect, 10000); // We introduce a delay before attempting to reconnect,
+        }                                     // to avoid a hot loop, and to allow our node script to
+      });                                     // process asynchronous requests in the meantime.                                          // If you're also serving http, display a 503 error.
+      connection.on('error', function(err) {
+        console.log('db error', err);
+        if(err.code === 'PROTOCOL_CONNECTION_LOST') {
+          //connection.end(); // Connection to the MySQL server is usually
+          handleDisconnect();                         // lost due to either server restart, or a
+        } else {                                      // connnection idle timeout (the wait_timeout
+          throw err;                                  // server variable configures this)
+        }
+      });
+        connection.query('USE ' + dbconfig.database);
+      console.log('I connected to the DB!!');
+
+    }; 
+    handleDisconnect();//we create a connection to the DB
     connection.query('USE ' + dbconfig.database);// we use the DB
     // =========================================================================
     // passport session setup ==================================================
@@ -37,7 +62,7 @@ module.exports = function(passport) {
     // used to deserialize the user
     passport.deserializeUser(function(id, done) {
         connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE `id` = "+ id, function(err, rows){
-            if(rows[0]){
+            if(rows.length>0){
                 done(err, rows[0]);
             }
             else{
@@ -45,6 +70,8 @@ module.exports = function(passport) {
             }
         });
     });
+
+    
 
 	// =========================================================================
     // Github ================================================================
@@ -60,7 +87,7 @@ module.exports = function(passport) {
         process.nextTick(function() {
             // check if the user is already logged in
             if (!req.user) {
-                connection=connConstant.connection;
+                handleDisconnect();
                 connection.query('USE ' + dbconfig.database);
                 connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE github_id = '" + profile.id + "'", function(err, rows){
                     if (err)
@@ -121,7 +148,7 @@ module.exports = function(passport) {
                 });
             } else {
                 // user already exists and is logged in, we have to link accounts (this is if we decide to add and other login options)
-                connection=connConstant.connection;
+                handleDisconnect();
                 connection.query('USE ' + dbconfig.database);
                 var user            = req.user; // pull the user out of the session
                 user.github_id    = profile.id;
@@ -137,7 +164,7 @@ module.exports = function(passport) {
                     "`github_name` = '" + user.github_name + "', " +
                     "`github_email` = '" + user.github_email + "' " +
                     "WHERE `id` = " + user.id + " LIMIT 1";
-                connection=connConstant.connection;
+                handleDisconnect();
                 connection.query('USE ' + dbconfig.database);
                 connection.query(updateQuery, function(err, rows) {
                     if (err)
