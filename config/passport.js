@@ -35,13 +35,13 @@ module.exports = function(passport) {
 
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
-        handleDisconnect();
+        connection=connConstant.connection;
         done(null, user.id);
     });
 
     // used to deserialize the user
     passport.deserializeUser(function(id, done) {
-        handleDisconnect();
+        connection=connConstant.connection;
         connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE `id` = "+ id, function(err, rows){
             if(rows.length>0){
                 done(err, rows[0]);
