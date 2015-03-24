@@ -17,12 +17,14 @@ module.exports = function(app, passport) {
 			".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
 		console.log(projectsOwnedQuery);
 		connection.query(projectsOwnedQuery, function(err, rows){
-            if (rows.length > 0) {
-            	res.render('projectsOwn.ejs', {
-					projectnames : rows,//I return the project names in order to be able to remove them
-					user: user
-				});
-            }
+            //if(rows){
+	            if (rows.length > 0) {
+	            	res.render('projectsOwn.ejs', {
+						projectnames : rows,//I return the project names in order to be able to remove them
+						user: user
+					});
+	            }
+        	//
             else{
             	res.redirect('/profile');
             }

@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 var dbconfig = require('../config/database');
 var connection; 
-function handleDisconnect() {
+function handleDisconnect(connection) {
 
   connection = mysql.createConnection(dbconfig.connection); // Recreate the connection, since
   connection.connect(function(err) {              // The server is either down
@@ -14,14 +14,15 @@ function handleDisconnect() {
     console.log('db error', err);
     if(err.code === 'PROTOCOL_CONNECTION_LOST') {
       connection.end(); // Connection to the MySQL server is usually
-      handleDisconnect();                         // lost due to either server restart, or a
+      connection = mysql.createConnection(dbconfig.connection);
+      handleDisconnect(connection);                         // lost due to either server restart, or a
     } else {                                      // connnection idle timeout (the wait_timeout
       throw err;                                  // server variable configures this)
     }
   });
-	connection.query('USE ' + dbconfig.database);
+  connection.query('USE ' + dbconfig.database);
   console.log('I connected to the DB!!');
-
+  module.exports.connection =connection;
 };
-handleDisconnect();
-module.exports.connection =connection;
+handleDisconnect(connection);
+
