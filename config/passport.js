@@ -1,5 +1,6 @@
 // load all the things we need
 var GithubStrategy   = require('passport-github').Strategy;
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 // load up the user model
 var mysql = require('mysql');
 var bcrypt = require('bcrypt-nodejs');
@@ -144,6 +145,110 @@ module.exports = function(passport) {
                     "`scase_token` = '" + user.scase_token + "', " +
                     "`github_name` = '" + user.github_name + "', " +
                     "`github_email` = '" + user.github_email + "' " +
+                    "WHERE `id` = " + user.id + " LIMIT 1";
+                connection=connConstant.connection;
+                connection.query('USE ' + dbconfig.database);
+                connection.query(updateQuery, function(err, rows) {
+                    if (err)
+                        return done(err);
+
+                    return done(null, user);
+                });
+            }
+        });
+    }));
+	// =========================================================================
+    // Google ================================================================
+    // =========================================================================
+    passport.use(new GoogleStrategy({
+
+        clientID        : configAuth.googleAuth.clientID,
+        clientSecret    : configAuth.googleAuth.clientSecret,
+        callbackURL     : configAuth.googleAuth.callbackURL,
+        passReqToCallback : true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
+
+    },
+    function(req, token, refreshToken, profile, done) {
+        // asynchronous
+        process.nextTick(function() {
+            // check if the user is already logged in
+            if (!req.user) {
+                connection=connConstant.connection;
+                connection.query('USE ' + dbconfig.database);
+                connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE google_id = '" + profile.id + "'", function(err, rows){
+                    if (err)
+                        return done(err);
+
+                    if (rows.length > 0) {
+                        user = rows[0];
+                        // if there is a user id already but no token (user was linked at one point and then removed)
+                        if (user.google_token === 'undefined') {
+                        	user.google_token = token;
+                            user.google_name  = profile.displayName;
+                            var scasetoken = scasetokenCreate(35)//we create a new scase token
+                            user.scase_token=scasetoken;//we save the new scase token
+                            user.google_email = (profile.emails[0].value || '').toLowerCase();//we get the e-mail if available
+                            //the following query updates the user profile
+                            var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
+                                "`google_token` = '" + user.google_token + "', " +
+                                "`google_name` = '" + user.google_name + "', " +
+                                "`scase_token` = '" + user.scase_token + "', " +
+                                "`google_email` = '" + user.google_email + "' " +
+                                "WHERE `google_id` = " + user.google_id + " LIMIT 1";
+                            handleDisconnect();
+                            connection.query('USE ' + dbconfig.database);    
+                            connection.query(updateQuery, function(err, rows) {
+                                if (err)
+                                    return done(err);
+
+                                return done(null, user);
+                            });
+                        }
+                        return done(null, user); // user found, return that user
+                    } else {
+                        // if there is no user, create them
+                        var newUser            = {};
+                        newUser.google_id    = profile.id;
+                        newUser.google_token = token;
+                        var scasetoken = scasetokenCreate(35)
+                        newUser.scase_token=scasetoken;
+                        newUser.google_name  = profile.username;
+                        newUser.google_email = (profile.emails[0].value || '').toLowerCase();
+                        //we insert the user in the DB
+                        var insertQuery = "INSERT INTO " + dbconfig.users_table + " " +
+                            "( `google_id`, `google_token`, `scase_token`, `google_name`, `google_email` ) " +
+                            "values ('" +  newUser.github_id + "','" + 
+                                newUser.google_token + "', '" + 
+                                newUser.scase_token + "', '" + 
+                                newUser.google_name + "', '" + 
+                                newUser.google_email + "')";
+                        connection=connConstant.connection;
+                        connection.query('USE ' + dbconfig.database);
+                        connection.query(insertQuery, function(err, rows) {
+                            newUser.id = rows.insertId;
+                            //console.log('I got'+newUser.github_id);
+                            return done(null, newUser);
+                        });
+                    }
+                });
+            } else {
+                // user already exists and is logged in, we have to link accounts (this is if we decide to add and other login options)
+                //handleDisconnect();
+                connection=connConstant.connection;
+                connection.query('USE ' + dbconfig.database);
+                var user            = req.user; // pull the user out of the session
+                user.google_id    = profile.id;
+                user.google_token = token;
+                user.google_name = profile.username;
+                user.google_email = (profile.emails[0].value || '').toLowerCase();
+                var scasetoken = scasetokenCreate(35)
+                user.scase_token=scasetoken;
+                var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
+                    "`google_id` = " + user.google_id + ", " +
+                    "`google_token` = '" + user.google_token + "', " +
+                    "`scase_token` = '" + user.scase_token + "', " +
+                    "`google_name` = '" + user.google_name + "', " +
+                    "`google_email` = '" + user.google_email + "' " +
                     "WHERE `id` = " + user.id + " LIMIT 1";
                 connection=connConstant.connection;
                 connection.query('USE ' + dbconfig.database);
