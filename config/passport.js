@@ -16,13 +16,14 @@ var connection;
 //=============the following are used to create the s-case token===============
 var crypto = require('crypto');
 var base64url = require('base64url');
-
+var jwt = require('express-jwt');
+var scase_secret= process.env.SCASE_SECRET;
 function scasetokenCreate(size){
     return base64url(crypto.randomBytes(size));
 }
 //============================================================================
 module.exports = function(passport) {
-   
+	
     var mysql = require('mysql');
     var dbconfig = require('../config/database');
     var connection;
@@ -84,19 +85,21 @@ module.exports = function(passport) {
                             user.scase_token=scasetoken;//we save the new scase token
                             user.github_name  = profile.username;//we get the github name
                             user.github_email = (profile.emails[0].value || '').toLowerCase();//we get the e-mail if available
+                            user.scase_secret = scase_secret;
                             //the following query updates the user profile
                             var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
                                 "`github_token` = '" + user.github_token + "', " +
                                 "`github_name` = '" + user.github_name + "', " +
                                 "`scase_token` = '" + user.scase_token + "', " +
-                                "`github_email` = '" + user.github_email + "' " +
+                                "`github_email` = '" + user.github_email + "', " +
+                                "`scase_secret` = '" +user.scase_secret + "' " +
                                 "WHERE `github_id` = " + user.github_id + " LIMIT 1";
-                            handleDisconnect();
+                            connection=connConstant.connection;
                             connection.query('USE ' + dbconfig.database);    
                             connection.query(updateQuery, function(err, rows) {
                                 if (err)
                                     return done(err);
-
+                                console.log(user.scase_secret);
                                 return done(null, user);
                             });
                         }
@@ -110,12 +113,15 @@ module.exports = function(passport) {
                         newUser.scase_token=scasetoken;
                         newUser.github_name  = profile.username;
                         newUser.github_email = (profile.emails[0].value || '').toLowerCase();
+                        newUser.scase_secret = scase_secret;
+                        console.log(newUser.scase_secret+':1');
                         //we insert the user in the DB
                         var insertQuery = "INSERT INTO " + dbconfig.users_table + " " +
-                            "( `github_id`, `github_token`, `scase_token`, `github_name`, `github_email` ) " +
+                            "( `github_id`, `github_token`, `scase_token`,`scase_secret`, `github_name`, `github_email` ) " +
                             "values ('" +  newUser.github_id + "','" + 
                                 newUser.github_token + "', '" + 
                                 newUser.scase_token + "', '" + 
+                                newUser.scase_secret + "', '" + 
                                 newUser.github_name + "', '" + 
                                 newUser.github_email + "')";
                         connection=connConstant.connection;
@@ -123,6 +129,7 @@ module.exports = function(passport) {
                         connection.query(insertQuery, function(err, rows) {
                             newUser.id = rows.insertId;
                             //console.log('I got'+newUser.github_id);
+                            console.log(newUser.scase_secret);
                             return done(null, newUser);
                         });
                     }
@@ -139,10 +146,12 @@ module.exports = function(passport) {
                 user.github_email = (profile.emails[0].value || '').toLowerCase();
                 var scasetoken = scasetokenCreate(35)
                 user.scase_token=scasetoken;
+                user.scase_secret = scase_secret;
                 var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
                     "`github_id` = " + user.github_id + ", " +
                     "`github_token` = '" + user.github_token + "', " +
                     "`scase_token` = '" + user.scase_token + "', " +
+                    "`scase_secret` = '" + user.scase_secret + "', " +
                     "`github_name` = '" + user.github_name + "', " +
                     "`github_email` = '" + user.github_email + "' " +
                     "WHERE `id` = " + user.id + " LIMIT 1";
@@ -151,7 +160,7 @@ module.exports = function(passport) {
                 connection.query(updateQuery, function(err, rows) {
                     if (err)
                         return done(err);
-
+                    console.log(user.scase_secret);
                     return done(null, user);
                 });
             }
@@ -172,6 +181,7 @@ module.exports = function(passport) {
         // asynchronous
         process.nextTick(function() {
             // check if the user is already logged in
+            console.log(req.user);
             if (!req.user) {
                 connection=connConstant.connection;
                 connection.query('USE ' + dbconfig.database);
@@ -184,23 +194,25 @@ module.exports = function(passport) {
                         // if there is a user id already but no token (user was linked at one point and then removed)
                         if (user.google_token === 'undefined') {
                         	user.google_token = token;
-                            user.google_name  = profile.displayName;
+                            user.google_name  = profile.name;
                             var scasetoken = scasetokenCreate(35)//we create a new scase token
                             user.scase_token=scasetoken;//we save the new scase token
+                            user.scase_secret = scase_secret;
                             user.google_email = (profile.emails[0].value || '').toLowerCase();//we get the e-mail if available
                             //the following query updates the user profile
                             var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
                                 "`google_token` = '" + user.google_token + "', " +
                                 "`google_name` = '" + user.google_name + "', " +
                                 "`scase_token` = '" + user.scase_token + "', " +
+                                "`scase_secret` = '" + user.scase_secret + "', " +
                                 "`google_email` = '" + user.google_email + "' " +
                                 "WHERE `google_id` = " + user.google_id + " LIMIT 1";
-                            handleDisconnect();
+                            connection=connConstant.connection;
                             connection.query('USE ' + dbconfig.database);    
                             connection.query(updateQuery, function(err, rows) {
                                 if (err)
                                     return done(err);
-
+                                console.log(user.scase_secret);
                                 return done(null, user);
                             });
                         }
@@ -208,25 +220,30 @@ module.exports = function(passport) {
                     } else {
                         // if there is no user, create them
                         var newUser            = {};
+                        console.log(profile)
                         newUser.google_id    = profile.id;
                         newUser.google_token = token;
                         var scasetoken = scasetokenCreate(35)
                         newUser.scase_token=scasetoken;
-                        newUser.google_name  = profile.username;
+                        newUser.google_name  = profile.name;
                         newUser.google_email = (profile.emails[0].value || '').toLowerCase();
+                        newUser.scase_secret = scase_secret
                         //we insert the user in the DB
                         var insertQuery = "INSERT INTO " + dbconfig.users_table + " " +
-                            "( `google_id`, `google_token`, `scase_token`, `google_name`, `google_email` ) " +
-                            "values ('" +  newUser.github_id + "','" + 
+                            "( `google_id`, `google_token`, `scase_token`,`scase_secret`, `google_name`, `google_email` ) " +
+                            "values ('" +  newUser.google_id + "','" + 
                                 newUser.google_token + "', '" + 
                                 newUser.scase_token + "', '" + 
+                                newUser.scase_secret + "', '" + 
                                 newUser.google_name + "', '" + 
                                 newUser.google_email + "')";
+                        console.log(insertQuery);
                         connection=connConstant.connection;
                         connection.query('USE ' + dbconfig.database);
                         connection.query(insertQuery, function(err, rows) {
                             newUser.id = rows.insertId;
                             //console.log('I got'+newUser.github_id);
+                            console.log(newUser.scase_secret);
                             return done(null, newUser);
                         });
                     }
@@ -239,14 +256,16 @@ module.exports = function(passport) {
                 var user            = req.user; // pull the user out of the session
                 user.google_id    = profile.id;
                 user.google_token = token;
-                user.google_name = profile.username;
+                user.google_name = profile.name;
                 user.google_email = (profile.emails[0].value || '').toLowerCase();
                 var scasetoken = scasetokenCreate(35)
                 user.scase_token=scasetoken;
+                user.scase_secret = scase_secret;
                 var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
                     "`google_id` = " + user.google_id + ", " +
                     "`google_token` = '" + user.google_token + "', " +
                     "`scase_token` = '" + user.scase_token + "', " +
+                    "`scase_secret` = '" + user.scase_secret + "', " +
                     "`google_name` = '" + user.google_name + "', " +
                     "`google_email` = '" + user.google_email + "' " +
                     "WHERE `id` = " + user.id + " LIMIT 1";
@@ -255,7 +274,7 @@ module.exports = function(passport) {
                 connection.query(updateQuery, function(err, rows) {
                     if (err)
                         return done(err);
-
+                    console.log(user.scase_secret);
                     return done(null, user);
                 });
             }

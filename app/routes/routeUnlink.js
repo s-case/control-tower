@@ -44,6 +44,19 @@ module.exports = function(app, passport) {
                                 res.redirect('/profile');
                             });
 	});
+
+	// google -------------------------------
+	app.get('/unlink/google', isLoggedIn, function(req, res) {
+		var user            = req.user;
+		var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
+                                "`google_token` = '" + undefined + "' " +                               
+                                "WHERE `google_id` = " + user.google_id + " LIMIT 1";
+        connection = connConstant.connection;
+		connection.query('USE ' + dbconfig.database);
+		connection.query(updateQuery, function(err, rows) {
+                                res.redirect('/profile');
+                            });
+	});
 };
 // route middleware to ensure user is logged i
 function isLoggedIn(req, res, next) {

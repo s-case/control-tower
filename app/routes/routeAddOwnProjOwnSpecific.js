@@ -28,16 +28,27 @@ module.exports = function(app, passport) {
 	// =============================================================================
 	// Add an Owner in a Project I own ========================================
 	// =============================================================================
-	app.post('/addOwner/github', isLoggedIn, function(req, res) {
-		var github_name = req.body.name;
-		var proj_name = req.body.project_name;
+	app.post('/addOwner', isLoggedIn, function(req, res) {
+		var name = req.body.name;//github name or google e-mail of the collaborator
+		var proj_name = req.body.project_name;//the name of the project to which we add the collaborator
+		var google_email;
+		var github_name;
+		var checkIfUserExistsQuery;//query to check if the provided github name or google email matches to an S-Case user
+		if(name.indexOf('gmail.com')>-1){
+			google_email=name;
+			checkIfUserExistsQuery = "SELECT id FROM " + dbconfig.users_table + " WHERE " +
+						dbconfig.users_table +".google_email=" + "'" + google_email +"'";////check if the user's githubname exists			
+		}
+		else{
+			github_name=name;
+			checkIfUserExistsQuery = "SELECT id FROM " + dbconfig.users_table + " WHERE " +
+						dbconfig.users_table +".github_name=" + "'" + github_name +"'";////check if the user's githubname exists			
+		}
 		console.log('projectname to add owner '+proj_name);
 		var user = req.user;
 		var ownerflag;//flag to check if I am owner
 		checkIfOwner(user,proj_name,function(ownerflag){
 			if(ownerflag==true){
-				var checkIfUserExistsQuery = "SELECT id FROM " + dbconfig.users_table + " WHERE " +
-					dbconfig.users_table +".github_name=" + "'" + github_name +"'";//check if the user's githubname exists
 				connection=connConstant.connection;
 				connection.query(checkIfUserExistsQuery, function(err,rows){
 					if(rows.length>0){
@@ -51,12 +62,12 @@ module.exports = function(app, passport) {
 							connection=connConstant.connection;
 							console.log(createOwnerQuery);
 							connection.query(createOwnerQuery, function(err, rows){
-								res.redirect('/manageprojects/github'+'?project_name='+proj_name);
+								res.redirect('/manageprojects'+'?project_name='+proj_name);
 							});
 						});
 					}
 					else{
-						res.redirect('/manageprojects/github'+'?project_name='+proj_name);
+						res.redirect('/manageprojects'+'?project_name='+proj_name);
 					}
 				});
 			}

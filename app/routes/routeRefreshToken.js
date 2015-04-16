@@ -38,7 +38,7 @@ module.exports = function(app, passport) {
 	    return base64url(crypto.randomBytes(size));
 	}
 	//we create the route to refresh the token
-	app.get('/refresh/github', isLoggedIn, function(req, res) {
+	app.get('/refreshscasetoken', isLoggedIn, function(req, res) {
 		var user            = req.user;
 		connection=connConstant.connection;
 		//we select the user from the user's table (just to check if the user exists)

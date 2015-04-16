@@ -29,7 +29,7 @@ module.exports = function(app, passport) {
 	// =============================================================================
 	// Remove an Owner from a Project I own ========================================
 	// =============================================================================
-	app.get('/removeOwner/github', isLoggedIn, function(req, res) {
+	app.get('/removeOwner', isLoggedIn, function(req, res) {
 		var user = req.user;
 		var owner_id= req.param('owner_id');
 		var proj_name = req.param('project_name')
@@ -48,11 +48,11 @@ module.exports = function(app, passport) {
 							console.log(removeOwnerQuery);
 							connection=connConstant.connection;
 							connection.query(removeOwnerQuery, function(err, rows){
-								res.redirect('/manageprojects/github'+'?project_name='+proj_name);
+								res.redirect('/manageprojects'+'?project_name='+proj_name);
 							});
 						}//if there is only 1 owner, I delete the whole project
 						else{
-							res.redirect('/deleteprojects/github'+'?project_name='+proj_name);
+							res.redirect('/deleteprojects'+'?project_name='+proj_name);
 						}
 	                    
                 }); 

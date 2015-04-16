@@ -29,7 +29,7 @@ module.exports = function(app, passport) {
 	// Delete a Project I own ======================================================
 	// delete it from all the other owners and collaborators too
 	// =============================================================================
-	app.get('/deleteprojects/github', isLoggedIn, function(req, res) {
+	app.get('/deleteprojects', isLoggedIn, function(req, res) {
 		var user = req.user;
 		var proj_name = req.param('project_name');//name of the project to delete
 		var proj_id = req.param('project_id');//id of the project
@@ -42,7 +42,7 @@ module.exports = function(app, passport) {
 					console.log(deleteProjectQuery);
 					connection=connConstant.connection;
 					connection.query(deleteProjectQuery, function(err, rows){
-		                    res.redirect('/displayOwnprojects/github');
+		                    res.redirect('/displayOwnprojects');
 	                });
 				}
 			});	

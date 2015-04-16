@@ -32,7 +32,7 @@ module.exports = function(app, passport) {
 	// ============================================================================================================================================
 
 	// github -------------------------------
-	app.get('/collabprojects/github', isLoggedIn, function(req, res) {
+	app.get('/collabprojects', isLoggedIn, function(req, res) {
 		var user = req.user;
 		var proj_name = req.param('project_name');//name of the project to manage
 		if(proj_name){
@@ -59,7 +59,7 @@ module.exports = function(app, passport) {
 					var collaborators;//variable to display collaborators
 					
 					function displayOwners (callback){
-						var selectOwnersQuery = "SELECT `github_name` FROM " + dbconfig.users_table +" JOIN " + dbconfig.owners_table + 
+						var selectOwnersQuery = "SELECT `github_name`,`google_email` FROM " + dbconfig.users_table +" JOIN " + dbconfig.owners_table + 
 						" ON "+ dbconfig.users_table + ".id=" +  dbconfig.owners_table+".user_id "+ "JOIN "+ dbconfig.projects_table+
 						" ON "+ dbconfig.projects_table + ".project_id=" + dbconfig.owners_table + ".project_id" + 
 						" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
@@ -73,7 +73,7 @@ module.exports = function(app, passport) {
 			            });
 					}
 					function displayCollaborators (callback){
-		        		var selectCollaboratorsQuery = "SELECT `github_name`," + dbconfig.collaborators_table + ".id AS `collab_id` FROM " + dbconfig.users_table +" JOIN " + dbconfig.collaborators_table + 
+		        		var selectCollaboratorsQuery = "SELECT `github_name`,`google_email`," + dbconfig.collaborators_table + ".id AS `collab_id` FROM " + dbconfig.users_table +" JOIN " + dbconfig.collaborators_table + 
 						" ON "+ dbconfig.users_table + ".id=" +  dbconfig.collaborators_table+".user_id "+ "JOIN "+ dbconfig.projects_table+
 						" ON "+ dbconfig.projects_table + ".project_id=" + dbconfig.collaborators_table + ".project_id" + 
 						" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
@@ -91,6 +91,8 @@ module.exports = function(app, passport) {
 						//console.log("owners"+owners);
 						//console.log("collabs"+collaborators);
 						displayCollaborators(function(){
+
+						console.log("collabs"+collaborators);
 							res.render('projectSpecific.ejs', {
 									ownersnames : owners,//we return owners
 									collaboratorsnames : collaborators,//we return collaborators

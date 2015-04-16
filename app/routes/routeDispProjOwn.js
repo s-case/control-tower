@@ -9,7 +9,7 @@ module.exports = function(app, passport) {
 	// =============================================================================
 	// Display Projects I own, allow to manage and allow to remove =================
 	// =============================================================================
-	app.get('/displayOwnprojects/github', isLoggedIn, function(req, res) {
+	app.get('/displayOwnprojects', isLoggedIn, function(req, res) {
 		var user            = req.user;
 		connection = connConstant.connection;
 		//query for the projects I own

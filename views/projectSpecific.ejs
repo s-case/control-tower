@@ -25,14 +25,14 @@
 				<div class="panel panel-default">
 					<!-- panel's heading that includes a form to add an owner if you are owner of the project-->
 				  	<div class="panel-heading">
-				  		<h3><span class="fa fa-github"></span>Owners</h3>
+				  		<h3><span class="fa fa-users"></span>Owners</h3>
 				  		<!-- if the user is an owner a form to add an owner will be displayed -->
 					  	<% if (ownerflag) { %>
-							<p><form action="/addOwner/github" method="post"> 
+							<p><form action="/addOwner" method="post"> 
 								<fieldset>
 									<label for="name"></label>
 									<input type="hidden" id="project_name" name="project_name" value=<%= projectname%>>
-									<input type="text" id="name" name="name" size="30" placeholder="Enter the Owner's Github name"/>
+									<input type="text" id="name" name="name" size="50" placeholder="Enter the Owner's Github name or Google e-mail Account"/>
 									<button type="submit" class="btn btn-success">Add Owner</button>
 		        				</fieldset>
 		    				</form>
@@ -45,8 +45,8 @@
 				   	<thead>
 			          <tr>
 			            <th style="width:10px">#</th>
-			            <th style="width:130px">Owner</th>
-			            <th style="width:160px"></th>
+			            <th style="width:130px">Github Username</th>
+			            <th style="width:160px">Google e-mail</th>
 			            <th style="width:160px"></th>
 			          </tr>
 			        </thead>
@@ -55,22 +55,32 @@
 							<tr>
 								<td style="width:10px"><%= i%></td>
 								<td style="width:130px"><%=ownersnames[i].github_name%></td>
+								<td style="width:160px"><%=ownersnames[i].google_email%></td>
 								<!-- find if the current username attempting to display is the active user-->
 								<% var myOwnflag = false;%>
-								<% if (ownersnames[i].github_name==username) { 
-									myOwnflag=true;
+								<% if (ownersnames[i].github_name||ownersnames[i].google_email) {
+									 if (ownersnames[i].github_name==username||ownersnames[i].google_email==user.google_email) { 
+													myOwnflag=true;
+									} 
 								}%>
 								<!-- display the "remove owner" option if only if the user is an owner of the project-->
 								<% if (ownerflag==true) { %>
 									<!-- next to the user's name is going to have a button "Remove Myself" -->
 									<% if (myOwnflag==true) { %>
-										<% var removeOwnerurl="/removeOwner/github?owner_id="+ ownersnames[i].owner_id+"&project_name="+projectname+"&project_id="+ownersnames[i].project_id%>
+										<% var removeOwnerurl="/removeOwner?owner_id="+ ownersnames[i].owner_id+"&project_name="+projectname+"&project_id="+ownersnames[i].project_id%>
 										<td style="width:160px"><a href=<%= removeOwnerurl %> class="btn btn-warning btn-sm"><span class="fa fa-times"></span> Remove Myself</a></td>
 									<% } %>
 									<!-- next to the other users' name is going to have a button "Remove <Username>" -->
 									<% if (myOwnflag==false) { %>
-										<% var removeOwnerurl="/removeOwner/github?owner_id="+ ownersnames[i].owner_id+"&project_name="+projectname+"&project_id="+ownersnames[i].project_id%>
-										<td style="width:160px"><a href=<%= removeOwnerurl %> class="btn btn-warning btn-sm"><span class="fa fa-times"></span> Remove <%= ownersnames[i].github_name%></a></td>
+										<% var removeOwnerurl="/removeOwner?owner_id="+ ownersnames[i].owner_id+"&project_name="+projectname+"&project_id="+ownersnames[i].project_id%>
+
+										<% if (ownersnames[i].google_email!='undefined') { %>
+											<td style="width:160px"><a href=<%= removeOwnerurl %> class="btn btn-warning btn-sm"><span class="fa fa-times"></span> Remove <%= ownersnames[i].google_email%></a></td>
+										<% } %>
+
+										<% if (!ownersnames[i].google_email=='undefined'&&ownersnames[i].github_name) { %>
+											<td style="width:160px"><a href=<%= removeOwnerurl %> class="btn btn-warning btn-sm"><span class="fa fa-times"></span> Remove <%= ownersnames[i].github_name%></a></td>
+										<% } %>
 									<% } %>
 								<% } %>
 							</tr>	
@@ -80,15 +90,15 @@
 				</div>
 				<div class="panel panel-default">
 				  	<div class="panel-heading">
-				  		<h3><span class="fa fa-github"></span> Collaborators</h3>
+				  		<h3><span class="fa fa-users"></span> Collaborators</h3>
 				  		<!--form to add a collaborator (displayed only if the user is an owner of the project)-->
 					  	<% if (ownerflag) { %>
 							<p>
-								<form action="/addCollaborator/github" method="post"> 
+								<form action="/addCollaborator" method="post"> 
 								<fieldset>
 									<label for="name"></label>
 									<input type="hidden" id="project_name" name="project_name" value=<%= projectname%>>
-									<input type="text" id="name" name="name" size="30" placeholder="Enter the Collaborator's Github name"/>
+									<input type="text" id="name" name="name" size="60" placeholder="Enter the Collaborator's Github name or Google e-mail Account"/>
 									<button type="submit" class="btn btn-success">Add Collaborator</button>
 		        				</fieldset>
 	    						</form>
@@ -100,8 +110,8 @@
 					   	<thead>
 				          <tr>
 				            <th style="width:10px">#</th>
-				            <th style="width:130px">Collaborator</th>
-				            <th style="width:160px"></th>
+				            <th style="width:130px">Github username</th>
+				            <th style="width:160px">Google email</th>
 				            <th style="width:160px"></th>
 				          </tr>
 				        </thead>
@@ -110,19 +120,30 @@
 								<tr>
 									<td style="width:10px"><%= i%></td>
 									<td style="width:130px"><%=collaboratorsnames[i].github_name%></td>
+									<td style="width:160px"><%=collaboratorsnames[i].google_email%></td>
 									<% var myCollabflag = false;%>
-									<% if (collaboratorsnames[i].github_name==username) { 
-										myCollabflag=true;
+									<% if (collaboratorsnames[i].github_name||collaboratorsnames[i].google_email) {
+									 	if (collaboratorsnames[i].github_name==username||collaboratorsnames[i].google_email==user.google_email) { 
+													myCollabflag=true;
+										} 
 									}%>
 									<!-- If i am a collaborator, then display the option to remove myself-->
 									<% if (myCollabflag==true) { %>
-										<% var removeCollaburl="/removeCollab/github?collab_id="+ collaboratorsnames[i].collab_id+"&project_name="+projectname%>
+										<% var removeCollaburl="/removeCollab?collab_id="+ collaboratorsnames[i].collab_id+"&project_name="+projectname%>
 										<td style="width:160px"><a href=<%= removeCollaburl %> class="btn btn-warning btn-sm"><span class="fa fa-times"></span> Remove Myself</a></td>
 									<% } %>
 									<!-- if the user is an owner, display the option to remove collaborators-->
 									<% if (ownerflag) { %>
-										<% var removeCollaburl="/removeCollab/github?collab_id="+ collaboratorsnames[i].collab_id+"&project_name="+projectname%>
-										<td style="width:160px"><a href=<%= removeCollaburl %> class="btn btn-warning btn-sm"><span class="fa fa-times"></span> Remove <%=collaboratorsnames[i].github_name%></a></td>
+										<% var removeCollaburl="/removeCollab?collab_id="+ collaboratorsnames[i].collab_id+"&project_name="+projectname%>
+
+										<% if (collaboratorsnames[i].google_email!='undefined') { %>
+											<td style="width:160px"><a href=<%= removeCollaburl %> class="btn btn-warning btn-sm"><span class="fa fa-times"></span> Remove <%= collaboratorsnames[i].google_email%></a></td>
+										<% } %>
+
+										<% if (collaboratorsnames[i].google_email=='undefined'&&collaboratorsnames[i].github_name) { %>
+											<td style="width:160px"><a href=<%= removeCollaburl %> class="btn btn-warning btn-sm"><span class="fa fa-times"></span> Remove <%= collaboratorsnames[i].github_name%></a></td>
+										<% } %>
+										
 									<% } %>
 								</tr>	
 							<% } %>
@@ -131,7 +152,7 @@
 				</div>
 				<!-- if the user is an owner display the option to delete the project-->
 				<% if (ownerflag) { %>
-					<% var deleteurl="/deleteprojects/github?project_name="+ projectname%>
+					<% var deleteurl="/deleteprojects?project_name="+ projectname%>
 					<br><p> <a href=<%= deleteurl %> class="btn btn-danger btn-lg"><span class="fa fa-times"></span> Delete <%= projectname%></a><br></p>
 				<% } %>
 			</div>

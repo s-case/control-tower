@@ -30,7 +30,7 @@ module.exports = function(app, passport) {
 // Delete account =============================================================
 // =============================================================================
 // used to delete accounts. 
-	app.get('/delete/github', isLoggedIn, function(req, res) {
+	app.get('/delete', isLoggedIn, function(req, res) {
 		var user = req.user;
 		var user_id = req.param('user_id');
 		//the query checks if the user owns a project
@@ -72,7 +72,7 @@ module.exports = function(app, passport) {
 					});
 				}	
 				if(!rows[0]){//if the user does not own any project we are going to delete the account
-					res.redirect('/delete/github?user_id='+user.id);
+					res.redirect('/delete?user_id='+user.id);
 				}
 			});
 		}

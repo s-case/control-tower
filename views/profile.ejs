@@ -8,15 +8,44 @@
 		<div class="row">
 			<div class="col-sm-8 col-sm-offset-3">
 				<div class="well">
-					<h3 class="text-primary"><span class="fa fa-github"></span> My S-CASE Github profile</h3>
+					<h3 class="text-primary"><span class="fa fa-github"></span> My S-CASE profile</h3>
 					<!-- check if the user has this token (is the user authenticated with this social account) -->
-					<% if (user.github_token!=='undefined') { %>
-						<p>
-							<strong>Github_id</strong>: <%= user.github_id %><br>
-							<strong>Github_name </strong>:<%= user.github_name %><br>
-							<strong>Github token</strong>: <%= user.github_token %><br>
-							<strong>S-Case token</strong>: <%= user.scase_token %><br>
-						</p>
+					<% if ((user.github_token!=='undefined'&&user.github_token!=null)||(user.google_token!=='undefined'&&user.google_token!=null)) { %>
+						<!-- link Google account -->
+						<a href="/connect/google" class="btn btn-danger"><span class="fa fa-google-plus"></span> Link Google+</a>
+						<!-- link Github account -->
+						<a href="/connect/github" class="btn btn-default"><span class="fa fa-github"></span> Link Github</a>
+						<% if ((user.github_token!=='undefined'&&user.github_token!=null)&&(user.google_token!=='undefined'&&user.google_token!=null)) { %>
+							<p>
+								<strong>Github_id</strong>: <%= user.github_id %><br>
+								<strong>Github_name </strong>:<%= user.github_name %><br>
+								<strong>Github token</strong>: <%= user.github_token %><br>
+								<strong>Google_id</strong>: <%= user.google_id %><br>
+								<strong>Google token</strong>: <%= user.google_token %><br>
+								<strong>Google e-mail</strong>: <%= user.google_email %><br>
+								<strong>S-Case token</strong>: <%= user.scase_token %><br>
+								<strong>S-Case secret</strong>: <%= user.scase_secret %><br>
+							</p>
+						<% } %>
+						<% if ((user.github_token!=='undefined'&&user.github_token!=null)&&(user.google_token=='undefined'||user.google_token==null)) { %>
+							<p>
+								<strong>Github_id</strong>: <%= user.github_id %><br>
+								<strong>Github_name </strong>:<%= user.github_name %><br>
+								<strong>Github token</strong>: <%= user.github_token %><br>
+								<strong>S-Case token</strong>: <%= user.scase_token %><br>
+								<strong>S-Case secret</strong>: <%= user.scase_secret %><br>
+							</p>
+						<% } %>
+						<% if ((user.github_token=='undefined'||user.github_token==null)&&(user.google_token!=='undefined'&&user.google_token!=null)) { %>
+							<p>
+								<strong>Google_id</strong>: <%= user.google_id %><br>
+								<strong>Google token</strong>: <%= user.google_token %><br>
+								<strong>Google e-mail</strong>: <%= user.google_email %><br>
+								<strong>S-Case token</strong>: <%= user.scase_token %><br>
+								<strong>S-Case secret</strong>: <%= user.scase_secret %><br>
+							</p>
+						<% } %>
+
 						<!-- form to create a Project -->
 						<p><form action="/createProject" method="post"> 
 							<fieldset>
@@ -30,19 +59,31 @@
         				<!-- Alert that I own some project(s) -->
 						<% if (user.Message!=null && user.Message!=undefined && user.Message.length>1) { %>
 							<div class="alert alert-danger" role="alert"> Alert: You still own <%= user.Message %></div>
-							<% var url = "/delete/github?user_id=" + user.id %>
+							<% var url = "/delete?user_id=" + user.id %>
 							<a href=<%= url %> class="btn btn-danger"><span class="fa fa-chain-bomb"></span>Delete Account</a>
 						<!-- Delete account -->
 						<% } else {%>
-							<a href="/delete/github" class="btn btn-danger"><span class="fa fa-chain-bomb"></span>Delete Account</a>
+							<a href="/delete" class="btn btn-danger"><span class="fa fa-chain-bomb"></span>Delete Account</a>
 						<% } %>
-						<!-- Unlink account -->
-						<a href="/unlink/github" class="btn btn-warning"><span class="fa fa-chain-broken"> Unlink</span></a>
+						
+						<!-- Unlink Github account -->
+						<a href="/unlink/github" class="btn btn-warning"><span class="fa fa-chain-broken"> </span>Unlink Github</a>
+						<!-- unlink Google account -->
+						<a href="/unlink/google" class="btn btn-warning"><span class="fa fa-chain-broken"></span> Unlink Google+</a>
 						<!-- Refresh S-Case token-->
-        				<a href="/refresh/github" class="btn btn-info"><span class="fa fa-refresh"></span> Refresh S-Case Token</a>
+        				<a href="/refreshscasetoken" class="btn btn-info"><span class="fa fa-refresh"></span> Refresh S-Case Token</a>
 					<!--if the account is disconnected, show only the connect option-->	
 					<% } else { %>
-						<a href="/connect/github" class="btn btn-primary">Connect Github</a>
+						<a href="/connect/github" class="btn btn-default"><span class="fa fa-github"></span>Connect Github</a>
+						<a href="/connect/google" class="btn btn-danger"><span class="fa fa-google-plus"></span>Connect Google</a>
+						<% if (user.Message!=null && user.Message!=undefined && user.Message.length>1) { %>
+							<div class="alert alert-danger" role="alert"> Alert: You still own <%= user.Message %></div>
+							<% var url = "/delete?user_id=" + user.id %>
+							<a href=<%= url %> class="btn btn-danger"><span class="fa fa-chain-bomb"></span>Delete Account</a>
+						<!-- Delete account -->
+						<% } else {%>
+							<a href="/delete" class="btn btn-danger"><span class="fa fa-chain-bomb"></span>Delete Account</a>
+						<% } %>
 					<% } %>
 				</div>
 			</div>

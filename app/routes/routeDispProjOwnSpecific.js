@@ -31,7 +31,7 @@ module.exports = function(app, passport) {
 	// Project panel of a Project I own. Display other owners, collaborators (allow to remove them only if I own a project)
 	// ====================================================================================================================
 
-	app.get('/manageprojects/github', isLoggedIn, function(req, res) {
+	app.get('/manageprojects', isLoggedIn, function(req, res) {
 		var user = req.user;
 		var proj_name = req.param('project_name');//name of the project to manage
 		if(proj_name){
@@ -44,7 +44,7 @@ module.exports = function(app, passport) {
 					var collaborators;//it is going to include all the collaborators (names and ids)
 					function displayOwners (callback){
 						//query to select all owners
-						var selectOwnersQuery = "SELECT `github_name`,"+dbconfig.projects_table+".`project_id`," + dbconfig.owners_table + ".id AS owner_id FROM "  + dbconfig.users_table +" JOIN " + dbconfig.owners_table + 
+						var selectOwnersQuery = "SELECT `github_name`,`google_email`,"+dbconfig.projects_table+".`project_id`," + dbconfig.owners_table + ".id AS owner_id FROM "  + dbconfig.users_table +" JOIN " + dbconfig.owners_table + 
 						" ON "+ dbconfig.users_table + ".id=" +  dbconfig.owners_table+".user_id "+ "JOIN "+ dbconfig.projects_table+
 						" ON "+ dbconfig.projects_table + ".project_id=" + dbconfig.owners_table + ".project_id" + 
 						" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
@@ -58,7 +58,7 @@ module.exports = function(app, passport) {
 					}
 					function displayCollaborators (callback){
 						//query to select all collaborators
-		        		var selectCollaboratorsQuery = "SELECT `github_name`," + dbconfig.collaborators_table + ".id AS `collab_id` FROM " + dbconfig.users_table +" JOIN " + dbconfig.collaborators_table + 
+		        		var selectCollaboratorsQuery = "SELECT `github_name`,`google_email`," + dbconfig.collaborators_table + ".id AS `collab_id` FROM " + dbconfig.users_table +" JOIN " + dbconfig.collaborators_table + 
 						" ON "+ dbconfig.users_table + ".id=" +  dbconfig.collaborators_table+".user_id "+ "JOIN "+ dbconfig.projects_table+
 						" ON "+ dbconfig.projects_table + ".project_id=" + dbconfig.collaborators_table + ".project_id" + 
 						" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
@@ -73,7 +73,7 @@ module.exports = function(app, passport) {
 					}
 					displayOwners(function(){
 						//console.log("owners"+owners);
-						//console.log("collabs"+collaborators);
+						
 						displayCollaborators(function(){
 							res.render('projectSpecific.ejs', {
 								ownersnames : owners,//we return owners

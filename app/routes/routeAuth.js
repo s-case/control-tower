@@ -12,7 +12,7 @@ module.exports = function(app, passport) {
 	// handle the callback after github has authenticated the user
 	app.get('/auth/github/callback',
 		passport.authenticate('github', {
-			successRedirect : '/displayOwnprojects/github',
+			successRedirect : '/profile',
 			failureRedirect : '/'
 		}));
 
@@ -24,7 +24,7 @@ module.exports = function(app, passport) {
 	// the callback after google has authenticated the user
 	app.get('/auth/google/callback',
 		passport.authenticate('google', {
-			successRedirect : '/displayOwnprojects/google',
+			successRedirect : '/profile',
 			failureRedirect : '/'
 		}));
 	
@@ -40,7 +40,7 @@ module.exports = function(app, passport) {
 	// handle the callback after github has authorized the user
 	app.get('/connect/github/callback',
 		passport.authorize('github', {
-			successRedirect : '/displayOwnprojects/github',
+			successRedirect : '/profile',
 			failureRedirect : '/'
 		}));
 
@@ -52,7 +52,7 @@ module.exports = function(app, passport) {
 	// the callback after google has authorized the user
 	app.get('/connect/google/callback',
 		passport.authorize('google', {
-			successRedirect : '/displayOwnprojects/google',
+			successRedirect : '/profile',
 			failureRedirect : '/'
 		}));
 

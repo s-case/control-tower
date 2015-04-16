@@ -11,8 +11,8 @@ module.exports = {
 	},
 
 	'googleAuth' : {
-		'clientID' 		: '628673878460-eiv3up0u03fotj4tbveuuq72lrhf3rsd.apps.googleusercontent.com',
-		'clientSecret' 	: 'WoAp2IF-XD_zl8s0FB5sRdXl',
+		'clientID' 		: process.env.GOOGLE_CLIENTID,
+		'clientSecret' 	: process.env.GOOGLE_CLIENTSECRET,
 		'callbackURL' 	: 'http://scouter.ee.auth.gr:3000/auth/google/callback'
 	}
 

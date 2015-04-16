@@ -10,7 +10,7 @@ module.exports = function(app, passport) {
 	// =============================================================================
 	// Display Projects I collaborate ==============================================
 	// =============================================================================
-	app.get('/displayCollabprojects/github', isLoggedIn, function(req, res) {
+	app.get('/displayCollabprojects', isLoggedIn, function(req, res) {
 		var user = req.user;
 		var proj_name = req.project_name;
 		connection=connConstant.connection;

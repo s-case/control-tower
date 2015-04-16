@@ -31,7 +31,7 @@ module.exports = function(app, passport) {
 	// =============================================================================
 	// Remove a Collaborator from a Project I own or If I want to remove myself ====
 	// =============================================================================
-	app.get('/removeCollab/github', isLoggedIn, function(req, res) {
+	app.get('/removeCollab', isLoggedIn, function(req, res) {
 		var user = req.user;
 		var collab_id= req.param('collab_id');//collaborator's id
 		var proj_name = req.param('project_name')
@@ -42,7 +42,7 @@ module.exports = function(app, passport) {
 				" WHERE " + dbconfig.collaborators_table + ".id=" + "'" + collab_id + "'";
 				connection=connConstant.connection;
 				connection.query(removeCollabQuery, function(err, rows){
-	                    res.redirect('/manageprojects/github'+'?project_name='+proj_name);
+	                    res.redirect('/manageprojects'+'?project_name='+proj_name);
                 });
 			}
 			else{//check if I am a collaborator in the project, so I can remove myself!

@@ -54,7 +54,7 @@ module.exports = function(app, passport) {
 							connection=connConstant.connection;
 							console.log(createOwnerQuery);
 							connection.query(createOwnerQuery, function(err, rows){
-								res.redirect('/manageprojects/github'+'?project_name='+proj_name);
+								res.redirect('/manageprojects'+'?project_name='+proj_name);
 							});
 						}
 						else{

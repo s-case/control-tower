@@ -24,7 +24,7 @@
 								<tr>
 									<td><%= i%></td>
 									<td><%= projectnames[i].project_name%></td>
-									<td><% var manageurl="/collabprojects/github?project_name="+ projectnames[i].project_name%>
+									<td><% var manageurl="/collabprojects?project_name="+ projectnames[i].project_name%>
 							 		<a href=<%= manageurl %> class="btn btn-success btn-sm" style="color:white"><span class="fa fa-cogs"></span> Edit <%= projectnames[i].project_name%></a></td>
 									</tr>
 							<% } %>
