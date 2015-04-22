@@ -16,7 +16,7 @@ var connection;
 //=============the following are used to create the s-case token===============
 var crypto = require('crypto');
 var base64url = require('base64url');
-var jwt = require('express-jwt');
+var jwt = require('jsonwebtoken');
 //var scase_secret= process.env.SCASE_SECRET;
 var scase_secret=scasetokenCreate(35);
 function scasetokenCreate(size){
@@ -87,6 +87,7 @@ module.exports = function(passport) {
                             user.github_name  = profile.username;//we get the github name
                             user.github_email = (profile.emails[0].value || '').toLowerCase();//we get the e-mail if available
                             user.scase_secret = scasetokenCreate(35);
+                            var produced_signature=jwt.sign({ scasetoken : scasetoken},rows[0].scase_secret);
                             //the following query updates the user profile
                             var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
                                 "`github_token` = '" + user.github_token + "', " +

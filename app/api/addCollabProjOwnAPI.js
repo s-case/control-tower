@@ -29,6 +29,7 @@ module.exports = function(app){
 	app.get('/api/addCollabProjOwn', function(req, res) {
 		res.setHeader('Content-Type', 'application/json');
 		var scase_token= req.param('scase_token');//require your scase token in order to authenticate
+		var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate
 		var proj_name= req.param('project_name');//require project name
 		var github_name = req.param('github_name');//require the github name of the user you would like to add as a collaborator
 		if(scase_token&&proj_name&&github_name){
