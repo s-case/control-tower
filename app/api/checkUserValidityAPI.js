@@ -5,6 +5,8 @@ var mysql = require('mysql');
 var dbconfig = require('../../config/database');
 var connConstant = require('../../config/ConnectConstant');
 var connection;
+var jwt = require('express-jwt');
+var jsonwebtoken = require('jsonwebtoken');
 // ROUTES FOR OUR API
 // =============================================================================
 //route for the S-CASE tools that do not store data
@@ -13,9 +15,18 @@ var connection;
 app.get('/api/validateUser',function(req,res){
 	var scase_token= req.param('scase_token');//require your scase token in order to authenticate
 	var project_name= req.param('project_name');//require project name
+	var scase_signature = req.param('scase_signature');
 	if(scase_token && project_name){
 		connection=connConstant.connection;
 		connection.query('USE ' + dbconfig.database);
+		var GetSecretQuery = "SELECT " + dbconfig.users_table + ".`scase_secret` AS scaseSecret WHERE " +
+							dbconfig.users_table + ".`scase_token`= '"+ scase_token + "' ";
+		connection.query(GetSecretQuery,function(err,rows){
+			var produced_signature=jwt.sign({ scasetoken : scase_token},rows[0].scaseSecret);
+			if(scase_signature==produced_signature){
+				
+			}
+		});
 		//query to check if the user is owner		
 		var OwnerSelectQuery = "SELECT COUNT(*) AS usersCount FROM " + dbconfig.users_table + " INNER JOIN (" +dbconfig.owners_table +","+
 							dbconfig.projects_table+") ON "+
@@ -81,7 +92,7 @@ app.get('/api/validateUser',function(req,res){
 							
 		});
 	}
-	else if(scase_token){//if we have sent only the scase_token we just check if the scase token exists in the database
+	else if(scase_token&&scase_signature){//if we have sent only the scase_token and scase_signature we just check if the scase token exists in the database
 		connection=connConstant.connection;
 		connection.query('USE ' + dbconfig.database);
 		var selectQuery = "SELECT COUNT(*) AS usersCount FROM " + dbconfig.users_table + " WHERE "+

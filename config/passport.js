@@ -17,7 +17,8 @@ var connection;
 var crypto = require('crypto');
 var base64url = require('base64url');
 var jwt = require('express-jwt');
-var scase_secret= process.env.SCASE_SECRET;
+//var scase_secret= process.env.SCASE_SECRET;
+var scase_secret=scasetokenCreate(35);
 function scasetokenCreate(size){
     return base64url(crypto.randomBytes(size));
 }
@@ -85,7 +86,7 @@ module.exports = function(passport) {
                             user.scase_token=scasetoken;//we save the new scase token
                             user.github_name  = profile.username;//we get the github name
                             user.github_email = (profile.emails[0].value || '').toLowerCase();//we get the e-mail if available
-                            user.scase_secret = scase_secret;
+                            user.scase_secret = scasetokenCreate(35);
                             //the following query updates the user profile
                             var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
                                 "`github_token` = '" + user.github_token + "', " +
@@ -113,7 +114,7 @@ module.exports = function(passport) {
                         newUser.scase_token=scasetoken;
                         newUser.github_name  = profile.username;
                         newUser.github_email = (profile.emails[0].value || '').toLowerCase();
-                        newUser.scase_secret = scase_secret;
+                        newUser.scase_secret = scasetokenCreate(35);
                         console.log(newUser.scase_secret+':1');
                         //we insert the user in the DB
                         var insertQuery = "INSERT INTO " + dbconfig.users_table + " " +
@@ -146,7 +147,7 @@ module.exports = function(passport) {
                 user.github_email = (profile.emails[0].value || '').toLowerCase();
                 var scasetoken = scasetokenCreate(35)
                 user.scase_token=scasetoken;
-                user.scase_secret = scase_secret;
+                user.scase_secret = scasetokenCreate(35);
                 var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
                     "`github_id` = " + user.github_id + ", " +
                     "`github_token` = '" + user.github_token + "', " +
@@ -197,7 +198,7 @@ module.exports = function(passport) {
                             user.google_name  = profile.name;
                             var scasetoken = scasetokenCreate(35)//we create a new scase token
                             user.scase_token=scasetoken;//we save the new scase token
-                            user.scase_secret = scase_secret;
+                            user.scase_secret = scasetokenCreate(35);
                             user.google_email = (profile.emails[0].value || '').toLowerCase();//we get the e-mail if available
                             //the following query updates the user profile
                             var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
@@ -227,7 +228,7 @@ module.exports = function(passport) {
                         newUser.scase_token=scasetoken;
                         newUser.google_name  = profile.name;
                         newUser.google_email = (profile.emails[0].value || '').toLowerCase();
-                        newUser.scase_secret = scase_secret
+                        newUser.scase_secret = scasetokenCreate(35);
                         //we insert the user in the DB
                         var insertQuery = "INSERT INTO " + dbconfig.users_table + " " +
                             "( `google_id`, `google_token`, `scase_token`,`scase_secret`, `google_name`, `google_email` ) " +
@@ -260,7 +261,7 @@ module.exports = function(passport) {
                 user.google_email = (profile.emails[0].value || '').toLowerCase();
                 var scasetoken = scasetokenCreate(35)
                 user.scase_token=scasetoken;
-                user.scase_secret = scase_secret;
+                user.scase_secret = scasetokenCreate(35);
                 var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
                     "`google_id` = " + user.google_id + ", " +
                     "`google_token` = '" + user.google_token + "', " +

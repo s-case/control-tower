@@ -33,7 +33,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs'); // set up ejs for templating
 
 // required for passport
-app.use(session({ secret: 'SCASEbringsRESTtoyou' })); // session secret
+app.use(session({ secret: process.env.SCASE_SECRET })); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
@@ -44,6 +44,7 @@ require('./app/routes/routeAuth.js')(app, passport);//load the routes for the Au
 require('./app/routes/routeUnlink.js')(app, passport);//load the route for unlinking the account
 require('./app/routes/routeDeleteAcc.js')(app, passport);//load the route for deleting the account
 require('./app/routes/routeRefreshToken.js')(app, passport);//load the route for refreshing the s-case token
+require('./app/routes/routeRefreshSecret.js')(app, passport);//load the route for refreshing the s-case secret
 require('./app/routes/routeDispProjOwn.js')(app, passport);//load the route for displaying the projects I own
 require('./app/routes/routeDispProjOwnSpecific.js')(app, passport);//load the route for displaying the info of a specific project I own
 require('./app/routes/routeDeleteProjOwnSpecific.js')(app, passport);//load the route for deleting a specific project I own
