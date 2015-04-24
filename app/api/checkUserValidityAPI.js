@@ -6,7 +6,7 @@ var dbconfig = require('../../config/database');
 var connConstant = require('../../config/ConnectConstant');
 var connection;
 //var jwt = require('express-jwt');
-var jwt = require('jsonwebtoken');
+var jwt = require('jsonwebtoken');//require json web token package
 // ROUTES FOR OUR API
 // =============================================================================
 //route for the S-CASE tools that do not store data

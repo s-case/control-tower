@@ -5,6 +5,7 @@ module.exports = function(app, passport) {
 	var connConstant = require('../../config/ConnectConstant');
 	//var connection = mysql.createConnection(dbconfig.connection);
 	//var connection = require('../config/ConnectConstant.js');
+	var jwt = require('jsonwebtoken');//require json web token package
 	var connection;
 	var ownerflag;//flag used to check if the user is an owner
 	//function to check if the user is owner of a specific project
