@@ -3,4 +3,5 @@ CREATE TABLE `projects` (
   `project_name` varchar(200) NOT NULL DEFAULT '',
   PRIMARY KEY (`project_id`,`project_name`),
   UNIQUE KEY `project_name_UNIQUE` (`project_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
