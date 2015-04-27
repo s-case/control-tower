@@ -87,7 +87,7 @@ module.exports = function(passport) {
                             user.github_name  = profile.username;//we get the github name
                             user.github_email = (profile.emails[0].value || '').toLowerCase();//we get the e-mail if available
                             user.scase_secret = scasetokenCreate(35);
-                            var produced_signature=jwt.sign({ scasetoken : scasetoken},rows[0].scase_secret);
+                            //var produced_signature=jwt.sign({ scasetoken : scasetoken},rows[0].scase_secret);
                             //the following query updates the user profile
                             var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
                                 "`github_token` = '" + user.github_token + "', " +
@@ -101,7 +101,7 @@ module.exports = function(passport) {
                             connection.query(updateQuery, function(err, rows) {
                                 if (err)
                                     return done(err);
-                                console.log(jwt.sign({ scasetoken : user.scase_token},user.scase_secret));
+                                //console.log(jwt.sign({ scasetoken : user.scase_token},user.scase_secret));
                                 return done(null, user);
                             });
                         }
@@ -130,7 +130,7 @@ module.exports = function(passport) {
                         connection.query(insertQuery, function(err, rows) {
                             newUser.id = rows.insertId;
                             //console.log('I got'+newUser.github_id);
-                            console.log(jwt.sign({ scasetoken : newUser.scase_token},newUser.scase_secret));
+                            //console.log(jwt.sign({ scasetoken : newUser.scase_token},newUser.scase_secret));
                             return done(null, newUser);
                         });
                     }
@@ -161,7 +161,7 @@ module.exports = function(passport) {
                 connection.query(updateQuery, function(err, rows) {
                     if (err)
                         return done(err);
-                    console.log(jwt.sign({ scasetoken : user.scase_token},user.scase_secret));
+                    //console.log(jwt.sign({ scasetoken : user.scase_token},user.scase_secret));
                     return done(null, user);
                 });
             }
