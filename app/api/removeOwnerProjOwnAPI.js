@@ -20,8 +20,9 @@ module.exports = function(app){
         			}
             	}
 	        }
+	        callback(ownerflag);
 		});
-		callback(ownerflag);
+		
 	}
 	// =============================================================================
 	// Remove a collaborator from a project I own API===============================================

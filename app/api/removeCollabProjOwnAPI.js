@@ -11,17 +11,19 @@ module.exports = function(app){
 		connection=connConstant.connection;
 		var selectProjects = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 		".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
-		//console.log(selectProjects)
+		console.log(selectProjects)
 		connection.query(selectProjects, function(err, rows){
 			if (rows.length > 0) {
+				console.log(rows[0]);
             	for(var i in rows){
         			if(rows[i].project_name==proj_name){
         				ownerflag=true;
         			}
             	}
 	        }
+	        callback(ownerflag);
 		});
-		callback(ownerflag);
+		
 	}
 	// =============================================================================
 	// Remove a collaborator from a project I own API===============================================

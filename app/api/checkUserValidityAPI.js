@@ -19,8 +19,9 @@ app.get('/api/validateUser',function(req,res){
 		connection=connConstant.connection;
 		connection.query('USE ' + dbconfig.database);
 		//query to get the secret of the user
-		var GetSecretQuery = "SELECT " + dbconfig.users_table + ".`scase_secret` AS scaseSecret WHERE " +
+		var GetSecretQuery = "SELECT " + dbconfig.users_table + ".`scase_secret` AS scaseSecret FROM "+dbconfig.users_table+" WHERE " +
 							dbconfig.users_table + ".`scase_token`= '"+ scase_token + "' ";
+							console.log(GetSecretQuery);
 		//query to check if the user is owner		
 		var OwnerSelectQuery = "SELECT COUNT(*) AS usersCount FROM " + dbconfig.users_table + " INNER JOIN (" +dbconfig.owners_table +","+
 							dbconfig.projects_table+") ON "+
@@ -39,18 +40,17 @@ app.get('/api/validateUser',function(req,res){
 		res.setHeader('Content-Type', 'application/json');
 		connection.query(GetSecretQuery,function(err,rows){
 			if (err||rows.length==0){
-				res.setHeader('Content-Type', 'application/json');
 				var obj = '{'
 						+ '"userValid" : "false"'
 						+ '}';
 				var Jobj=JSON.parse(obj);
 				res.send(Jobj);
 			}
+			console.log(rows)
 			var decoded = jwt.verify(scase_signature,rows[0].scaseSecret);
 			if(decoded.scasetoken=scase_token){
 				connection.query(OwnerSelectQuery, function(err, rows){//check if the user is owner
 					if (err||rows.length==0){
-						res.setHeader('Content-Type', 'application/json');
 						var obj = '{'
 								+ '"userValid" : "false"'
 								+ '}';
@@ -63,7 +63,6 @@ app.get('/api/validateUser',function(req,res){
 						role="owner";
 					}
 					if(role!=="nothing"){
-						res.setHeader('Content-Type', 'application/json');
 						var userInfo = [{"userValid" : "true"},{"userRole" : role}];
 						//var Jobj=JSON.parse(userInfo);
 						res.send(userInfo);
@@ -72,7 +71,6 @@ app.get('/api/validateUser',function(req,res){
 				connection=connConstant.connection;
 				connection.query(CollaboratorSelectQuery, function(err, rows){
 					if (err||rows.length==0){
-						res.setHeader('Content-Type', 'application/json');
 						var obj = '{'
 								+ '"userValid" : "false"'
 								+ '}';
@@ -85,13 +83,11 @@ app.get('/api/validateUser',function(req,res){
 						role="collaborator";
 					}
 					if(role!=="nothing"){
-						res.setHeader('Content-Type', 'application/json');
 						var userInfo = [{"userValid" : "true"},{"userRole" : role}];
 						//var Jobj=JSON.parse(userInfo);
 						res.send(userInfo);
 					}
 					else {
-						res.setHeader('Content-Type', 'application/json');
 						var userInfo = [{"userValid" : "false"},{"userRole" : role}];
 						//var Jobj=JSON.parse(userInfo);
 						res.send(userInfo);
@@ -120,7 +116,6 @@ app.get('/api/validateUser',function(req,res){
 		res.setHeader('Content-Type', 'application/json');
 		connection.query(GetSecretQuery,function(err,rows){
 			if (err||rows.length==0){
-				res.setHeader('Content-Type', 'application/json');
 				var obj = '{'
 						+ '"userValid" : "false"'
 						+ '}';
@@ -131,7 +126,6 @@ app.get('/api/validateUser',function(req,res){
 			if(decoded.scasetoken=scase_token){
 				connection.query(selectQuery, function(err, rows){
 					if (err||rows.length==0){
-						res.setHeader('Content-Type', 'application/json');
 						var obj = '{'
 								+ '"userValid" : "false"'
 								+ '}';
@@ -142,7 +136,6 @@ app.get('/api/validateUser',function(req,res){
 					var userCnt = parseInt(rows[0].usersCount);
 					//console.log(userCnt);
 					if(userCnt==1){
-						res.setHeader('Content-Type', 'application/json');
 						var obj = '{'
 								+ '"userValid" : "true"'
 								+ '}';
@@ -150,7 +143,6 @@ app.get('/api/validateUser',function(req,res){
 						res.send(Jobj);
 					}
 					else {
-						res.setHeader('Content-Type', 'application/json');
 						var obj = '{'
 								+ '"userValid" : "false"'
 								+ '}';
@@ -160,7 +152,6 @@ app.get('/api/validateUser',function(req,res){
 				});
 			}
 			else{
-        		res.setHeader('Content-Type', 'application/json');
 				var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
 				var Jobj=JSON.parse(obj);
 				res.send(Jobj);

@@ -130,7 +130,7 @@ module.exports = function(passport) {
                         connection.query(insertQuery, function(err, rows) {
                             newUser.id = rows.insertId;
                             //console.log('I got'+newUser.github_id);
-                            //console.log(jwt.sign({ scasetoken : newUser.scase_token},newUser.scase_secret));
+                            console.log(jwt.sign({ scasetoken : newUser.scase_token},newUser.scase_secret));
                             return done(null, newUser);
                         });
                     }
@@ -244,7 +244,7 @@ module.exports = function(passport) {
                         connection.query(insertQuery, function(err, rows) {
                             newUser.id = rows.insertId;
                             //console.log('I got'+newUser.github_id);
-                            //console.log(newUser.scase_secret);
+                            console.log(jwt.sign({ scasetoken : newUser.scase_token},newUser.scase_secret));
                             return done(null, newUser);
                         });
                     }
