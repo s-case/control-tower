@@ -58,7 +58,8 @@ require('./app/routes/routeAddCollabProjOwnSpecific.js')(app, passport);//load t
 //================API routes=============================
 require('./app/api/checkUserValidityAPI.js') (app);//check if a user is Valid (API) route
 require('./app/api/deleteAccAPI.js') (app);//delete account
-require('./app/api/refreshSCaseAPI.js') (app);//refresh S-CASE token
+require('./app/api/refreshSCaseTokenAPI.js') (app);//refresh S-CASE token
+require('./app/api/refreshSCaseSecretAPI.js') (app);//refresh S-CASE secret
 require('./app/api/dispProjOwnAPI.js') (app);//display the projects I own
 require('./app/api/dispProjOwnersCollabsAPI.js') (app);//display the owners of a project I own
 require('./app/api/dispProjCollabAPI.js') (app);//display the collaborators of a project I own

@@ -13,7 +13,7 @@ module.exports = function(app, passport) {
 		connection=connConstant.connection;
 		var selectProjects = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 		".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
-		console.log(selectProjects)
+		//console.log(selectProjects)
 		connection.query(selectProjects, function(err, rows){
 			if (rows.length > 0) {
             	for(var i in rows){
@@ -22,7 +22,7 @@ module.exports = function(app, passport) {
         			}
             	}
 	        }
-	        console.log(ownerflag);
+	        //console.log(ownerflag);
 	        callback(ownerflag);
 		});
 	}
@@ -38,14 +38,14 @@ module.exports = function(app, passport) {
 		checkIfOwner(user,proj_name,function(ownerflag){
 			if(ownerflag==true){
 				var checkOwnersAmountQuery = "SELECT * FROM " + dbconfig.owners_table + " WHERE "+ dbconfig.owners_table + ".project_id="+"'"+proj_id+"'";
-				console.log(checkOwnersAmountQuery);
+				//console.log(checkOwnersAmountQuery);
 				connection=connConstant.connection;
 				connection.query(checkOwnersAmountQuery, function(err, rows){
 						//if there are more than 1 owners, I just remove the owner
 						if(rows.length>1){
 							var removeOwnerQuery = "DELETE FROM " + dbconfig.owners_table+
 							" WHERE " + dbconfig.owners_table + ".id=" + "'" + owner_id + "'";
-							console.log(removeOwnerQuery);
+							//console.log(removeOwnerQuery);
 							connection=connConstant.connection;
 							connection.query(removeOwnerQuery, function(err, rows){
 								res.redirect('/manageprojects'+'?project_name='+proj_name);

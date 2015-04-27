@@ -33,14 +33,14 @@ module.exports = function(app){
 		var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate
 		var proj_name= req.param('project_name');//require project name
 		var github_name = req.param('github_name');//require the github name of the user you would like to add as a collaborator
-		if(scase_token&&proj_name&&github_name){
+		if(scase_token&&proj_name&&github_name&&scase_signature){
 			connection=connConstant.connection;//ensure that there is a connection to the DB
 			//we select the user with the scase_token provided 
 			var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE scase_token = '" + scase_token + "'";//query to get all the info of the user with the provided scase token
 			connection.query(selectUsersQuery, function(err, rows){
                 if (rows.length > 0) {
-                	var produced_signature=jwt.sign({ scasetoken : scase_token},rows[0].scaseSecret);
-                	if(scase_signature==produced_signature){//we check if the produced signature is the same with the one provided
+                	var decoded = jwt.verify(scase_signature,rows[0].scase_secret);
+					if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
                 		var user = rows[0];
                 		connection = connConstant.connection;
                 		var ownerflag;

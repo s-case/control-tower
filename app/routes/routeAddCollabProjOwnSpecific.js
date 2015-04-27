@@ -12,7 +12,7 @@ module.exports = function(app, passport) {
 		connection=connConstant.connection;
 		var selectProjects = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 		".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
-		console.log(selectProjects)
+		//console.log(selectProjects)
 		connection.query(selectProjects, function(err, rows){
 			if (rows.length > 0) {
             	for(var i in rows){
@@ -21,7 +21,7 @@ module.exports = function(app, passport) {
         			}
             	}
 	        }
-	        console.log(ownerflag);
+	        //console.log(ownerflag);
 	        callback(ownerflag);
 		});
 	}
@@ -44,7 +44,7 @@ module.exports = function(app, passport) {
 			checkIfUserExistsQuery = "SELECT id FROM " + dbconfig.users_table + " WHERE " +
 						dbconfig.users_table +".github_name=" + "'" + github_name +"'";////check if the user's githubname exists			
 		}
-		console.log('projectname to add collaborator '+proj_name);
+		//console.log('projectname to add collaborator '+proj_name);
 		var user = req.user;//the user that attempts to add collaborator
 		var ownerflag;//flag to check if I am owner
 		checkIfOwner(user,proj_name,function(ownerflag){
@@ -60,7 +60,7 @@ module.exports = function(app, passport) {
 							var createCollabQuery = "INSERT INTO " +dbconfig.collaborators_table+ "(user_id,project_id)" +
 								" VALUES (" + "'"+ user_id + "'"+ ",'"+rows[0].project_id+"')";//then insert the user as a collaborator in the collaborators' table
 							connection=connConstant.connection;
-							console.log(createCollabQuery);
+							//console.log(createCollabQuery);
 							connection.query(createCollabQuery, function(err, rows){
 								res.redirect('/manageprojects'+'?project_name='+proj_name);
 							});

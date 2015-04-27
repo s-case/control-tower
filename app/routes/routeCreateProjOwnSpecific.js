@@ -12,7 +12,7 @@ module.exports = function(app, passport) {
 		connection=connConstant.connection;
 		var selectProjects = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 		".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
-		console.log(selectProjects)
+		//console.log(selectProjects)
 		connection.query(selectProjects, function(err, rows){
 			if (rows.length > 0) {
             	for(var i in rows){
@@ -21,7 +21,7 @@ module.exports = function(app, passport) {
         			}
             	}
 	        }
-	        console.log(ownerflag);
+	        //console.log(ownerflag);
 	        callback(ownerflag);
 		});
 	}
@@ -32,27 +32,27 @@ module.exports = function(app, passport) {
 		var proj_name = req.body.name;
 		proj_name = proj_name.trim();
 		if(proj_name.length>0){
-			console.log('projectname to create'+proj_name);
+			//console.log('projectname to create'+proj_name);
 			var user = req.user;
 			console.log(user);
 			//var proj_name = req.param('project_name');
 			var createProjectQuery = "INSERT INTO " + dbconfig.projects_table +
 					" (project_name)" +
 					" VALUES ("+ "'" + proj_name+"'"+")";//query to create the project
-			console.log(createProjectQuery);
+			//console.log(createProjectQuery);
 			connection=connConstant.connection;
 			connection.query(createProjectQuery, function(err, rows){
 				if(rows){
 					var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
 								+ proj_name +"'";//query to get the project's ID to insert in the Owners table as a project the user owns
 					connection=connConstant.connection;
-					console.log(getProjectId);
+					//console.log(getProjectId);
 					connection.query(getProjectId, function(err, rows){
 						if(rows.length>0){
 							var createOwnerQuery = "INSERT INTO " +dbconfig.owners_table+ "(user_id,project_id)" +
 								" VALUES (" + "'"+ user.id + "'"+ ",'"+rows[0].project_id+"')";
 							connection=connConstant.connection;
-							console.log(createOwnerQuery);
+							//console.log(createOwnerQuery);
 							connection.query(createOwnerQuery, function(err, rows){
 								res.redirect('/manageprojects'+'?project_name='+proj_name);
 							});

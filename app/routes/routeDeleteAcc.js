@@ -13,7 +13,7 @@ module.exports = function(app, passport) {
 		connection=connConstant.connection;
 		var selectProjects = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 		".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
-		console.log(selectProjects)
+		//console.log(selectProjects)
 		connection.query(selectProjects, function(err, rows){
 			if (rows.length > 0) {
             	for(var i in rows){
@@ -22,7 +22,7 @@ module.exports = function(app, passport) {
         			}
             	}
 	        }
-	        console.log(ownerflag);
+	        //console.log(ownerflag);
 	        callback(ownerflag);
 		});
 	}
@@ -84,23 +84,23 @@ module.exports = function(app, passport) {
 	        	" WHERE " +dbconfig.owners_table +".project_id IN (SELECT project_id FROM " +
 	        	dbconfig.owners_table + " WHERE "+ dbconfig.owners_table + ".user_id=" + user_id +
 	        	")) AS projectsofuser GROUP BY project_id HAVING COUNT(project_id)=1)";
-			console.log(DeleteProjectsOnlyOwnerQuery);
+			//console.log(DeleteProjectsOnlyOwnerQuery);
             connection=connConstant.connection;
             connection.query(DeleteProjectsOnlyOwnerQuery, function(err, rows) {
                 //delete from owners
 				var DeleteFromOwnerQuery = "DELETE FROM " + dbconfig.owners_table +                          
 	                                " WHERE `user_id` = " + user_id;
-                console.log(DeleteFromOwnerQuery);
+                //console.log(DeleteFromOwnerQuery);
                 connection=connConstant.connection;
                 connection.query(DeleteFromOwnerQuery, function(err, rows) {
             		var DeleteFromCollabQuery = "DELETE FROM " + dbconfig.collaborators_table +                          
                                 " WHERE `user_id` = " + user_id;
-                    console.log(DeleteFromCollabQuery);
+                    //console.log(DeleteFromCollabQuery);
                     connection=connConstant.connection;
                     connection.query(DeleteFromCollabQuery, function(err, rows) {
                     	var DeleteFromUsersQuery = "DELETE FROM " + dbconfig.users_table +                          
                 			" WHERE `id` = " + user_id;
-            			console.log(DeleteFromUsersQuery);
+            			//console.log(DeleteFromUsersQuery);
     				  	connection.query(DeleteFromUsersQuery, function(err, rows) {
                             	res.redirect('/'); 
                         });

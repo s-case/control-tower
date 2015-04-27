@@ -101,7 +101,7 @@ module.exports = function(passport) {
                             connection.query(updateQuery, function(err, rows) {
                                 if (err)
                                     return done(err);
-                                console.log(user.scase_secret);
+                                console.log(jwt.sign({ scasetoken : user.scase_token},user.scase_secret));
                                 return done(null, user);
                             });
                         }
@@ -116,7 +116,6 @@ module.exports = function(passport) {
                         newUser.github_name  = profile.username;
                         newUser.github_email = (profile.emails[0].value || '').toLowerCase();
                         newUser.scase_secret = scasetokenCreate(35);
-                        console.log(newUser.scase_secret+':1');
                         //we insert the user in the DB
                         var insertQuery = "INSERT INTO " + dbconfig.users_table + " " +
                             "( `github_id`, `github_token`, `scase_token`,`scase_secret`, `github_name`, `github_email` ) " +
@@ -131,7 +130,7 @@ module.exports = function(passport) {
                         connection.query(insertQuery, function(err, rows) {
                             newUser.id = rows.insertId;
                             //console.log('I got'+newUser.github_id);
-                            console.log(newUser.scase_secret);
+                            console.log(jwt.sign({ scasetoken : newUser.scase_token},newUser.scase_secret));
                             return done(null, newUser);
                         });
                     }
@@ -162,7 +161,7 @@ module.exports = function(passport) {
                 connection.query(updateQuery, function(err, rows) {
                     if (err)
                         return done(err);
-                    console.log(user.scase_secret);
+                    console.log(jwt.sign({ scasetoken : user.scase_token},user.scase_secret));
                     return done(null, user);
                 });
             }
@@ -183,7 +182,7 @@ module.exports = function(passport) {
         // asynchronous
         process.nextTick(function() {
             // check if the user is already logged in
-            console.log(req.user);
+            //console.log(req.user);
             if (!req.user) {
                 connection=connConstant.connection;
                 connection.query('USE ' + dbconfig.database);
@@ -214,7 +213,7 @@ module.exports = function(passport) {
                             connection.query(updateQuery, function(err, rows) {
                                 if (err)
                                     return done(err);
-                                console.log(user.scase_secret);
+                                //console.log(user.scase_secret);
                                 return done(null, user);
                             });
                         }
@@ -222,7 +221,7 @@ module.exports = function(passport) {
                     } else {
                         // if there is no user, create them
                         var newUser            = {};
-                        console.log(profile)
+                        //console.log(profile)
                         newUser.google_id    = profile.id;
                         newUser.google_token = token;
                         var scasetoken = scasetokenCreate(35)
@@ -239,13 +238,13 @@ module.exports = function(passport) {
                                 newUser.scase_secret + "', '" + 
                                 newUser.google_name + "', '" + 
                                 newUser.google_email + "')";
-                        console.log(insertQuery);
+                        //console.log(insertQuery);
                         connection=connConstant.connection;
                         connection.query('USE ' + dbconfig.database);
                         connection.query(insertQuery, function(err, rows) {
                             newUser.id = rows.insertId;
                             //console.log('I got'+newUser.github_id);
-                            console.log(newUser.scase_secret);
+                            //console.log(newUser.scase_secret);
                             return done(null, newUser);
                         });
                     }
@@ -276,7 +275,7 @@ module.exports = function(passport) {
                 connection.query(updateQuery, function(err, rows) {
                     if (err)
                         return done(err);
-                    console.log(user.scase_secret);
+                   //console.log(user.scase_secret);
                     return done(null, user);
                 });
             }

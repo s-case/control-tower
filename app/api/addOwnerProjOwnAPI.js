@@ -38,8 +38,8 @@ module.exports = function(app){
 
 			connection.query(selectUsersQuery, function(err, rows){
                 if (rows.length > 0) {
-                	var produced_signature=jwt.sign({ scasetoken : scase_token},rows[0].scaseSecret);
-                	if(scase_signature==produced_signature){//we check if the produced signature is the same with the one provided
+                	var decoded = jwt.verify(scase_signature,rows[0].scase_secret);
+					if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
 	                	var user = rows[0];
 	                	connection = connConstant.connection;
 	                	var ownerflag;
@@ -87,6 +87,12 @@ module.exports = function(app){
 							
 						});
 					}
+					else{
+                		res.setHeader('Content-Type', 'application/json');
+						var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+						var Jobj=JSON.parse(obj);
+						res.send(Jobj);
+                	}
                 }
                 else {
 			   		res.setHeader('Content-Type', 'application/json');

@@ -20,6 +20,6 @@
     "forever"   : "~0.14.1",
     "forever-monitor" : "~1.5.2",
     "express-jwt" : "*",
-    "jsonwebtoken" : "*
+    "jsonwebtoken" : "*"
   }
 }

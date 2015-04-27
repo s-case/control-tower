@@ -15,7 +15,7 @@ module.exports = function(app, passport) {
 		//query for the projects I own
 		var projectsOwnedQuery = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 			".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
-		console.log(projectsOwnedQuery);
+		//console.log(projectsOwnedQuery);
 		connection.query(projectsOwnedQuery, function(err, rows){
             //if(rows){
 	            if (rows.length > 0) {

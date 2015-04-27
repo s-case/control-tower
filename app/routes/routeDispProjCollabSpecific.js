@@ -13,7 +13,7 @@ module.exports = function(app, passport) {
 		connection=connConstant.connection;
 		var selectProjects = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 		".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
-		console.log(selectProjects)
+		//console.log(selectProjects)
 		connection.query(selectProjects, function(err, rows){
 			if (rows.length > 0) {
             	for(var i in rows){
@@ -22,7 +22,7 @@ module.exports = function(app, passport) {
         			}
             	}
 	        }
-	        console.log(ownerflag);
+	        //onsole.log(ownerflag);
 	        callback(ownerflag);
 		});
 	}
@@ -66,7 +66,7 @@ module.exports = function(app, passport) {
 						connection=connConstant.connection;
 						connection.query(selectOwnersQuery, function(err, rows){
 			                    if (rows.length > 0) {
-			                    	console.log(rows);
+			                    	//console.log(rows);
 			                    	owners=rows;
 			                    }
 			                    callback(owners);
@@ -81,7 +81,7 @@ module.exports = function(app, passport) {
 						 
 		        		connection.query(selectCollaboratorsQuery, function(err, rows){
 		                    if (rows.length > 0) {
-		                    	console.log(rows);
+		                    	//console.log(rows);
 		                    	collaborators=rows;
 		                    }
 		                    callback(collaborators);
@@ -91,8 +91,7 @@ module.exports = function(app, passport) {
 						//console.log("owners"+owners);
 						//console.log("collabs"+collaborators);
 						displayCollaborators(function(){
-
-						console.log("collabs"+collaborators);
+						//console.log("collabs"+collaborators);
 							res.render('projectSpecific.ejs', {
 									ownersnames : owners,//we return owners
 									collaboratorsnames : collaborators,//we return collaborators
