@@ -59,7 +59,7 @@
 								<!-- find if the current username attempting to display is the active user-->
 								<% var myOwnflag = false;%>
 								<% if (ownersnames[i].github_name||ownersnames[i].google_email) {
-									 if (ownersnames[i].github_name==username||ownersnames[i].google_email==user.google_email) { 
+									 if ((ownersnames[i].github_name==username&&username!=null)||(ownersnames[i].google_email==user.google_email&&user.google_email!=null)) { 
 													myOwnflag=true;
 									} 
 								}%>
@@ -123,7 +123,7 @@
 									<td style="width:160px"><%=collaboratorsnames[i].google_email%></td>
 									<% var myCollabflag = false;%>
 									<% if (collaboratorsnames[i].github_name||collaboratorsnames[i].google_email) {
-									 	if (collaboratorsnames[i].github_name==username||collaboratorsnames[i].google_email==user.google_email) { 
+									 	if ((collaboratorsnames[i].github_name==username&&username!=null)||(collaboratorsnames[i].google_email==user.google_email&&user.google_email!=null)) { 
 													myCollabflag=true;
 										} 
 									}%>
