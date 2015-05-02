@@ -17,11 +17,7 @@
 						<a href="/connect/github" class="btn btn-default"><span class="fa fa-github"></span> Link Github</a>
 						<% if ((user.github_token!=='undefined'&&user.github_token!=null)&&(user.google_token!=='undefined'&&user.google_token!=null)) { %>
 							<p>
-								<strong>Github_id</strong>: <%= user.github_id %><br>
 								<strong>Github_name </strong>:<%= user.github_name %><br>
-								<strong>Github token</strong>: <%= user.github_token %><br>
-								<strong>Google_id</strong>: <%= user.google_id %><br>
-								<strong>Google token</strong>: <%= user.google_token %><br>
 								<strong>Google e-mail</strong>: <%= user.google_email %><br>
 								<strong>S-Case token</strong>: <%= user.scase_token %><br>
 								<strong>S-Case secret</strong>: <%= user.scase_secret %><br>
@@ -29,17 +25,13 @@
 						<% } %>
 						<% if ((user.github_token!=='undefined'&&user.github_token!=null)&&(user.google_token=='undefined'||user.google_token==null)) { %>
 							<p>
-								<strong>Github_id</strong>: <%= user.github_id %><br>
 								<strong>Github_name </strong>:<%= user.github_name %><br>
-								<strong>Github token</strong>: <%= user.github_token %><br>
 								<strong>S-Case token</strong>: <%= user.scase_token %><br>
 								<strong>S-Case secret</strong>: <%= user.scase_secret %><br>
 							</p>
 						<% } %>
 						<% if ((user.github_token=='undefined'||user.github_token==null)&&(user.google_token!=='undefined'&&user.google_token!=null)) { %>
 							<p>
-								<strong>Google_id</strong>: <%= user.google_id %><br>
-								<strong>Google token</strong>: <%= user.google_token %><br>
 								<strong>Google e-mail</strong>: <%= user.google_email %><br>
 								<strong>S-Case token</strong>: <%= user.scase_token %><br>
 								<strong>S-Case secret</strong>: <%= user.scase_secret %><br>
