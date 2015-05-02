@@ -18,7 +18,7 @@ module.exports = function(app){
             			callback(ownerflag);
             		}
             		if(decoded){
-            			if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
+            			if(decoded.scasetoken==scase_token){//we check if the produced signature is the same with the one provided
 			            	var selectProjects = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 								".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
 							console.log(selectProjects)
@@ -66,7 +66,7 @@ module.exports = function(app){
 					var collaborators;//it is going to include all the collaborators (names and ids)
 					function displayOwners (callback){
 						//query to select all owners
-						var selectOwnersQuery = "SELECT `github_name`,"+dbconfig.projects_table+".`project_id`," + dbconfig.owners_table + ".id AS owner_id FROM "  + dbconfig.users_table +" JOIN " + dbconfig.owners_table + 
+						var selectOwnersQuery = "SELECT `google_email`,`github_name`,"+dbconfig.projects_table+".`project_id`," + dbconfig.owners_table + ".id AS owner_id FROM "  + dbconfig.users_table +" JOIN " + dbconfig.owners_table + 
 						" ON "+ dbconfig.users_table + ".id=" +  dbconfig.owners_table+".user_id "+ "JOIN "+ dbconfig.projects_table+
 						" ON "+ dbconfig.projects_table + ".project_id=" + dbconfig.owners_table + ".project_id" + 
 						" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
@@ -80,7 +80,7 @@ module.exports = function(app){
 					}
 					function displayCollaborators (callback){
 						//query to select all collaborators
-		        		var selectCollaboratorsQuery = "SELECT `github_name`," + dbconfig.collaborators_table + ".id AS `collab_id` FROM " + dbconfig.users_table +" JOIN " + dbconfig.collaborators_table + 
+		        		var selectCollaboratorsQuery = "SELECT `google_email`,`github_name`," + dbconfig.collaborators_table + ".id AS `collab_id` FROM " + dbconfig.users_table +" JOIN " + dbconfig.collaborators_table + 
 						" ON "+ dbconfig.users_table + ".id=" +  dbconfig.collaborators_table+".user_id "+ "JOIN "+ dbconfig.projects_table+
 						" ON "+ dbconfig.projects_table + ".project_id=" + dbconfig.collaborators_table + ".project_id" + 
 						" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
@@ -99,12 +99,22 @@ module.exports = function(app){
 						displayCollaborators(function(){
 							var obj = '[{'+ '"owners" : "';
 							for (var i in owners){
-								obj = obj + owners[i].github_name +","
+								if(owners[i].github_name!=null){
+									obj = obj + owners[i].github_name +",";
+								}
+								if(owners[i].google_email!=null){
+									obj = obj + owners[i].google_email +",";
+								}
 							}
 							obj = obj.substring(0,obj.length-1)+'"},';
 							obj = obj + '{'+ '"collaborators" : "';
 							for (var i in collaborators){
-								obj = obj + collaborators[i].github_name +","
+								if(collaborators[i].github_name!=null){
+									obj = obj + collaborators[i].github_name +",";
+								}
+								if(collaborators[i].google_email!=null){
+									obj = obj + collaborators[i].google_email +",";
+								}
 							}
 							obj = obj.substring(0,obj.length-1)+'"}]';
 							//var obj=JSON.parse(obj);
@@ -113,7 +123,7 @@ module.exports = function(app){
 					});
 				}
 				else if(ownerflag==false){
-					var obj = '{"User with the given scase_token or signature: does not own the project and/or the project does not exist in S-Case"}';
+					var obj = '{"User with the given scase_token or signature": "does not own the project and/or the project does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
 					res.send(Jobj);
 				}
