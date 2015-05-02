@@ -16,7 +16,7 @@ module.exports = function(app){
 		connection.query(selectProjects, function(err, rows){
 			if (rows.length > 0) {
             	for(var i in rows){
-        			if(rows[i].project_name==proj_name){
+        			if(rows[i].project_name===proj_name){
         				ownerflag=true;//if the user owns the project, the flag is set to true
         			}
             	}
@@ -105,9 +105,13 @@ module.exports = function(app){
 									}
 								});
 		                	}
+		                	else{
+								var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+								var Jobj=JSON.parse(obj);
+								res.send(Jobj);
+	                		}
 	                	}
 	                	else{
-	                		 res.setHeader('Content-Type', 'application/json');
 							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
 							var Jobj=JSON.parse(obj);
 							res.send(Jobj);
@@ -115,7 +119,6 @@ module.exports = function(app){
                 	});
                 }
                 else {
-                    res.setHeader('Content-Type', 'application/json');
 					var obj = '{'+ '"User with scase_token: '+scase_token + '": "does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
 					res.send(Jobj);
@@ -192,10 +195,13 @@ module.exports = function(app){
 										res.send(Jobj);
 									}
 								});
-		                	}
+		                	}else{
+								var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+								var Jobj=JSON.parse(obj);
+								res.send(Jobj);
+	                		}
 	                	}
 	                	else{
-	                		 res.setHeader('Content-Type', 'application/json');
 							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
 							var Jobj=JSON.parse(obj);
 							res.send(Jobj);
@@ -203,7 +209,6 @@ module.exports = function(app){
                 	});
                 }
                 else {
-                    res.setHeader('Content-Type', 'application/json');
 					var obj = '{'+ '"User with scase_token: '+scase_token + '": "does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
 					res.send(Jobj);

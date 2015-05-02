@@ -15,7 +15,7 @@ module.exports = function(app){
 		connection.query(selectProjects, function(err, rows){
 			if (rows.length > 0) {
             	for(var i in rows){
-        			if(rows[i].project_name==proj_name){
+        			if(rows[i].project_name===proj_name){
         				ownerflag=true;
         			}
             	}
@@ -33,53 +33,64 @@ module.exports = function(app){
 		var proj_name= req.param('project_name');
 		var github_name = req.param('github_name');
 		var google_email = req.param('google_email');//require the goole email of the user you would like to remove from owners
+		res.setHeader('Content-Type', 'application/json');
 		if(scase_token&&proj_name&&github_name&&scase_signature){
 			connection=connConstant.connection;
 			//we select the user with the scase_token provided 
 			var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE scase_token = '" + scase_token + "'";
 			connection.query(selectUsersQuery, function(err, rows){
                 if (rows.length > 0) {
-                	var decoded = jwt.verify(scase_signature,rows[0].scase_secret);
-					if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
-	                	var user = rows[0];
-	                	connection = connConstant.connection;
-	                	var ownerflag;
-	                	checkIfOwner(user,proj_name,function(ownerflag){
-							if(ownerflag==true){
-								var selectCollabQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE github_name = '" + github_name + "'";//select the user's details with the provided github name
-				              	connection.query(selectCollabQuery, function(err, rows){
-				              		var removeCollabQuery = "DELETE FROM " + dbconfig.owners_table+
-									" WHERE " + dbconfig.owners_table + ".user_id=" + "'" + rows[0].id + "'";
-									connection=connConstant.connection;
-									connection.query(removeCollabQuery, function(err, rows){
-					                    res.setHeader('Content-Type', 'application/json');
-										var obj = '{'+ '"owner '+github_name + '": "deleted"}';
-										if(err){
-											var obj = '{'+ '"owner '+github_name + '": "not deleted"}';
-										}
+                	jwt.verify(scase_signature,rows[0].scase_secret,function(err,decoded){
+                		if(err){
+							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+							var Jobj=JSON.parse(obj);
+							res.send(Jobj);
+                		}
+                		if(decoded){
+                			if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
+			                	var user = rows[0];
+			                	connection = connConstant.connection;
+			                	var ownerflag = false;
+			                	checkIfOwner(user,proj_name,function(ownerflag){
+									if(ownerflag==true){
+										var selectCollabQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE github_name = '" + github_name + "'";//select the user's details with the provided github name
+						              	connection.query(selectCollabQuery, function(err, rows){
+						              		var removeCollabQuery = "DELETE FROM " + dbconfig.owners_table+
+											" WHERE " + dbconfig.owners_table + ".user_id=" + "'" + rows[0].id + "'";
+											connection=connConstant.connection;
+											connection.query(removeCollabQuery, function(err, rows){
+												var obj = '{'+ '"owner '+github_name + '": "deleted"}';
+												if(err){
+													var obj = '{'+ '"owner '+github_name + '": "not deleted"}';
+												}
+												var Jobj=JSON.parse(obj);
+												res.send(Jobj);
+						                	});
+
+						              	});
+									}
+									else if(ownerflag==false){
+										var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not own project ' + proj_name +' or the project does not exist"}';
 										var Jobj=JSON.parse(obj);
 										res.send(Jobj);
-				                	});
-
-				              	});
+									}
+								});
 							}
-							else if(ownerflag==false){
-								res.setHeader('Content-Type', 'application/json');
-								var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not own project ' + proj_name +' or the project does not exist"}';
+		                	else{
+								var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
 								res.send(Jobj);
-							}
-						});
-					}
-                	else{
-                		 res.setHeader('Content-Type', 'application/json');
-						var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
-						var Jobj=JSON.parse(obj);
-						res.send(Jobj);
-                	}
+		                	}
+                		}
+                		else{
+							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+							var Jobj=JSON.parse(obj);
+							res.send(Jobj);
+                		}
+                	});
+					
                 }
                 else {
-                    res.setHeader('Content-Type', 'application/json');
 					var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
 					res.send(Jobj);
@@ -92,47 +103,64 @@ module.exports = function(app){
 			var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE scase_token = '" + scase_token + "'";
 			connection.query(selectUsersQuery, function(err, rows){
                 if (rows.length > 0) {
-                	var decoded = jwt.verify(scase_signature,rows[0].scase_secret);
-					if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
-	                	var user = rows[0];
-	                	connection = connConstant.connection;
-	                	var ownerflag;
-	                	checkIfOwner(user,proj_name,function(ownerflag){
-							if(ownerflag==true){
-								var selectCollabQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE google_email= '" + google_email + "'";//select the user's details with the provided github name
-				              	connection.query(selectCollabQuery, function(err, rows){
-				              		var removeCollabQuery = "DELETE FROM " + dbconfig.owners_table+
-									" WHERE " + dbconfig.owners_table + ".user_id=" + "'" + rows[0].id + "'";
-									connection=connConstant.connection;
-									connection.query(removeCollabQuery, function(err, rows){
-					                    res.setHeader('Content-Type', 'application/json');
-										var obj = '{'+ '"owner '+google_email+ '": "deleted"}';
-										if(err){
-											var obj = '{'+ '"owner '+google_email + '": "not deleted"}';
-										}
+                	jwt.verify(scase_signature,rows[0].scase_secret,function(err,decoded){
+                		if(err){
+							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+							var Jobj=JSON.parse(obj);
+							res.send(Jobj);
+                		}
+                		if(decoded){
+                			if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
+			                	var user = rows[0];
+			                	connection = connConstant.connection;
+			                	var ownerflag=false;
+			                	checkIfOwner(user,proj_name,function(ownerflag){
+									if(ownerflag==true){
+										var selectCollabQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE google_email= '" + google_email + "'";//select the user's details with the provided github name
+						              	connection.query(selectCollabQuery, function(err, rows){
+						              		if(rows.length>0){
+						              			var removeCollabQuery = "DELETE FROM " + dbconfig.owners_table+
+												" WHERE " + dbconfig.owners_table + ".user_id=" + "'" + rows[0].id + "'";
+												connection=connConstant.connection;
+												connection.query(removeCollabQuery, function(err, rows){
+													var obj = '{'+ '"owner '+google_email+ '": "deleted"}';
+													if(err){
+														var obj = '{'+ '"owner '+google_email + '": "not deleted"}';
+													}
+													var Jobj=JSON.parse(obj);
+													res.send(Jobj);
+							                	});
+						              		}
+						              		else{
+						              			var obj = '{'+ '"User with google email  '+google_email + '": "does not exist"}';
+												var Jobj=JSON.parse(obj);
+												res.send(Jobj);
+						              		}
+
+						              	});
+									}
+									else if(ownerflag==false){
+										var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not own project ' + proj_name +' or the project does not exist"}';
 										var Jobj=JSON.parse(obj);
 										res.send(Jobj);
-				                	});
-
-				              	});
+									}
+								});
 							}
-							else if(ownerflag==false){
-								res.setHeader('Content-Type', 'application/json');
-								var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not own project ' + proj_name +' or the project does not exist"}';
+		                	else{
+								var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
 								res.send(Jobj);
-							}
-						});
-					}
-                	else{
-                		 res.setHeader('Content-Type', 'application/json');
-						var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
-						var Jobj=JSON.parse(obj);
-						res.send(Jobj);
-                	}
+		                	}
+                		}
+                		else{
+                			var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+							var Jobj=JSON.parse(obj);
+							res.send(Jobj);
+                		}
+                	});
+					
                 }
                 else {
-                    res.setHeader('Content-Type', 'application/json');
 					var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
 					res.send(Jobj);
@@ -140,7 +168,6 @@ module.exports = function(app){
             });
 		}
 		else{
-			res.setHeader('Content-Type', 'application/json');
 			var obj = '{'+ '"message": "you miss some parameters"}';
 			var Jobj=JSON.parse(obj);
 			res.send(Jobj);

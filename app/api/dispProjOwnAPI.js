@@ -9,6 +9,7 @@ module.exports = function(app){
 	// Display the Projects I Own API===============================================
 	// =============================================================================
 	app.get('/api/displayProjectsOwn',function(req,res){
+		res.setHeader('Content-Type', 'application/json');
 		var scase_token=req.param('scase_token');
 		var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate
 		if(scase_token&&scase_signature){
@@ -17,46 +18,54 @@ module.exports = function(app){
 			var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE scase_token = '" + scase_token + "'";
 			connection.query(selectUsersQuery, function(err, rows){
                 if (rows.length > 0) {
-                	var decoded = jwt.verify(scase_signature,rows[0].scase_secret);
-					if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
-	                	var user = rows[0];
-	                	connection = connConstant.connection;
-						//we select the user from the user's table (just to check if the user exists)
-						connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'", function(err, rows){
-				            if (rows.length > 0) {
-				                user = rows[0];
-				                //query for the projects I own
-								var projectsOwnedQuery = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
-									".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
-								connection.query(projectsOwnedQuery, function(err, rows){
+                	jwt.verify(scase_signature,rows[0].scase_secret,function(err,decoded){
+                		if(err){
+							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+							var Jobj=JSON.parse(obj);
+							res.send(Jobj);
+                		}
+                		if(decoded){
+                			if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
+			                	var user = rows[0];
+			                	connection = connConstant.connection;
+								//we select the user from the user's table (just to check if the user exists)
+								connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'", function(err, rows){
 						            if (rows.length > 0) {
-						            	res.setHeader('Content-Type', 'application/json');
-											var obj = '{'+ '"projectnames-Own" : "';
-											for (var i in rows){
-												obj = obj + rows[i].project_name +","
+						                user = rows[0];
+						                //query for the projects I own
+										var projectsOwnedQuery = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
+											".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
+										connection.query(projectsOwnedQuery, function(err, rows){
+								            if (rows.length > 0) {
+												var obj = '{'+ '"projectnames-Own" : "';
+												for (var i in rows){
+													obj = obj + rows[i].project_name +","
+												}
+												obj = obj.substring(0,obj.length-1)+'"}';
+												var Jobj=JSON.parse(obj);
+												res.send(Jobj);
 											}
-											obj = obj.substring(0,obj.length-1)+'"}';
-											var Jobj=JSON.parse(obj);
-											res.send(Jobj);
-									}
-									else {
-						            	res.setHeader('Content-Type', 'application/json');
-										var obj = '{"projectnames-Own" : "no projects you Own"}';
-										var Jobj=JSON.parse(obj);
-										res.send(Jobj);
-									}
-					            });
-					        }
-					    });
-					}else{
-                		 res.setHeader('Content-Type', 'application/json');
-						var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
-						var Jobj=JSON.parse(obj);
-						res.send(Jobj);
-                	}	
+											else {
+												var obj = '{"projectnames-Own" : "no projects you Own"}';
+												var Jobj=JSON.parse(obj);
+												res.send(Jobj);
+											}
+							            });
+							        }
+							    });
+							}else{
+								var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+								var Jobj=JSON.parse(obj);
+								res.send(Jobj);
+                			}	
+                		}else{
+							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+							var Jobj=JSON.parse(obj);
+							res.send(Jobj);
+	                	}
+                	});
 	            }
 	            else{
-                    res.setHeader('Content-Type', 'application/json');
 					var obj = '{'+ '"User with scase_token  '+scase_token + '": "do not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
 					res.send(Jobj);
@@ -64,7 +73,6 @@ module.exports = function(app){
 		    });
         }
         else{
-			res.setHeader('Content-Type', 'application/json');
 			var obj = '{'+ '"message": "you miss the scase token"}';
 			var Jobj=JSON.parse(obj);
 			res.send(Jobj);

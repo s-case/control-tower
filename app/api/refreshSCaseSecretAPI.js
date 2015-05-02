@@ -18,53 +18,64 @@ module.exports = function(app){
 	app.get('/api/refreshSCASEsecret',function(req,res){
 		var scase_token=req.param('scase_token');
 		var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate
+		res.setHeader('Content-Type', 'application/json');
 		if(scase_token&&scase_signature){
 			connection = connConstant.connection;
 			//we select the user with the scase_token provided 
 			var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE scase_token = '" + scase_token + "'";
 			connection.query(selectUsersQuery, function(err, rows){
                 if (rows.length > 0) {
-                	var decoded = jwt.verify(scase_signature,rows[0].scase_secret);
-					if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
-	                	var user = rows[0];
-	                	connection = connConstant.connection;
-						//we select the user from the user's table (just to check if the user exists)
-						connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'", function(err, rows){
-				            if (rows.length > 0) {
-				                user = rows[0];
-				                var scasesecret = scasetokenCreate(35)//we create a new scase token
-				                user.scase_secret=scasesecret;
-				                //query to update the token
-				                var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
-				                        "`scase_secret` = '" + user.scase_secret + "' " +
-				                        "WHERE `id` = '" + user.id + "' LIMIT 1"; 
-		                        connection = connConstant.connection;
-				                connection.query(updateQuery, function(err, rows) {
-				                  	res.setHeader('Content-Type', 'application/json');
-									if (err){
-					                    res.setHeader('Content-Type', 'application/json');
-										var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not exist in S-Case"}';
-										var Jobj=JSON.parse(obj);
-										res.send(Jobj);
-									}
-									else{
-										var obj = '{'+ '"newSCASEsecret" : "'+scasesecret+'"}';
-										var Jobj=JSON.parse(obj);
-										res.send(Jobj);
-									}
-				                });
-				            }
-				        });
-					}
-                	else{
-                		 res.setHeader('Content-Type', 'application/json');
-						var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
-						var Jobj=JSON.parse(obj);
-						res.send(Jobj);
-                	}
+                	jwt.verify(scase_signature,rows[0].scase_secret,function(err,decoded){
+                		if(err){
+							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+							var Jobj=JSON.parse(obj);
+							res.send(Jobj);
+                		}
+                		if(decoded){
+                			if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
+			                	var user = rows[0];
+			                	connection = connConstant.connection;
+								//we select the user from the user's table (just to check if the user exists)
+								connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'", function(err, rows){
+						            if (rows.length > 0) {
+						                user = rows[0];
+						                var scasesecret = scasetokenCreate(35)//we create a new scase token
+						                user.scase_secret=scasesecret;
+						                //query to update the token
+						                var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
+						                        "`scase_secret` = '" + user.scase_secret + "' " +
+						                        "WHERE `id` = '" + user.id + "' LIMIT 1"; 
+				                        connection = connConstant.connection;
+						                connection.query(updateQuery, function(err, rows) {
+						                  	res.setHeader('Content-Type', 'application/json');
+											if (err){
+												var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not exist in S-Case"}';
+												var Jobj=JSON.parse(obj);
+												res.send(Jobj);
+											}
+											else{
+												var obj = '{'+ '"newSCASEsecret" : "'+scasesecret+'"}';
+												var Jobj=JSON.parse(obj);
+												res.send(Jobj);
+											}
+						                });
+						            }
+						        });
+							}
+		                	else{
+								var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+								var Jobj=JSON.parse(obj);
+								res.send(Jobj);
+		                	}
+                		}else{
+							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+							var Jobj=JSON.parse(obj);
+							res.send(Jobj);
+	                	}
+                	});
+					
                 }
                 else {
-                    res.setHeader('Content-Type', 'application/json');
 					var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
 					res.send(Jobj);
@@ -72,7 +83,6 @@ module.exports = function(app){
 			});
 		}
 		else{
-			res.setHeader('Content-Type', 'application/json');
 			var obj = '{'+ '"message": "you miss some parameters"}';
 			var Jobj=JSON.parse(obj);
 			res.send(Jobj);

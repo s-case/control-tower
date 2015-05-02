@@ -13,24 +13,39 @@ module.exports = function(app){
 		connection.query(selectUsersQuery, function(err, rows){
             if (rows.length > 0) {
             	var user = rows[0];
-                var decoded = jwt.verify(scase_signature,rows[0].scase_secret);
-				if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
-	            	var selectProjects = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
-						".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
-					console.log(selectProjects)
-					connection.query(selectProjects, function(err, rows){
-						if (rows.length > 0) {
-			            	for(var i in rows){
-			        			if(rows[i].project_name==proj_name){
-			        				ownerflag=true;
-			        			}
-			            	}
-				        }
-					});
-				}
+                jwt.verify(scase_signature,rows[0].scase_secret,function(err,decoded){
+            		if(err){
+            			callback(ownerflag);
+            		}
+            		if(decoded){
+            			if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
+			            	var selectProjects = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
+								".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
+							console.log(selectProjects)
+							connection.query(selectProjects, function(err, rows){
+								if (rows.length > 0) {
+					            	for(var i in rows){
+					        			if(rows[i].project_name===proj_name){
+					        				ownerflag=true;
+					        			}
+					            	}
+						        }
+						        callback(ownerflag);
+							});
+						}
+						else{
+							callback(ownerflag);
+						}
+            		}
+            		else{
+            			callback(ownerflag);
+            		}
+            	});
             }
-            //console.log(ownerflag);
-	        callback(ownerflag);
+            else{
+            	callback(ownerflag);
+            }
+	        
         });
 	}
 	// =============================================================================
@@ -40,6 +55,7 @@ module.exports = function(app){
 		var scase_token= req.param('scase_token');
 		var proj_name = req.param('project_name');//name of the project to manage
 		var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate
+		res.setHeader('Content-Type', 'application/json');
 		if(proj_name&&scase_token&&scase_signature){
 			//flag that is going to be set to true only if own the project
 			//function to check if I own the project
@@ -81,7 +97,6 @@ module.exports = function(app){
 						//console.log("owners"+owners);
 						//console.log("collabs"+collaborators);
 						displayCollaborators(function(){
-							res.setHeader('Content-Type', 'application/json');
 							var obj = '[{'+ '"owners" : "';
 							for (var i in owners){
 								obj = obj + owners[i].github_name +","
@@ -98,7 +113,6 @@ module.exports = function(app){
 					});
 				}
 				else if(ownerflag==false){
-                    res.setHeader('Content-Type', 'application/json');
 					var obj = '{"User with the given scase_token or signature: does not own the project and/or the project does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
 					res.send(Jobj);
@@ -106,7 +120,6 @@ module.exports = function(app){
 			});	
 		}
 		else{
-			res.setHeader('Content-Type', 'application/json');
 			var obj = '{'+ '"message": "you miss some parameters"}';
 			var Jobj=JSON.parse(obj);
 			res.send(Jobj);

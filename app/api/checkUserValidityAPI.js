@@ -14,7 +14,7 @@ var jwt = require('jsonwebtoken');//require json web token package
 app.get('/api/validateUser',function(req,res){
 	var scase_token= req.param('scase_token');//require your scase token in order to authenticate
 	var project_name= req.param('project_name');//require project name
-	var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate
+	var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate		
 	if(scase_token && scase_signature && project_name){
 		connection=connConstant.connection;
 		connection.query('USE ' + dbconfig.database);
@@ -37,64 +37,8 @@ app.get('/api/validateUser',function(req,res){
 							dbconfig.projects_table+".`project_name`= '" + project_name + "' AND " +
 							dbconfig.users_table+".`scase_token`= '" + scase_token + "' ";					
 		var role = "nothing";
-		res.setHeader('Content-Type', 'application/json');
 		connection.query(GetSecretQuery,function(err,rows){
-			if (err||rows.length==0){
-				var obj = '{'
-						+ '"userValid" : "false"'
-						+ '}';
-				var Jobj=JSON.parse(obj);
-				res.send(Jobj);
-			}
-			console.log(rows)
-			var decoded = jwt.verify(scase_signature,rows[0].scaseSecret);
-			if(decoded.scasetoken=scase_token){
-				connection.query(OwnerSelectQuery, function(err, rows){//check if the user is owner
-					if (err||rows.length==0){
-						var obj = '{'
-								+ '"userValid" : "false"'
-								+ '}';
-						var Jobj=JSON.parse(obj);
-						res.send(Jobj);
-					}
-					var userCnt = parseInt(rows[0].usersCount);
-					//console.log("Owners Number:"+userCnt);
-					if(userCnt==1){
-						role="owner";
-					}
-					if(role!=="nothing"){
-						var userInfo = [{"userValid" : "true"},{"userRole" : role}];
-						//var Jobj=JSON.parse(userInfo);
-						res.send(userInfo);
-					}				
-				});
-				connection=connConstant.connection;
-				connection.query(CollaboratorSelectQuery, function(err, rows){
-					if (err||rows.length==0){
-						var obj = '{'
-								+ '"userValid" : "false"'
-								+ '}';
-						var Jobj=JSON.parse(obj);
-						res.send(Jobj);
-					}
-					var userCnt = parseInt(rows[0].usersCount);
-					//console.log("Collaborators Number:"+userCnt);
-					if(userCnt==1){
-						role="collaborator";
-					}
-					if(role!=="nothing"){
-						var userInfo = [{"userValid" : "true"},{"userRole" : role}];
-						//var Jobj=JSON.parse(userInfo);
-						res.send(userInfo);
-					}
-					else {
-						var userInfo = [{"userValid" : "false"},{"userRole" : role}];
-						//var Jobj=JSON.parse(userInfo);
-						res.send(userInfo);
-				    }	
-				});
-			}
-			else{
+			if (err||rows.length<1){
 				res.setHeader('Content-Type', 'application/json');
 				var obj = '{'
 						+ '"userValid" : "false"'
@@ -102,6 +46,105 @@ app.get('/api/validateUser',function(req,res){
 				var Jobj=JSON.parse(obj);
 				res.send(Jobj);
 			}
+			if(rows.length>0){
+				jwt.verify(scase_signature,rows[0].scaseSecret,function(err,decoded){
+	        		if(err){
+	        			res.setHeader('Content-Type', 'application/json');
+						var obj = '{'
+									+ '"userValid" : "false"'
+									+ '}';
+						var Jobj=JSON.parse(obj);
+						res.send(Jobj);
+	        		}
+	        		if(decoded){
+	        			if(decoded.scasetoken=scase_token){
+	        				var ownerflag=false;
+							connection.query(OwnerSelectQuery, function(err, rows){//check if the user is owner
+								if (err||rows.length==0){
+									res.setHeader('Content-Type', 'application/json');
+									var obj = '{'
+											+ '"userValid" : "false"'
+											+ '}';
+									var Jobj=JSON.parse(obj);
+									res.send(Jobj);
+								}
+								var userCnt = parseInt(rows[0].usersCount);
+								//console.log("Owners Number:"+userCnt);
+								if(userCnt==1){
+									role="owner";
+								}
+								if(role!=="nothing"){
+									ownerflag=true;
+									console.log(ownerflag);
+									res.setHeader('Content-Type', 'application/json');
+									var userInfo = [{"userValid" : "true"},{"userRole" : role}];
+									//var Jobj=JSON.parse(userInfo);
+									res.send(userInfo);
+								}
+								connection=connConstant.connection;
+								if(ownerflag==false){
+									console.log(ownerflag);
+									connection.query(CollaboratorSelectQuery, function(err, rows){
+										if (err||rows.length==0){
+											res.setHeader('Content-Type', 'application/json');
+											var obj = '{'
+													+ '"userValid" : "false"'
+													+ '}';
+											var Jobj=JSON.parse(obj);
+											res.send(Jobj);
+										}
+										var userCnt = parseInt(rows[0].usersCount);
+										//console.log("Collaborators Number:"+userCnt);
+										if(userCnt==1){
+											role="collaborator";
+										}
+										if(role!=="nothing"){
+											res.setHeader('Content-Type', 'application/json');
+											var userInfo = [{"userValid" : "true"},{"userRole" : role}];
+											//var Jobj=JSON.parse(userInfo);
+											res.send(userInfo);
+										}
+										else {
+											res.setHeader('Content-Type', 'application/json');
+											var userInfo = [{"userValid" : "false"},{"userRole" : role}];
+											//var Jobj=JSON.parse(userInfo);
+											res.send(userInfo);
+									    }	
+									});
+								}			
+							});
+							
+
+						}
+						else{
+							res.setHeader('Content-Type', 'application/json');
+							var obj = '{'
+									+ '"userValid" : "false"'
+									+ '}';
+							var Jobj=JSON.parse(obj);
+							res.send(Jobj);
+						}
+	        		}
+	        		else{
+	        				res.setHeader('Content-Type', 'application/json');
+							var obj = '{'
+									+ '"userValid" : "false"'
+									+ '}';
+							var Jobj=JSON.parse(obj);
+							res.send(Jobj);
+					}
+	        	});
+			}
+			else{
+				res.setHeader('Content-Type', 'application/json');
+				var obj = '{'
+									+ '"userValid" : "false"'
+									+ '}';
+				var Jobj=JSON.parse(obj);
+				res.send(Jobj);
+
+			}
+			
 		});
 		
 	}
@@ -113,50 +156,84 @@ app.get('/api/validateUser',function(req,res){
 							dbconfig.users_table + ".`scase_token`= '"+ scase_token + "' ";
 		var selectQuery = "SELECT COUNT(*) AS usersCount FROM " + dbconfig.users_table + " WHERE "+
 							"`scase_token` = '" + scase_token + "' ";
-		res.setHeader('Content-Type', 'application/json');
 		connection.query(GetSecretQuery,function(err,rows){
 			if (err||rows.length==0){
+				res.setHeader('Content-Type', 'application/json');
 				var obj = '{'
 						+ '"userValid" : "false"'
 						+ '}';
 				var Jobj=JSON.parse(obj);
 				res.send(Jobj);
 			}
-			var decoded = jwt.verify(scase_signature,rows[0].scaseSecret);
-			if(decoded.scasetoken=scase_token){
-				connection.query(selectQuery, function(err, rows){
-					if (err||rows.length==0){
+			if(rows.length>0){
+				jwt.verify(scase_signature,rows[0].scaseSecret,function(err,decoded){
+	        		if(err){
+	        			res.setHeader('Content-Type', 'application/json');
 						var obj = '{'
-								+ '"userValid" : "false"'
-								+ '}';
+									+ '"userValid" : "false"'
+									+ '}';
 						var Jobj=JSON.parse(obj);
 						res.send(Jobj);
-					}
-					
-					var userCnt = parseInt(rows[0].usersCount);
-					//console.log(userCnt);
-					if(userCnt==1){
-						var obj = '{'
-								+ '"userValid" : "true"'
-								+ '}';
-						var Jobj=JSON.parse(obj);
-						res.send(Jobj);
-					}
-					else {
-						var obj = '{'
-								+ '"userValid" : "false"'
-								+ '}';
-						var Jobj=JSON.parse(obj);
-						res.send(Jobj);
+	        		}
+	        		if(decoded){
+	        			if(decoded.scasetoken=scase_token){
+							connection.query(selectQuery, function(err, rows){
+								res.setHeader('Content-Type', 'application/json');
+								if (err||rows.length==0){
+									var obj = '{'
+											+ '"userValid" : "false"'
+											+ '}';
+									var Jobj=JSON.parse(obj);
+									res.send(Jobj);
+								}
+								
+								var userCnt = parseInt(rows[0].usersCount);
+								//console.log(userCnt);
+								if(userCnt==1){
+									res.setHeader('Content-Type', 'application/json');
+									var obj = '{'
+											+ '"userValid" : "true"'
+											+ '}';
+									var Jobj=JSON.parse(obj);
+									res.send(Jobj);
+								}
+								else {
+									res.setHeader('Content-Type', 'application/json');
+									var obj = '{'
+											+ '"userValid" : "false"'
+											+ '}';
+									var Jobj=JSON.parse(obj);
+									res.send(Jobj);
+								}
+							});
+						}
+						else{
+							res.setHeader('Content-Type', 'application/json');
+							var obj = '{'
+									+ '"userValid" : "false"'
+									+ '}';
+							var Jobj=JSON.parse(obj);
+							res.send(Jobj);
+	        			}
+	        		}
+	        		else{
+	        				res.setHeader('Content-Type', 'application/json');
+							var obj = '{'
+									+ '"userValid" : "false"'
+									+ '}';
+							var Jobj=JSON.parse(obj);
+							res.send(Jobj);
 					}
 				});
 			}
 			else{
-				var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+				res.setHeader('Content-Type', 'application/json');
+				var obj = '{'
+									+ '"userValid" : "false"'
+									+ '}';
 				var Jobj=JSON.parse(obj);
 				res.send(Jobj);
-        	}
-
+			}
 		});
 	}
 	else{
