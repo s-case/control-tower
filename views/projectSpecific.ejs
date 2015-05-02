@@ -13,8 +13,10 @@
 				<!-- check if the user is an owner of this project-->
 				<% var ownerflag %>
 				<% for (var i in ownersnames) { %>
-						<% if (ownersnames[i].github_name==username) { 
-								ownerflag=true;
+						<% if (ownersnames[i].github_name||ownersnames[i].google_email) {
+								 if ((ownersnames[i].github_name==username&&username!=null)||(ownersnames[i].google_email==user.google_email&&user.google_email!=null)) { 
+												ownerflag=true;
+								} 
 							}%>
 				<% } %>
 				<!-- if the user is owner we display an alert message-->
