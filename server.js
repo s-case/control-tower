@@ -54,7 +54,8 @@ require('./app/routes/routeRemoveCollabProjOwnSpecific.js')(app, passport);//loa
 require('./app/routes/routeRemoveOwnProjOwnSpecific.js')(app, passport);//load the route for removing an owner from a project I own 
 require('./app/routes/routeCreateProjOwnSpecific.js')(app, passport);//load the route for creating a project I own 
 require('./app/routes/routeAddOwnProjOwnSpecific.js')(app, passport);//load the route for adding an owner in a project I own 
-require('./app/routes/routeAddCollabProjOwnSpecific.js')(app, passport);//load the route for adding a collaborator in a project I own 
+require('./app/routes/routeAddCollabProjOwnSpecific.js')(app, passport);//load the route for adding a collaborator in a project I own
+require('./app/routes/routeChangeProjectsPrivacy.js')(app, passport);//load the route for changing the privacy level of a project I own 
 //================API routes=============================
 require('./app/api/checkUserValidityAPI.js') (app);//check if a user is Valid (API) route
 require('./app/api/deleteAccAPI.js') (app);//delete account

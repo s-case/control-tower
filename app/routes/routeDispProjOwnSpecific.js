@@ -42,6 +42,7 @@ module.exports = function(app, passport) {
 					//console.log('i m in');
 					var owners;//it is going to include all the owners (names and ids)
 					var collaborators;//it is going to include all the collaborators (names and ids)
+					var privacy_level;
 					function displayOwners (callback){
 						//query to select all owners
 						var selectOwnersQuery = "SELECT `github_name`,`google_email`,"+dbconfig.projects_table+".`project_id`," + dbconfig.owners_table + ".id AS owner_id FROM "  + dbconfig.users_table +" JOIN " + dbconfig.owners_table + 
@@ -71,16 +72,41 @@ module.exports = function(app, passport) {
 		                    callback();//callback at the end of the second query
 		        		});
 					}
+					function getPrivacy (callback){
+						//query to select all collaborators
+						var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
+								+ proj_name +"'";//query to get the project's
+						connection.query(getProjectId, function(err, rows){
+							if(rows.length>0){
+								var getPrivacyQuery = "SELECT `privacy_level` FROM " + dbconfig.projects_table + 
+								" WHERE " + dbconfig.projects_table + ".project_id=" + rows[0].project_id;
+								connection=connConstant.connection;
+				        		connection.query(getPrivacyQuery, function(err, rows){
+				        			privacy_level='private';
+				                    if (rows.length > 0) {
+				                    	//console.log(rows);
+				                    	privacy_level=rows[0].privacy_level;
+				                    }
+				                    callback();//callback at the end of the second query
+				        		});
+							}
+							else{
+								res.redirect('/manageprojects'+'?project_name='+proj_name);
+							}
+						});	 
+					}
 					displayOwners(function(){
 						//console.log("owners"+owners);
-						
 						displayCollaborators(function(){
-							res.render('projectSpecific.ejs', {
-								ownersnames : owners,//we return owners
-								collaboratorsnames : collaborators,//we return collaborators
-								projectname : proj_name,//we return project name
-								username : user.github_name,//we return the active's User name (it is used in order be able to remove your own account from the project)
-								user: user
+							getPrivacy (function(){
+								res.render('projectSpecific.ejs', {
+									privacylevel:privacy_level,//the level of privacy
+									ownersnames : owners,//we return owners
+									collaboratorsnames : collaborators,//we return collaborators
+									projectname : proj_name,//we return project name
+									username : user.github_name,//we return the active's User name (it is used in order be able to remove your own account from the project)
+									user: user
+								});
 							});
 						});
 					});

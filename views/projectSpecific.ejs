@@ -7,9 +7,16 @@
 	<div class="row">
 		<div class="col-sm-8 col-sm-offset-2">
 			<div class="well well-lg">
-				<h3 class="text-primary"><span class="fa fa-github"></span> Github</h3>
-				<h3 class="btn btn-default btn-lg btn-block">Project Panel of: <%=projectname%><br></h3>
-				
+				<!--<h3 class="text-primary"><span class="fa fa-github"></span> Github</h3>-->
+				<!--<h3 class="btn btn-default btn-lg btn-block">Project Panel of: <%=projectname%><br></h3>-->
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+					    <h1 class="panel-title">Project Panel of: <%=projectname%></h1>
+				  	</div>
+				  	<div class="panel-body">
+				    	Privacy level : <%=privacylevel%>
+			  		</div>
+				</div>
 				<!-- check if the user is an owner of this project-->
 				<% var ownerflag %>
 				<% for (var i in ownersnames) { %>
@@ -39,6 +46,19 @@
 		        				</fieldset>
 		    				</form>
 		    				</p>
+		    				<!-- Privacy button -->
+							<div class="btn-group">
+							  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+							    Privacy Level <span class="caret"></span>
+							  </button>
+							  <ul class="dropdown-menu" role="menu">
+							  	<% var privateProjectUrl="/changePrivacy?privacy_level=private&project_name="+projectname%>
+							  	<% var publicProjectUrl="/changePrivacy?privacy_level=public&project_name="+projectname%>
+							    <li><a href=<%=privateProjectUrl%>>Private</a></li>
+							    <li class="divider"></li>
+							    <li><a href=<%=publicProjectUrl%>>Public</a></li>
+							  </ul>
+							</div>
 						<% } %>
 					</div>
 				  <!-- Table of Owners-->

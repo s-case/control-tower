@@ -21,55 +21,44 @@ module.exports = function(app, passport) {
         			}
             	}
 	        }
-	        //console.log(ownerflag);
+	        console.log(ownerflag);
 	        callback(ownerflag);
 		});
 	}
 	// ===============================================================
 	// Create a Project I own ========================================
 	// ===============================================================
-	app.post('/createProject', isLoggedIn, function(req, res) {
-		var proj_name = req.body.name;
-		proj_name = proj_name.trim();
-		var privacy_level='private';
-		if(proj_name.length>0){
-			//console.log('projectname to create'+proj_name);
-			var user = req.user;
-			//var proj_name = req.param('project_name');
-			var createProjectQuery = "INSERT INTO " + dbconfig.projects_table +
-					" (project_name,privacy_level)" +
-					" VALUES ("+ "'" + proj_name+"','"+privacy_level+"')";//query to create the project
-			console.log(createProjectQuery);
-			connection=connConstant.connection;
-			connection.query(createProjectQuery, function(err, rows){
-				if(rows){
-					var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
-								+ proj_name +"'";//query to get the project's ID to insert in the Owners table as a project the user owns
+	app.get('/changePrivacy', isLoggedIn, function(req, res) {
+		var user = req.user;
+		var proj_name = req.param('project_name');//name of the project to manage
+		//console.log('projectname to create'+proj_name);
+		var privacy = req.param('privacy_level');
+		checkIfOwner(user,proj_name,function(ownerflag){
+				if(ownerflag==true){
 					connection=connConstant.connection;
+					var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
+								+ proj_name +"'";//query to get the project's ID 
 					//console.log(getProjectId);
 					connection.query(getProjectId, function(err, rows){
 						if(rows.length>0){
-							var createOwnerQuery = "INSERT INTO " +dbconfig.owners_table+ "(user_id,project_id)" +
-							" VALUES (" + "'"+ user.id + "'"+ ",'"+rows[0].project_id+"')";
+							var changePrivacyQuery = "UPDATE " +dbconfig.projects_table+ " SET `privacy_level`='" +privacy
+								+ "' WHERE `project_id`='"+rows[0].project_id+"'";
 							connection=connConstant.connection;
-							//console.log(createOwnerQuery);
-							connection.query(createOwnerQuery, function(err, rows){
+							console.log(changePrivacyQuery);
+							connection.query(changePrivacyQuery, function(err, rows){
 								res.redirect('/manageprojects'+'?project_name='+proj_name);
 							});
 						}
 						else{
 							res.redirect('/profile');
 						}
-					});
+					});			
 				}
 				else{
 					res.redirect('/profile');
 				}
-	        }); 
-		}
-		else{
-					res.redirect('/profile');
-		}
+
+		});		
 	});
 };
 // route middleware to ensure user is logged i
