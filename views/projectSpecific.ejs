@@ -14,7 +14,27 @@
 					    <h1 class="panel-title">Project Panel of: <%=projectname%></h1>
 				  	</div>
 				  	<div class="panel-body">
-				    	Privacy level : <%=privacylevel%>
+						  	<!-- if the user is owner we display an alert message-->
+						<% if (ownerflag) { %>
+							<div class="alert alert-danger" role="alert">if every owner is removed, the project is deleted!</div>
+							<!-- Privacy button -->
+							<div class="btn-group">
+							  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+							    Privacy Level: <%= privacylevel %> <span class="caret"></span>
+							  </button>
+							  <ul class="dropdown-menu" role="menu">
+							  	<% var privateProjectUrl="/changePrivacy?privacy_level=private&project_name="+projectname%>
+							  	<% var publicProjectUrl="/changePrivacy?privacy_level=public&project_name="+projectname%>
+							  	<% if (privacylevel=='private') { %> 
+							  	<li><a href=<%=publicProjectUrl%>>Public</a></li>
+							  	<% } if (privacylevel=='public') { %> 
+							    <li><a href=<%=privateProjectUrl%>>Private</a></li>
+							    <% } %>							    
+							  </ul>
+							</div>
+						<% } %>
+				    	
+							
 			  		</div>
 				</div>
 				<!-- check if the user is an owner of this project-->
@@ -26,10 +46,7 @@
 								} 
 							}%>
 				<% } %>
-				<!-- if the user is owner we display an alert message-->
-				<% if (ownerflag) { %>
-					<div class="alert alert-danger" role="alert">if every owner is removed, the project is deleted!</div>
-				<% } %>
+				
 				<!-- panel which will include the table with the owners-->
 				<div class="panel panel-default">
 					<!-- panel's heading that includes a form to add an owner if you are owner of the project-->
@@ -46,19 +63,6 @@
 		        				</fieldset>
 		    				</form>
 		    				</p>
-		    				<!-- Privacy button -->
-							<div class="btn-group">
-							  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-							    Privacy Level <span class="caret"></span>
-							  </button>
-							  <ul class="dropdown-menu" role="menu">
-							  	<% var privateProjectUrl="/changePrivacy?privacy_level=private&project_name="+projectname%>
-							  	<% var publicProjectUrl="/changePrivacy?privacy_level=public&project_name="+projectname%>
-							    <li><a href=<%=privateProjectUrl%>>Private</a></li>
-							    <li class="divider"></li>
-							    <li><a href=<%=publicProjectUrl%>>Public</a></li>
-							  </ul>
-							</div>
 						<% } %>
 					</div>
 				  <!-- Table of Owners-->
