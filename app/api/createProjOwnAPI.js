@@ -62,7 +62,7 @@ module.exports = function(app){
 									}
 									else if (err) {
 										console.log(err)
-										var obj = '{'+ '"message": "mysql failure, project cannot be created"}';
+										var obj = '{'+ '"message": "'+ err.code +' mysql failure, project cannot be created"}';
 										var Jobj=JSON.parse(obj);
 										res.status(500).send(Jobj);
 									}
