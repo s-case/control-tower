@@ -49,9 +49,6 @@ module.exports = function(app){
                 		if(decoded){
 							if(decoded.scasetoken==scase_token){//we check if the produced signature is the same with the one provided
 		                		var user = rows[0];
-		                		var createProjectQuery = "INSERT INTO " + dbconfig.projects_table +
-										" (project_name,privacy_level)" +
-										" VALUES ("+ "'" + proj_name+"','"+privacy_level+"')";//query to create the project
 								//console.log(createProjectQuery);
 								connection=connConstant.connection;
 								checkIfOwner(user,proj_name,function(ownerflag){
