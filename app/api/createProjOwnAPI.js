@@ -54,7 +54,7 @@ module.exports = function(app){
 														res.status(500).send(Jobj);
 													}
 													else if(rows){
-														var obj = '{'+ '"message": "'+proj_name + 'created"}';
+														var obj = '{'+ '"message": "'+proj_name + ' created"}';
 														var Jobj=JSON.parse(obj);
 														res.status(201).send(Jobj);
 													}
@@ -80,7 +80,7 @@ module.exports = function(app){
 						        }); 
 		                	}
 		                	else{
-								var obj = '{"message": "User with scase_signature '+scase_signature + 'does not exist in S-Case"}';
+								var obj = '{"message": "User with scase_token '+scase_token + 'does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
 								res.status(401).send(Jobj);
 	                		}
