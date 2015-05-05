@@ -5,3 +5,21 @@
     <script src="https://code.jquery.com/jquery.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <!---script to disallow spaces in the names of the project--->
+    <script>
+    var editedValue = "testValue";
+
+	function doIt(e)
+	{
+	    var e = e || event;
+	    
+	    if (e.keyCode == 32) return false;
+	        
+	}
+
+	window.onload = function(){
+	    var inp = document.getElementById("name");
+	    
+	    inp.onkeydown = doIt;
+	};
+	</script>
