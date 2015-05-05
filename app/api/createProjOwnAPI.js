@@ -40,7 +40,6 @@ module.exports = function(app){
 										var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
 													+ proj_name +"'";//query to get the project's ID to insert in the Owners table as a project the user owns
 										connection=connConstant.connection;
-										console.log(rows);
 										//console.log(getProjectId);
 										connection.query(getProjectId, function(err, rows){
 											if(rows.length>0){
@@ -61,7 +60,11 @@ module.exports = function(app){
 											}
 										});
 									}
-									
+									else if (err) {
+										var obj = '{'+ '"message": "mysql failure, project cannot be created"}';
+										var Jobj=JSON.parse(obj);
+										res.status(500).send(Jobj);
+									}
 									else{
 										var obj = '{"message": "project cannot be created (project name already exists)"}';
 										var Jobj=JSON.parse(obj);
