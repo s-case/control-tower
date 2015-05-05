@@ -61,8 +61,7 @@ module.exports = function(app){
 										});
 									}
 									else if (err) {
-										console.log(err)
-										var obj = '{'+ '"message": "'+ err.Error +' mysql failure, project cannot be created"}';
+										var obj = '{'+ '"message": "'+ err.code +'"}';
 										var Jobj=JSON.parse(obj);
 										res.status(500).send(Jobj);
 									}
