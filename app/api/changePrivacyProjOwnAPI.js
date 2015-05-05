@@ -34,7 +34,7 @@ module.exports = function(app){
 		var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate
 		var proj_name= req.param('project_name');//require project name
 		var privacy=req.param('privacy_level');
-		if(scase_token&&proj_name&&scase_signature&&privacy_level){
+		if(scase_token&&proj_name&&scase_signature&&privacy){
 			connection=connConstant.connection;//ensure that there is a connection to the DB
 			//we select the user with the scase_token provided 
 			var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE scase_token = '" + scase_token + "'";//query to get all the info of the user with the provided scase token
