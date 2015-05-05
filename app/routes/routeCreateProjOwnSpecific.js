@@ -39,7 +39,7 @@ module.exports = function(app, passport) {
 			var createProjectQuery = "INSERT INTO " + dbconfig.projects_table +
 					" (project_name,privacy_level)" +
 					" VALUES ("+ "'" + proj_name+"','"+privacy_level+"')";//query to create the project
-			console.log(createProjectQuery);
+			//console.log(createProjectQuery);
 			connection=connConstant.connection;
 			connection.query(createProjectQuery, function(err, rows){
 				if(rows){
