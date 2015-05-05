@@ -48,20 +48,20 @@ module.exports = function(app){
 												connection=connConstant.connection;
 												//console.log(createOwnerQuery);
 												connection.query(createOwnerQuery, function(err, rows){
-													var obj = '{'+ '"Project: '+proj_name + '": "created"}';
+													var obj = '{'+ '"message": "'+proj_name + 'created"}';
 													var Jobj=JSON.parse(obj);
 													res.status(201).send(Jobj);
 												});
 											}
 											else{
-												var obj = '{'+ '"message: "mysql failure, project cannot be created"}';
+												var obj = '{'+ '"message": "mysql failure, project cannot be created"}';
 												var Jobj=JSON.parse(obj);
 												res.status(500).send(Jobj);
 											}
 										});
 									}
 									else if (err) {
-										var obj = '{'+ '"message: "mysql failure, project cannot be created"}';
+										var obj = '{'+ '"message": "mysql failure, project cannot be created"}';
 										var Jobj=JSON.parse(obj);
 										res.status(500).send(Jobj);
 									}

@@ -6,6 +6,25 @@ module.exports = function(app){
 	var connection;//variable used for the connection to the database
 	var ownerflag=false;//flag used to check if the user is an owner
 	var jwt = require('jsonwebtoken');//
+	var ownerflag;//flag used to check if the user is an owner
+	//function to check if the user is owner of a specific project
+	function checkIfOwner(user,proj_name,callback){
+		connection=connConstant.connection;
+		var selectProjects = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
+		".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
+		//console.log(selectProjects)
+		connection.query(selectProjects, function(err, rows){
+			if (rows.length > 0) {
+            	for(var i in rows){
+        			if(rows[i].project_name==proj_name){
+        				ownerflag=true;
+        			}
+            	}
+	        }
+	        console.log(ownerflag);
+	        callback(ownerflag);
+		});
+	}
 	// =============================================================================
 	// Create a project I own API===================================
 	// =============================================================================
@@ -14,7 +33,7 @@ module.exports = function(app){
 		var scase_token= req.param('scase_token');//require your scase token in order to authenticate
 		var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate
 		var proj_name= req.param('project_name');//require project name
-		var privacy_level=req.param('privacy_level');
+		var privacy=req.param('privacy_level');
 		if(scase_token&&proj_name&&scase_signature&&privacy_level){
 			connection=connConstant.connection;//ensure that there is a connection to the DB
 			//we select the user with the scase_token provided 
@@ -35,42 +54,38 @@ module.exports = function(app){
 										" VALUES ("+ "'" + proj_name+"','"+privacy_level+"')";//query to create the project
 								//console.log(createProjectQuery);
 								connection=connConstant.connection;
-								connection.query(createProjectQuery, function(err, rows){
-									if(rows){
-										var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
-													+ proj_name +"'";//query to get the project's ID to insert in the Owners table as a project the user owns
-										connection=connConstant.connection;
-										//console.log(getProjectId);
-										connection.query(getProjectId, function(err, rows){
-											if(rows.length>0){
-												var createOwnerQuery = "INSERT INTO " +dbconfig.owners_table+ "(user_id,project_id)" +
-												" VALUES (" + "'"+ user.id + "'"+ ",'"+rows[0].project_id+"')";
-												connection=connConstant.connection;
-												//console.log(createOwnerQuery);
-												connection.query(createOwnerQuery, function(err, rows){
-													var obj = '{'+ '"Project: '+proj_name + '": "created"}';
+								checkIfOwner(user,proj_name,function(ownerflag){
+										if(ownerflag==true){
+											connection=connConstant.connection;
+											var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
+														+ proj_name +"'";//query to get the project's ID 
+											//console.log(getProjectId);
+											connection.query(getProjectId, function(err, rows){
+												if(rows.length>0){
+													var changePrivacyQuery = "UPDATE " +dbconfig.projects_table+ " SET `privacy_level`='" +privacy
+														+ "' WHERE `project_id`='"+rows[0].project_id+"'";
+													connection=connConstant.connection;
+													console.log(changePrivacyQuery);
+													connection.query(changePrivacyQuery, function(err, rows){
+														var obj = '{"message": "Privacy level of' + proj_name +' set to '+ privacy+ '"}';
+														var Jobj=JSON.parse(obj);
+														res.status(200).send(Jobj);
+													});
+												}
+												else{
+													var obj = '{"message": "There is no project with name '+proj_name + '"}';
 													var Jobj=JSON.parse(obj);
-													res.status(201).send(Jobj);
-												});
-											}
-											else{
-												var obj = '{'+ '"message: "mysql failure, project cannot be created"}';
-												var Jobj=JSON.parse(obj);
-												res.status(500).send(Jobj);
-											}
-										});
-									}
-									else if (err) {
-										var obj = '{'+ '"message: "mysql failure, project cannot be created"}';
-										var Jobj=JSON.parse(obj);
-										res.status(500).send(Jobj);
-									}
-									else{
-										var obj = '{"message": "project cannot be created (project name already exists)"}';
-										var Jobj=JSON.parse(obj);
-										res.status(409).send(Jobj);
-									}
-						        }); 
+													res.status(404).send(Jobj);
+												}
+											});			
+										}
+										else{
+											var obj = '{"message": "User with scase_signature '+scase_signature + ' is not owner of the project"}';
+											var Jobj=JSON.parse(obj);
+											res.status(401).send(Jobj);
+										}
+
+								});		
 		                	}
 		                	else{
 								var obj = '{"message": "User with scase_signature '+scase_signature + 'does not exist in S-Case"}';
@@ -86,7 +101,7 @@ module.exports = function(app){
                 	});
                 }
                 else {
-					var obj = '{"message": "User with scase_signature '+scase_signature + 'does not exist in S-Case"}';
+					var obj = '{"message": "User with scase_token '+scase_token + 'does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
 					res.status(401).send(Jobj);
 				}
