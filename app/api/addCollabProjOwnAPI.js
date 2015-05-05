@@ -135,7 +135,7 @@ module.exports = function(app){
                 		if(err){
 							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
 							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
+							res.status(401).send(Jobj);
                 		}
                 		if(decoded){
 							if(decoded.scasetoken==scase_token){//we check if the produced signature is the same with the one provided
@@ -164,12 +164,16 @@ module.exports = function(app){
 														connection=connConstant.connection;
 														connection.query(createCollabQuery, function(err, rows){
 															//res.setHeader('Content-Type', 'application/json');
-															var obj = '{'+ '"collaborator '+google_email + '": "added"}';
 															if(err){
-																var obj = '{'+ '"collaborator '+google_email + '": "not added"}';
+																var obj = '{'+ '"message": "'+ err.code +'"}';
+																var Jobj=JSON.parse(obj);
+																res.status(500).send(Jobj);
 															}
-															var Jobj=JSON.parse(obj);
-															res.send(Jobj);
+															else if(rows){
+																var obj = '{'+ '"message" : "collaborator '+google_email + ' added"}';
+																var Jobj=JSON.parse(obj);
+																res.statussend(Jobj);
+															}															
 														});
 													}
 													else{//the project does not exist we return a message

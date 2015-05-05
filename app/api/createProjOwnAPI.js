@@ -48,9 +48,16 @@ module.exports = function(app){
 												connection=connConstant.connection;
 												//console.log(createOwnerQuery);
 												connection.query(createOwnerQuery, function(err, rows){
-													var obj = '{'+ '"message": "'+proj_name + 'created"}';
-													var Jobj=JSON.parse(obj);
-													res.status(201).send(Jobj);
+													if(err){
+														var obj = '{'+ '"message": "'+ err.code +'"}';
+														var Jobj=JSON.parse(obj);
+														res.status(500).send(Jobj);
+													}
+													else if(rows){
+														var obj = '{'+ '"message": "'+proj_name + 'created"}';
+														var Jobj=JSON.parse(obj);
+														res.status(201).send(Jobj);
+													}
 												});
 											}
 											else{

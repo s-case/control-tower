@@ -21,7 +21,7 @@ module.exports = function(app){
         			}
             	}
 	        }
-	        console.log(ownerflag);
+	        //console.log(ownerflag);
 	        callback(ownerflag);
 		});
 	}
@@ -62,9 +62,9 @@ module.exports = function(app){
 													var changePrivacyQuery = "UPDATE " +dbconfig.projects_table+ " SET `privacy_level`='" +privacy
 														+ "' WHERE `project_id`='"+rows[0].project_id+"'";
 													connection=connConstant.connection;
-													console.log(changePrivacyQuery);
+													//console.log(changePrivacyQuery);
 													connection.query(changePrivacyQuery, function(err, rows){
-														var obj = '{"message": "Privacy level of' + proj_name +' set to '+ privacy+ '"}';
+														var obj = '{"message": "Privacy level of ' + proj_name +' set to '+ privacy+ '"}';
 														var Jobj=JSON.parse(obj);
 														res.status(200).send(Jobj);
 													});
