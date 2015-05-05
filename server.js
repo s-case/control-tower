@@ -69,6 +69,8 @@ require('./app/api/removeCollabProjOwnAPI.js') (app);//remove a collaborator fro
 require('./app/api/removeOwnerProjOwnAPI.js') (app);//remove an owner from a project I own
 require('./app/api/addOwnerProjOwnAPI.js') (app);//add an owner to a project I own
 require('./app/api/addCollabProjOwnAPI.js') (app);//add a collaborator to a project I own
+require('./app/api/createProjOwnAPI.js') (app);//create a project I own
+require('./app/api/changePrivacyProjOwnAPI.js') (app);//change privacy level in a project I own
 // launch ======================================================================
 app.listen(port);
 console.log('The magic happens on port ' + port);
