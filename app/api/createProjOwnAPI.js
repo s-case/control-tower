@@ -36,10 +36,11 @@ module.exports = function(app){
 								//console.log(createProjectQuery);
 								connection=connConstant.connection;
 								connection.query(createProjectQuery, function(err, rows){
-									if(rows.length>0){
+									if(rows){
 										var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
 													+ proj_name +"'";//query to get the project's ID to insert in the Owners table as a project the user owns
 										connection=connConstant.connection;
+										console.log(rows);
 										//console.log(getProjectId);
 										connection.query(getProjectId, function(err, rows){
 											if(rows.length>0){
