@@ -18,20 +18,28 @@
 								} 
 							}%>
 				<% } %>
-				<div class="panel panel-primary">
+				<% if (privacylevel=='private') { %>
+					<div class="panel panel-danger">
+				<%}%> 
+				<% if (privacylevel=='public') { %>
+					<div class="panel panel-success">
+				<%}%> 
+				
 					<div class="panel-heading">
-					    <h1 class="panel-title">Project Panel of: <%=projectname%></h1>
+					    <% if (privacylevel=='private') { %> 
+					  	<h1 class="panel-title"><i class="fa fa-user-secret">Private Project: <%=projectname%></i></h1>
+					  	<% } if (privacylevel=='public') { %> 
+					    <h1 class="panel-title"><i class="fa fa-cloud">Public Project: <%=projectname%></i></h1>
+					    <% } %>	
 				  	</div>
 				  	<div class="panel-body">
-						  	<!-- if the user is owner we display an alert message-->
 						<% if (ownerflag) { %>
-							<div class="alert alert-danger" role="alert">if every owner is removed, the project is deleted!</div>
 							<!-- Privacy button -->
 							<div class="btn-group">
 							  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 							    Privacy Level: <%= privacylevel %> <span class="caret"></span>
 							  </button>
-							  <ul class="dropdown-menu" role="menu">
+							  <ul class="dropdown-menu" role="menu" col-sm-12>
 							  	<% var privateProjectUrl="/changePrivacy?privacy_level=private&project_name="+projectname%>
 							  	<% var publicProjectUrl="/changePrivacy?privacy_level=public&project_name="+projectname%>
 							  	<% if (privacylevel=='private') { %> 
@@ -54,6 +62,7 @@
 				  		<h3><span class="fa fa-users"></span>Owners</h3>
 				  		<!-- if the user is an owner a form to add an owner will be displayed -->
 					  	<% if (ownerflag) { %>
+					  		<div class="alert alert-danger" role="alert">if every owner is removed, the project is deleted!</div>
 							<p><form action="/addOwner" method="post"> 
 								<fieldset>
 									<label for="name"></label>
