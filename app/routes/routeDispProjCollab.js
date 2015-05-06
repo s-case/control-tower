@@ -18,38 +18,18 @@ module.exports = function(app, passport) {
 			".`project_id` = "+ dbconfig.collaborators_table + ".`project_id` "+" WHERE "+ dbconfig.collaborators_table+".`user_id` = '" + user.id + "'";
 		connection.query(selectProjectCollab, function(err, rows){
 		
-                //if (rows.length > 0) {//if there are projects I collaborate I show them
-                //	res.render('projectsCollab.ejs', {
-				//		projectnames : rows,
-				//		user : user
-				//	});
-                //}
-       			if (rows.length>0) {
-       				res.format({
-       					'application/json': function(){
-						    res.send([{ projectnames: rows },{user : user}]);
-						  },
-
-						  default: function(){
-						    res.redirect('/getCollabs');
-						  }
-       				});
-       			}
+                if (rows.length > 0) {//if there are projects I collaborate I show them
+                	res.render('projectsCollab.ejs', {
+						projectnames : rows,
+						user : user
+					});
+                }
+           
                 else{
                 	res.redirect('/profile');
                 }//otherwise I do not show anything
                 
         });
-
-	});
-	app.get('/getCollabs', isLoggedIn, function(req, res) {
-		var user = req.user;
-		var projectnames = req.projectnames;
-                	res.render('projectsCollab.ejs', {
-						projectnames : projectnames,
-						user : user
-					});
-                
 
 	});
 };
