@@ -14,7 +14,8 @@ var jwt = require('jsonwebtoken');//require json web token package
 app.get('/api/validateUser',function(req,res){
 	var scase_token= req.param('scase_token');//require your scase token in order to authenticate
 	var project_name= req.param('project_name');//require project name
-	var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate		
+	var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate
+	res.setHeader('Content-Type', 'application/json');		
 	if(scase_token && scase_signature && project_name){
 		connection=connConstant.connection;
 		connection.query('USE ' + dbconfig.database);
@@ -39,34 +40,25 @@ app.get('/api/validateUser',function(req,res){
 		var role = "nothing";
 		connection.query(GetSecretQuery,function(err,rows){
 			if (err||rows.length<1){
-				res.setHeader('Content-Type', 'application/json');
-				var obj = '{'
-						+ '"userValid" : "false"'
-						+ '}';
+				var obj = '{"message": "User Not Valid"}';
 				var Jobj=JSON.parse(obj);
-				res.send(Jobj);
+				res.status(401).send(Jobj);
 			}
 			if(rows.length>0){
 				jwt.verify(scase_signature,rows[0].scaseSecret,function(err,decoded){
 	        		if(err){
-	        			res.setHeader('Content-Type', 'application/json');
-						var obj = '{'
-									+ '"userValid" : "false"'
-									+ '}';
+						var obj = '{"message": "User Not Valid"}';
 						var Jobj=JSON.parse(obj);
-						res.send(Jobj);
+						res.status(401).send(Jobj);
 	        		}
 	        		if(decoded){
 	        			if(decoded.scasetoken=scase_token){
 	        				var ownerflag=false;
 							connection.query(OwnerSelectQuery, function(err, rows){//check if the user is owner
-								if (err||rows.length==0){
-									res.setHeader('Content-Type', 'application/json');
-									var obj = '{'
-											+ '"userValid" : "false"'
-											+ '}';
+								if (err||rows.length<1){
+									var obj = '{"message": "User Not Valid"}';
 									var Jobj=JSON.parse(obj);
-									res.send(Jobj);
+									res.status(401).send(Jobj);
 								}
 								var userCnt = parseInt(rows[0].usersCount);
 								//console.log("Owners Number:"+userCnt);
@@ -75,23 +67,17 @@ app.get('/api/validateUser',function(req,res){
 								}
 								if(role!=="nothing"){
 									ownerflag=true;
-									console.log(ownerflag);
-									res.setHeader('Content-Type', 'application/json');
-									var userInfo = [{"userValid" : "true"},{"userRole" : role}];
+									var userInfo = [{"message" : "User Valid"},{"userRole" : role}];
 									//var Jobj=JSON.parse(userInfo);
-									res.send(userInfo);
+									res.status(200).send(userInfo);
 								}
 								connection=connConstant.connection;
 								if(ownerflag==false){
-									console.log(ownerflag);
 									connection.query(CollaboratorSelectQuery, function(err, rows){
-										if (err||rows.length==0){
-											res.setHeader('Content-Type', 'application/json');
-											var obj = '{'
-													+ '"userValid" : "false"'
-													+ '}';
+										if (err||rows.length<1){
+											var obj = '{"message": "User Not Valid"}';
 											var Jobj=JSON.parse(obj);
-											res.send(Jobj);
+											res.status(401).send(Jobj);
 										}
 										var userCnt = parseInt(rows[0].usersCount);
 										//console.log("Collaborators Number:"+userCnt);
@@ -99,16 +85,14 @@ app.get('/api/validateUser',function(req,res){
 											role="collaborator";
 										}
 										if(role!=="nothing"){
-											res.setHeader('Content-Type', 'application/json');
-											var userInfo = [{"userValid" : "true"},{"userRole" : role}];
+											var userInfo = [{"message" : "User Valid"},{"userRole" : role}];
 											//var Jobj=JSON.parse(userInfo);
-											res.send(userInfo);
+											res.status(200).send(userInfo);
 										}
 										else {
-											res.setHeader('Content-Type', 'application/json');
-											var userInfo = [{"userValid" : "false"},{"userRole" : role}];
-											//var Jobj=JSON.parse(userInfo);
-											res.send(userInfo);
+											var obj = '{"message": "User Not Valid"}';
+											var Jobj=JSON.parse(obj);
+											res.status(401).send(Jobj);
 									    }	
 									});
 								}			
@@ -117,34 +101,23 @@ app.get('/api/validateUser',function(req,res){
 
 						}
 						else{
-							res.setHeader('Content-Type', 'application/json');
-							var obj = '{'
-									+ '"userValid" : "false"'
-									+ '}';
+							var obj = '{"message": "User Not Valid"}';
 							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
+							res.status(401).send(Jobj);
 						}
 	        		}
 	        		else{
-	        				res.setHeader('Content-Type', 'application/json');
-							var obj = '{'
-									+ '"userValid" : "false"'
-									+ '}';
-							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
+						var obj = '{"message": "User Not Valid"}';
+						var Jobj=JSON.parse(obj);
+						res.status(401).send(Jobj);
 					}
 	        	});
 			}
 			else{
-				res.setHeader('Content-Type', 'application/json');
-				var obj = '{'
-									+ '"userValid" : "false"'
-									+ '}';
+				var obj = '{"message": "User Not Valid"}';
 				var Jobj=JSON.parse(obj);
-				res.send(Jobj);
-
+				res.status(401).send(Jobj);
 			}
-			
 		});
 		
 	}
@@ -157,90 +130,65 @@ app.get('/api/validateUser',function(req,res){
 		var selectQuery = "SELECT COUNT(*) AS usersCount FROM " + dbconfig.users_table + " WHERE "+
 							"`scase_token` = '" + scase_token + "' ";
 		connection.query(GetSecretQuery,function(err,rows){
-			if (err||rows.length==0){
-				res.setHeader('Content-Type', 'application/json');
-				var obj = '{'
-						+ '"userValid" : "false"'
-						+ '}';
+			if (err||rows.length<1){
+				var obj = '{"message": "User Not Valid"}';
 				var Jobj=JSON.parse(obj);
-				res.send(Jobj);
+				res.status(401).send(Jobj);
 			}
 			if(rows.length>0){
 				jwt.verify(scase_signature,rows[0].scaseSecret,function(err,decoded){
 	        		if(err){
-	        			res.setHeader('Content-Type', 'application/json');
-						var obj = '{'
-									+ '"userValid" : "false"'
-									+ '}';
+	        			var obj = '{"message": "User Not Valid"}';
 						var Jobj=JSON.parse(obj);
-						res.send(Jobj);
+						res.status(401).send(Jobj);
 	        		}
 	        		if(decoded){
 	        			if(decoded.scasetoken=scase_token){
 							connection.query(selectQuery, function(err, rows){
-								res.setHeader('Content-Type', 'application/json');
-								if (err||rows.length==0){
-									var obj = '{'
-											+ '"userValid" : "false"'
-											+ '}';
+								if (err||rows.length<1){
+									var obj = '{"message": "User Not Valid"}';
 									var Jobj=JSON.parse(obj);
-									res.send(Jobj);
+									res.status(401).send(Jobj);
 								}
 								
 								var userCnt = parseInt(rows[0].usersCount);
 								//console.log(userCnt);
 								if(userCnt==1){
-									res.setHeader('Content-Type', 'application/json');
-									var obj = '{'
-											+ '"userValid" : "true"'
-											+ '}';
+									var obj = '{"message": "User Valid"}';
 									var Jobj=JSON.parse(obj);
-									res.send(Jobj);
+									res.status(200).send(Jobj);
 								}
 								else {
-									res.setHeader('Content-Type', 'application/json');
-									var obj = '{'
-											+ '"userValid" : "false"'
-											+ '}';
+									var obj = '{"message": "User Not Valid"}';
 									var Jobj=JSON.parse(obj);
-									res.send(Jobj);
+									res.status(401).send(Jobj);
 								}
 							});
 						}
 						else{
-							res.setHeader('Content-Type', 'application/json');
-							var obj = '{'
-									+ '"userValid" : "false"'
-									+ '}';
+							var obj = '{"message": "User Not Valid"}';
 							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
+							res.status(401).send(Jobj);
 	        			}
 	        		}
 	        		else{
-	        				res.setHeader('Content-Type', 'application/json');
-							var obj = '{'
-									+ '"userValid" : "false"'
-									+ '}';
-							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
+	    				var obj = '{"message": "User Not Valid"}';
+						var Jobj=JSON.parse(obj);
+						res.status(401).send(Jobj);
 					}
 				});
 			}
 			else{
-				res.setHeader('Content-Type', 'application/json');
-				var obj = '{'
-									+ '"userValid" : "false"'
-									+ '}';
+				var obj = '{"message": "User Not Valid"}';
 				var Jobj=JSON.parse(obj);
-				res.send(Jobj);
+				res.status(401).send(Jobj);
 			}
 		});
 	}
 	else{
-		res.setHeader('Content-Type', 'application/json');
 		var obj = '{'+ '"message": "you miss some parameters"}';
 		var Jobj=JSON.parse(obj);
-		res.send(Jobj);
+		res.status(400).send(Jobj);
 	}
 });
 };

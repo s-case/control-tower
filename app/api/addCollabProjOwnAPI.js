@@ -78,7 +78,7 @@ module.exports = function(app){
 																res.status(500).send(Jobj);
 															}
 															else if(rows){
-																var obj = '{'+ '"message": "'+github_name + ' added"}';
+																var obj = '{'+ '"message": "collaborator '+github_name + ' added"}';
 																var Jobj=JSON.parse(obj);
 																res.status(201).send(Jobj);
 															}
@@ -98,7 +98,7 @@ module.exports = function(app){
 											}
 											else{
 												//res.setHeader('Content-Type', 'application/json');
-												var obj = '{'+ '"message: "user '+github_name + ' does not exist in S-Case"}';
+												var obj = '{'+ '"message": "user '+github_name + ' does not exist in S-Case"}';
 												var Jobj=JSON.parse(obj);
 												res.status(401).send(Jobj);
 											}
@@ -192,7 +192,7 @@ module.exports = function(app){
 											}
 											else{
 												//res.setHeader('Content-Type', 'application/json');
-												var obj = '{'+ '"message: "user '+google_email + ' does not exist in S-Case"}';
+												var obj = '{'+ '"message": "user '+google_email + ' does not exist in S-Case"}';
 												var Jobj=JSON.parse(obj);
 												res.status(401).send(Jobj);
 											}
