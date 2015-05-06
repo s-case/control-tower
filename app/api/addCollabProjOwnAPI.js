@@ -42,9 +42,9 @@ module.exports = function(app){
                 if (rows.length > 0) {
                 	jwt.verify(scase_signature,rows[0].scase_secret,function(err,decoded){
                 		if(err){
-							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+							var obj = '{"message": "User with scase_signature '+scase_signature + 'does not exist in S-Case"}';
 							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
+							res.status(401).send(Jobj);
                 		}
                 		if(decoded){
 							if(decoded.scasetoken==scase_token){//we check if the produced signature is the same with the one provided
@@ -72,56 +72,63 @@ module.exports = function(app){
 															" VALUES (" + "'"+ user_id + "'"+ ",'"+rows[0].project_id+"')";//insert the user as an owner in the owner's table
 														connection=connConstant.connection;
 														connection.query(createCollabQuery, function(err, rows){
-															//res.setHeader('Content-Type', 'application/json');
-															var obj = '{'+ '"collaborator '+github_name + '": "added"}';
 															if(err){
-																var obj = '{'+ '"collaborator '+github_name + '": "not added"}';
+																var obj = '{'+ '"message": "'+ err.code +'"}';
+																var Jobj=JSON.parse(obj);
+																res.status(500).send(Jobj);
 															}
-															var Jobj=JSON.parse(obj);
-															res.send(Jobj);
+															else if(rows){
+																var obj = '{'+ '"message": "'+github_name + ' added"}';
+																var Jobj=JSON.parse(obj);
+																res.status(201).send(Jobj);
+															}
 														});
 													}
 													else{//the project does not exist we return a message
-														//res.setHeader('Content-Type', 'application/json');
-														var obj = '{'+ '"Project '+proj_name + '": "does not exist'+'"}';
+														var obj = '{'+ '"message": "project' + proj_name +' does not exist"}';
 														var Jobj=JSON.parse(obj);
-														res.send(Jobj);
+														res.status(500).send(Jobj);
 													}
 												});
 											}
+											else if (err) {
+												var obj = '{'+ '"message": "'+ err.code +'"}';
+												var Jobj=JSON.parse(obj);
+												res.status(500).send(Jobj);
+											}
 											else{
 												//res.setHeader('Content-Type', 'application/json');
-												var obj = '{'+ '"user with '+github_name + '": "does not exist in S-Case"}';
+												var obj = '{'+ '"message: "user '+github_name + ' does not exist in S-Case"}';
 												var Jobj=JSON.parse(obj);
-												res.send(Jobj);
+												res.status(401).send(Jobj);
 											}
 										});
 									}
 									else if(ownerflag==false){
 										//res.setHeader('Content-Type', 'application/json');
-										var obj = '{'+ '"User with scase_token '+scase_token + '": "does not own project ' + proj_name +' or project does not exist"}';
+										var obj = '{'+ '"message" : "User with scase_token '+scase_token + ' "does not own project ' + proj_name +' or project does not exist"}';
 										var Jobj=JSON.parse(obj);
-										res.send(Jobj);
+										res.status(401).send(Jobj);
 									}
 								});
 		                	}
 		                	else{
-								var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+								var obj = '{"message": "User with scase_signature '+scase_signature + 'does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.send(Jobj);
+								res.status(401).send(Jobj);
 	                		}
 	                	}
 	                	else{
-							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
-							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
-	                	}
+								var obj = '{"message": "User with scase_signature '+scase_signature + 'does not exist in S-Case"}';
+								var Jobj=JSON.parse(obj);
+								res.status(401).send(Jobj);
+                		}
                 	});
                 }
                 else {
-					var obj = '{'+ '"User with scase_token: '+scase_token + '": "does not exist in S-Case"}';
+					var obj = '{'+ '"message": "User with scase_token '+scase_token + ' does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
-					res.send(Jobj);
+					res.status(401).send(Jobj);
 				}
             });
 		}
@@ -133,9 +140,9 @@ module.exports = function(app){
                 if (rows.length > 0) {
                 	jwt.verify(scase_signature,rows[0].scase_secret,function(err,decoded){
                 		if(err){
-							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
-							var Jobj=JSON.parse(obj);
-							res.status(401).send(Jobj);
+								var obj = '{"message": "User with scase_signature '+scase_signature + 'does not exist in S-Case"}';
+								var Jobj=JSON.parse(obj);
+								res.status(401).send(Jobj);
                 		}
                 		if(decoded){
 							if(decoded.scasetoken==scase_token){//we check if the produced signature is the same with the one provided
@@ -172,50 +179,49 @@ module.exports = function(app){
 															else if(rows){
 																var obj = '{'+ '"message" : "collaborator '+google_email + ' added"}';
 																var Jobj=JSON.parse(obj);
-																res.statussend(Jobj);
+																res.status(201).send(Jobj);
 															}															
 														});
 													}
 													else{//the project does not exist we return a message
-														//res.setHeader('Content-Type', 'application/json');
-														var obj = '{'+ '"Project '+proj_name + '": "does not exist'+'"}';
+														var obj = '{'+ '"message": "project' + proj_name +' does not exist"}';
 														var Jobj=JSON.parse(obj);
-														res.send(Jobj);
+														res.status(500).send(Jobj);
 													}
 												});
 											}
 											else{
 												//res.setHeader('Content-Type', 'application/json');
-												var obj = '{'+ '"user with '+google_email + '": "does not exist in S-Case"}';
+												var obj = '{'+ '"message: "user '+google_email + ' does not exist in S-Case"}';
 												var Jobj=JSON.parse(obj);
-												res.send(Jobj);
+												res.status(401).send(Jobj);
 											}
 										});
 									}
 									else if(ownerflag==false){
 										//res.setHeader('Content-Type', 'application/json');
-										var obj = '{'+ '"User with scase_token '+scase_token + '": "does not own project ' + proj_name +' or project does not exist"}';
+										var obj = '{'+ '"message" : "User with scase_token '+scase_token + ' "does not own project ' + proj_name +' or project does not exist"}';
 										var Jobj=JSON.parse(obj);
-										res.send(Jobj);
+										res.status(401).send(Jobj);
 									}
 								});
 		                	}else{
-								var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+								var obj = '{"message": "User with scase_signature '+scase_signature + 'does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.send(Jobj);
+								res.status(401).send(Jobj);
 	                		}
 	                	}
 	                	else{
-							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
-							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
-	                	}
+								var obj = '{"message": "User with scase_signature '+scase_signature + 'does not exist in S-Case"}';
+								var Jobj=JSON.parse(obj);
+								res.status(401).send(Jobj);
+                		}
                 	});
                 }
                 else {
-					var obj = '{'+ '"User with scase_token: '+scase_token + '": "does not exist in S-Case"}';
+					var obj = '{'+ '"message": "User with scase_token '+scase_token + ' does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
-					res.send(Jobj);
+					res.status(401).send(Jobj);
 				}
             });
 		}
@@ -223,7 +229,7 @@ module.exports = function(app){
 			//res.setHeader('Content-Type', 'application/json');
 			var obj = '{"message": "you miss some parameters"}';
 			var Jobj=JSON.parse(obj);
-			res.send(Jobj);
+			res.status(400).send(Jobj);
 		}
 	});
 };
