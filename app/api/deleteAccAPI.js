@@ -20,9 +20,9 @@ module.exports = function(app){
                 if (rows.length > 0) {
                 	jwt.verify(scase_signature,rows[0].scase_secret,function(err,decoded){
                 		if(err){
-							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+							var obj = '{"message": "User with scase_signature '+scase_signature + 'does not exist in S-Case"}';
 							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
+							res.status(401).send(Jobj);
                 		}
                 		if(decoded){
                 			if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
@@ -37,58 +37,77 @@ module.exports = function(app){
 								//console.log(DeleteProjectsOnlyOwnerQuery);
 					            connection = connConstant.connection;
 					            connection.query(DeleteProjectsOnlyOwnerQuery, function(err, rows) {
-					                //delete from owners
-									var DeleteFromOwnerQuery = "DELETE FROM " + dbconfig.owners_table +                          
-						                                " WHERE `user_id` = " + user_id;
-					                //console.log(DeleteFromOwnerQuery);
-					                connection = connConstant.connection;
-					                connection.query(DeleteFromOwnerQuery, function(err, rows) {
-					            		var DeleteFromCollabQuery = "DELETE FROM " + dbconfig.collaborators_table +                          
-					                                " WHERE `user_id` = " + user_id;//delete from collaborators
-					                    //console.log(DeleteFromCollabQuery);
-					                    connection = connConstant.connection;
-					                    connection.query(DeleteFromCollabQuery, function(err, rows) {
-					                    	var DeleteFromUsersQuery = "DELETE FROM " + dbconfig.users_table +                          
-					                			" WHERE `id` = " + user_id;//delete from users table
-					            			//console.log(DeleteFromUsersQuery);
-					    				  	connection.query(DeleteFromUsersQuery, function(err, rows) {
-					                            	res.setHeader('Content-Type', 'application/json');
-													var obj = '{'
-															+ '"userDeleted" : "true"'
-															+ '}';
-													var Jobj=JSON.parse(obj);
-													res.send(Jobj);
-					                        });
-					                    });
-					                });
+					            	if(err){
+					                		var obj = '{'+ '"message": "'+ err.code +'"}';
+											var Jobj=JSON.parse(obj);
+											res.status(500).send(Jobj);
+				                	}
+				                	else if(rows){
+				                		//delete from owners
+										var DeleteFromOwnerQuery = "DELETE FROM " + dbconfig.owners_table +                          
+							                                " WHERE `user_id` = " + user_id;
+						                //console.log(DeleteFromOwnerQuery);
+						                connection = connConstant.connection;
+						                connection.query(DeleteFromOwnerQuery, function(err, rows) {
+						                	if(err){
+						                		var obj = '{'+ '"message": "'+ err.code +'"}';
+												var Jobj=JSON.parse(obj);
+												res.status(500).send(Jobj);
+						                	}
+						                	else if(rows){
+						                		var DeleteFromCollabQuery = "DELETE FROM " + dbconfig.collaborators_table +                          
+						                                " WHERE `user_id` = " + user_id;//delete from collaborators
+							                    //console.log(DeleteFromCollabQuery);
+							                    connection = connConstant.connection;
+							                    connection.query(DeleteFromCollabQuery, function(err, rows) {
+							                    	var DeleteFromUsersQuery = "DELETE FROM " + dbconfig.users_table +                          
+							                			" WHERE `id` = " + user_id;//delete from users table
+							            			//console.log(DeleteFromUsersQuery);
+							    				  	connection.query(DeleteFromUsersQuery, function(err, rows) {
+							                            	if(err){
+																var obj = '{'+ '"message": "'+ err.code +'"}';
+																var Jobj=JSON.parse(obj);
+																res.status(500).send(Jobj);
+															}
+															else if(rows){
+																var obj = '{'+ '"message": "user deleted"}';
+																var Jobj=JSON.parse(obj);
+																res.status(201).send(Jobj);
+															}
+							                        });
+							                    });
+						                	}
+						            		
+						                });
+				                	}
 				        		});
 							}
 		                	else{
-								var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+								var obj = '{"message": "User with scase_signature '+scase_signature + 'does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.send(Jobj);
-		                	}
+								res.status(401).send(Jobj);
+	                		}
             			}
 	            		else{
-							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
-							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
-	            		}
+								var obj = '{"message": "User with scase_signature '+scase_signature + 'does not exist in S-Case"}';
+								var Jobj=JSON.parse(obj);
+								res.status(401).send(Jobj);
+                		}
             		});
 	            }
-	            else {
-	                //res.setHeader('Content-Type', 'application/json');
-					var obj = '{'+ '"User with scase_token  '+scase_token + '": "do not exist in S-Case"}';
+              	else {
+					var obj = '{'+ '"message": "User with scase_token '+scase_token + ' does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
-					res.send(Jobj);
+					res.status(401).send(Jobj);
 				}
+            	});
 			});
 		}
 		else{
 			//res.setHeader('Content-Type', 'application/json');
 			var obj = '{"message": "you miss some parameters"}';
 			var Jobj=JSON.parse(obj);
-			res.send(Jobj);
+			res.status(400).send(Jobj);
 		}
 	});
 };
