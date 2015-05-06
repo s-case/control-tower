@@ -43,15 +43,15 @@ module.exports = function(app){
                 if (rows.length > 0) {
                 	jwt.verify(scase_signature,rows[0].scase_secret,function(err,decoded){
                 		if(err){
-							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+							var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
+							res.status(401).send(Jobj);
                 		}
                 		if(decoded){
-                			if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
+                			if(decoded.scasetoken===scase_token){//we check if the produced signature is the same with the one provided
 			                	var user = rows[0];
 			                	connection = connConstant.connection;
-			                	var ownerflag;
+			                	ownerflag=false;
 			                	checkIfOwner(user,proj_name,function(ownerflag){
 									if(ownerflag==true){
 										var selectCollabQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE github_name = '" + github_name + "'";//query to select the user's details with the provided github name
@@ -61,47 +61,65 @@ module.exports = function(app){
 												" WHERE " + dbconfig.collaborators_table + ".user_id=" + "'" + rows[0].id + "'";//query to remove the collaborator
 												connection=connConstant.connection;
 												connection.query(removeCollabQuery, function(err, rows){
-													var obj = '{'+ '"collaborator '+github_name + '": "deleted"}';
 													if(err){
-														var obj = '{'+ '"collaborator '+github_name + '": "not deleted"}';
+														var obj = '{'+ '"message": "'+ err.code +'"}';
+														var Jobj=JSON.parse(obj);
+														res.status(500).send(Jobj);
 													}
-													var Jobj=JSON.parse(obj);
-													res.send(Jobj);
+													else if(rows){
+														var obj;
+														if(rows.affectedRows>0){
+															obj = '{'+ '"message": "collaborator '+github_name + ' deleted"}';
+														}
+														else{
+															obj = '{'+ '"message": "'+github_name +' does not collaborate on this project"}';
+														}
+														var Jobj=JSON.parse(obj);
+														res.status(200).send(Jobj);
+													}else{
+														var obj = '{'+ '"message": "user with ' + github_name +' does not exist"}';
+														var Jobj=JSON.parse(obj);
+														res.status(500).send(Jobj);
+
+
+													}
 							                	});
 						              		}
 						                	else{
-						              			var obj = '{'+ '"User with github_name  '+github_name + '": "does not exist"}';
+						              			var obj = '{'+ '"message": "user with ' + github_name +' does not exist"}';
 												var Jobj=JSON.parse(obj);
-												res.send(Jobj);
+												res.status(500).send(Jobj);
+
 						              		}
 
 						              	});
 									}
 									else if(ownerflag==false){
-										var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not own project ' + proj_name +' or the project does not exist"}';
+										//res.setHeader('Content-Type', 'application/json');
+										var obj = '{'+ '"message" : "User with this scase_token does not own project ' + proj_name +' or project does not exist"}';
 										var Jobj=JSON.parse(obj);
-										res.send(Jobj);
+										res.status(401).send(Jobj);
 									}
 								});
 							}
 							else{
-								var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.send(Jobj);
-		                	}
+								res.status(401).send(Jobj);
+	                		}
                 		}
                 		else{
-							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
-							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
-                		}
+								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
+								var Jobj=JSON.parse(obj);
+								res.status(401).send(Jobj);
+	                		}
                 	});
 					
                 }
                 else {
-					var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not exist in S-Case"}';
+					var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
-					res.send(Jobj);
+					res.status(401).send(Jobj);
 				}
             });
 		}
@@ -113,15 +131,15 @@ module.exports = function(app){
                 if (rows.length > 0) {
                 	jwt.verify(scase_signature,rows[0].scase_secret,function(err,decoded){
                 		if(err){
-							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
-							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
+								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
+								var Jobj=JSON.parse(obj);
+								res.status(401).send(Jobj);
                 		}
                 		if(decoded){
-                			if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
+                			if(decoded.scasetoken===scase_token){//we check if the produced signature is the same with the one provided
 			                	var user = rows[0];
 			                	connection = connConstant.connection;
-			                	var ownerflag;
+			                	ownerflag = false;
 			                	checkIfOwner(user,proj_name,function(ownerflag){
 			                		console.log(ownerflag);
 									if(ownerflag==true){
@@ -132,52 +150,69 @@ module.exports = function(app){
 												" WHERE " + dbconfig.collaborators_table + ".user_id=" + "'" + rows[0].id + "'";//query to remove the collaborator
 												connection=connConstant.connection;
 												connection.query(removeCollabQuery, function(err, rows){
-													var obj = '{'+ '"collaborator '+google_email + '": "deleted"}';
 													if(err){
-														var obj = '{'+ '"collaborator '+google_email + '": "not deleted"}';
+														var obj = '{'+ '"message": "'+ err.code +'"}';
+														var Jobj=JSON.parse(obj);
+														res.status(500).send(Jobj);
 													}
-													var Jobj=JSON.parse(obj);
-													res.send(Jobj);
+													else if(rows){
+														var obj;
+														if(rows.affectedRows>0){
+															obj = '{'+ '"message": "collaborator '+google_email + ' deleted"}';
+														}
+														else{
+															obj = '{'+ '"message": "'+google_email +' does not collaborate on this project"}';
+														}
+														var Jobj=JSON.parse(obj);
+														res.status(200).send(Jobj);
+													}
+													else{
+														var obj = '{'+ '"message": "user with ' + google_email +' does not exist"}';
+														var Jobj=JSON.parse(obj);
+														res.status(500).send(Jobj);
+													}
 							                	});
 						              		}
 						                	else{
-						              			var obj = '{'+ '"User with google email  '+google_email + '": "does not exist"}';
+												var obj = '{'+ '"message": "user with ' + google_email +' does not exist"}';
 												var Jobj=JSON.parse(obj);
-												res.send(Jobj);
-						              		}
+												res.status(500).send(Jobj);
+											}
 						              	});
 									}
 									else if(ownerflag==false){
-										var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not own project ' + proj_name +' or the project does not exist"}';
+										//res.setHeader('Content-Type', 'application/json');
+										var obj = '{'+ '"message" : "User with this scase_token does not own project ' + proj_name +' or project does not exist"}';
 										var Jobj=JSON.parse(obj);
-										res.send(Jobj);
+										res.status(401).send(Jobj);
 									}
 								});
 							}
 							else{
-								var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.send(Jobj);
-		                	}
+								res.status(401).send(Jobj);
+	                		}
                 		}
                 		else{
-							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
-							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
+								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
+								var Jobj=JSON.parse(obj);
+								res.status(401).send(Jobj);
                 		}
                 	});
                 }
                 else {
-					var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not exist in S-Case"}';
+					var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
-					res.send(Jobj);
+					res.status(401).send(Jobj);
 				}
             });
 		}
 		else{
-			var obj = '{'+ '"message": "you miss some parameters"}';
+			//res.setHeader('Content-Type', 'application/json');
+			var obj = '{"message": "you miss some parameters"}';
 			var Jobj=JSON.parse(obj);
-			res.send(Jobj);
+			res.status(400).send(Jobj);
 		}
 	});
 };

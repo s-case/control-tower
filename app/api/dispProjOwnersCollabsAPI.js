@@ -18,10 +18,10 @@ module.exports = function(app){
             			callback(ownerflag);
             		}
             		if(decoded){
-            			if(decoded.scasetoken==scase_token){//we check if the produced signature is the same with the one provided
+            			if(decoded.scasetoken===scase_token){//we check if the produced signature is the same with the one provided
 			            	var selectProjects = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 								".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
-							console.log(selectProjects)
+							console.log(decoded.scase_token)
 							connection.query(selectProjects, function(err, rows){
 								if (rows.length > 0) {
 					            	for(var i in rows){
@@ -59,9 +59,9 @@ module.exports = function(app){
 		if(proj_name&&scase_token&&scase_signature){
 			//flag that is going to be set to true only if own the project
 			//function to check if I own the project
+			ownerflag=false;
 			checkIfOwner(scase_token,proj_name,scase_signature,function(ownerflag){
 				if(ownerflag==true){
-					console.log('i m in');
 					var owners;//it is going to include all the owners (names and ids)
 					var collaborators;//it is going to include all the collaborators (names and ids)
 					function displayOwners (callback){
@@ -97,42 +97,56 @@ module.exports = function(app){
 						//console.log("owners"+owners);
 						//console.log("collabs"+collaborators);
 						displayCollaborators(function(){
-							var obj = '[{'+ '"owners" : "';
-							for (var i in owners){
-								if(owners[i].github_name!=null){
-									obj = obj + owners[i].github_name +",";
+							if(owners!=undefined||collaborators!=undefined){
+								var obj = '[{'+ '"owners" : "';
+								for (var i in owners){
+									if(owners[i].github_name!=null){
+										obj = obj + owners[i].github_name +",";
+									}
+									if(owners[i].google_email!=null){
+										obj = obj + owners[i].google_email +",";
+									}
 								}
-								if(owners[i].google_email!=null){
-									obj = obj + owners[i].google_email +",";
+								obj = obj.substring(0,obj.length-1)+'"},';
+								obj = obj + '{'+ '"collaborators" : "';
+								for (var i in collaborators){
+									if(collaborators[i].github_name!=null){
+										obj = obj + collaborators[i].github_name +",";
+									}
+									if(collaborators[i].google_email!=null){
+										obj = obj + collaborators[i].google_email +",";
+									}
 								}
+								if(collaborators!=undefined){
+									obj = obj.substring(0,obj.length-1)+'"}]';
+								}
+								else{
+									obj = obj+'"}]';
+								}
+								//var obj=JSON.parse(obj);
+								res.status(200).send(obj);
 							}
-							obj = obj.substring(0,obj.length-1)+'"},';
-							obj = obj + '{'+ '"collaborators" : "';
-							for (var i in collaborators){
-								if(collaborators[i].github_name!=null){
-									obj = obj + collaborators[i].github_name +",";
-								}
-								if(collaborators[i].google_email!=null){
-									obj = obj + collaborators[i].google_email +",";
-								}
+							else{
+								var obj = '{"message": "an error in mysql happened, sorry!"}';
+								var Jobj=JSON.parse(obj);
+								res.status(401).send(Jobj);
 							}
-							obj = obj.substring(0,obj.length-1)+'"}]';
-							//var obj=JSON.parse(obj);
-							res.send(obj);
+							
 						});
 					});
 				}
 				else if(ownerflag==false){
-					var obj = '{"User with the given scase_token or signature": "does not own the project and/or the project does not exist in S-Case"}';
+					var obj = '{"message": "User with the given scase_token or signature does not own the project and/or the project does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
-					res.send(Jobj);
+					res.status(401).send(Jobj);
 				}
 			});	
 		}
 		else{
-			var obj = '{'+ '"message": "you miss some parameters"}';
+			//res.setHeader('Content-Type', 'application/json');
+			var obj = '{"message": "you miss some parameters"}';
 			var Jobj=JSON.parse(obj);
-			res.send(Jobj);
+			res.status(400).send(Jobj);
 		}
 	});
 };

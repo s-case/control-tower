@@ -40,15 +40,15 @@ module.exports = function(app){
                 if (rows.length > 0) {
                 	jwt.verify(scase_signature,rows[0].scase_secret,function(err,decoded){
                 		if(err){
-							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+							var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
+							res.status(401).send(Jobj);
                 		}
                 		if(decoded){
-                			if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
+                			if(decoded.scasetoken==scase_token){//we check if the produced signature is the same with the one provided
 			                	var user = rows[0];
 			                	connection = connConstant.connection;
-			                	var ownerflag;
+			                	ownerflag=false;
 								checkIfOwner(user,proj_name,function(ownerflag){
 									if(ownerflag==true){
 										var deleteProjectQuery = "DELETE FROM " + dbconfig.projects_table+
@@ -56,45 +56,51 @@ module.exports = function(app){
 										//console.log(deleteProjectQuery);
 										connection=connConstant.connection;
 										connection.query(deleteProjectQuery, function(err, rows){
-											var obj = '{'+ '"project '+proj_name + '": "deleted"}';
 											if(err){
-												var obj = '{'+ '"project '+proj_name + '": "not deleted"}';
+												var obj = '{'+ '"message": "'+ err.code +'"}';
+												var Jobj=JSON.parse(obj);
+												res.status(500).send(Jobj);
 											}
-											var Jobj=JSON.parse(obj);
-											res.send(Jobj);
+											else if(rows){
+												var obj = '{'+ '"message": "project '+ proj_name + ' deleted"}';
+												var Jobj=JSON.parse(obj);
+												res.status(200).send(Jobj);
+											}
 						                });
 									}
 									else if(ownerflag==false){
-										var obj = '{'+ '"User with scase_token '+scase_token + '": "do not own the project and/or the project does not exist in S-Case"}';
+										//res.setHeader('Content-Type', 'application/json');
+										var obj = '{'+ '"message" : "User with scase_token '+scase_token + ' does not own project ' + proj_name +' or project does not exist"}';
 										var Jobj=JSON.parse(obj);
-										res.send(Jobj);
+										res.status(401).send(Jobj);
 									}
 								});
 							}
 		                	else{
-								var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.send(Jobj);
-		                	}		
+								res.status(401).send(Jobj);
+	                		}	
                 		}
                 		else{
-							var obj = '{'+ '"User with scase_token  '+scase_token + '": "do not exist in S-Case"}';
-							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
-						}
+								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
+								var Jobj=JSON.parse(obj);
+								res.status(401).send(Jobj);
+                		}
                 	});
                 }
-                else{
-					var obj = '{'+ '"User with scase_token  '+scase_token + '": "do not exist in S-Case"}';
+                else {
+					var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
-					res.send(Jobj);
+					res.status(401).send(Jobj);
 				}
             });
 		}
 		else{
-			var obj = '{'+ '"message": "you miss some parameters"}';
+			//res.setHeader('Content-Type', 'application/json');
+			var obj = '{"message": "you miss some parameters"}';
 			var Jobj=JSON.parse(obj);
-			res.send(Jobj);
+			res.status(400).send(Jobj);
 		}
 	});
 };

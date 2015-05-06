@@ -23,7 +23,7 @@ module.exports = function(app){
                 if (rows.length > 0) {
                 	jwt.verify(scase_signature,rows[0].scase_secret,function(err,decoded){
                 		if(err){
-							var obj = '{"message": "User with scase_signature '+scase_signature + 'does not exist in S-Case"}';
+							var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 							var Jobj=JSON.parse(obj);
 							res.status(401).send(Jobj);
                 		}
@@ -80,20 +80,20 @@ module.exports = function(app){
 						        }); 
 		                	}
 		                	else{
-								var obj = '{"message": "User with scase_token '+scase_token + 'does not exist in S-Case"}';
+								var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
 								res.status(401).send(Jobj);
 	                		}
 	                	}
 	                	else{
-							var obj = '{"message": "User with scase_signature '+scase_signature + 'does not exist in S-Case"}';
+							var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 							var Jobj=JSON.parse(obj);
 							res.status(401).send(Jobj);
 	                	}
                 	});
                 }
                 else {
-					var obj = '{"message": "User with scase_token '+scase_token+ 'does not exist in S-Case"}';
+					var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
 					res.status(401).send(Jobj);
 				}

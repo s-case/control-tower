@@ -27,9 +27,9 @@ module.exports = function(app){
                 if (rows.length > 0) {
                 	jwt.verify(scase_signature,rows[0].scase_secret,function(err,decoded){
                 		if(err){
-							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+							var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 							var Jobj=JSON.parse(obj);
-							res.send(Jobj);
+							res.status(401).send(Jobj);
                 		}
                 		if(decoded){
                 			if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
@@ -37,7 +37,12 @@ module.exports = function(app){
 			                	connection = connConstant.connection;
 								//we select the user from the user's table (just to check if the user exists)
 								connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'", function(err, rows){
-						            if (rows.length > 0) {
+						            if(err){
+											var obj = '{'+ '"message": "'+ err.code +'"}';
+											var Jobj=JSON.parse(obj);
+											res.status(500).send(Jobj);
+										}
+						            else if (rows.length > 0) {
 						                user = rows[0];
 						                var scasetoken = scasetokenCreate(35)//we create a new scase token
 						                user.scase_token=scasetoken;
@@ -48,9 +53,9 @@ module.exports = function(app){
 				                        connection = connConstant.connection;
 						                connection.query(updateQuery, function(err, rows) {
 											if (err){
-												var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not exist in S-Case"}';
+												var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
 												var Jobj=JSON.parse(obj);
-												res.send(Jobj);
+												res.status(401).send(Jobj);
 											}
 											else{
 												var obj = '{'+ '"newSCASEtoken" : "'+scasetoken+'"}';
@@ -62,28 +67,30 @@ module.exports = function(app){
 						        });
 							}
 		                	else{
-								var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
+								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.send(Jobj);
+								res.status(401).send(Jobj);
 		                	}
                 		}
-                		else{
-							var obj = '{'+ '"User with scase_signature: '+scase_signature + '": "does not exist in S-Case"}';
-							var Jobj=JSON.parse(obj);
-						}
+                		 else{
+								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
+								var Jobj=JSON.parse(obj);
+								res.status(401).send(Jobj);
+	                	}
                 	});
                 }
-                else {
-					var obj = '{'+ '"User with scase_token  '+scase_token + '": "does not exist in S-Case"}';
-					var Jobj=JSON.parse(obj);
-					res.send(Jobj);
-				}
+                else{
+								var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
+								var Jobj=JSON.parse(obj);
+								res.status(401).send(Jobj);
+		                	}
 			});
 		}
 		else{
-			var obj = '{'+ '"message": "you miss some parameters"}';
+			//res.setHeader('Content-Type', 'application/json');
+			var obj = '{"message": "you miss some parameters"}';
 			var Jobj=JSON.parse(obj);
-			res.send(Jobj);
+			res.status(400).send(Jobj);
 		}
 	});
 };
