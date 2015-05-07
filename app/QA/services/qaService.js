@@ -1,4 +1,4 @@
-angular.module('qaService', [])
+angular.module('qaServiceModule', [])
 	// super simple service
 	// each function returns a promise object 
 	.factory('qaFactory', function($http) {

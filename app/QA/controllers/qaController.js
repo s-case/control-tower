@@ -1,7 +1,7 @@
-angular.module('qaController', [])
+angular.module('qaControllerModule', [])
 
 	// inject the Todo service factory into our controller
-	.controller('mainController', function($scope, $http, qaFactory) {
+	.controller('qaController', function($scope, $http, qaFactory) {
 		$scope.formData = {};
 
 		// GET =====================================================================

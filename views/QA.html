@@ -1,76 +1,130 @@
 <!doctype html>
 
 <!-- ASSIGN OUR ANGULAR MODULE -->
-<html ng-app="qaApp">
-<head>
-	<!-- META -->
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1"><!-- Optimize mobile viewport -->
-
-	<title>Node/Angular Todo App</title>
-
-	<!-- SCROLLS -->
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
-	<style>
-		html 					{ overflow-y:scroll; }
-		body 					{ padding-top:50px; }
-		#todo-list 				{ margin-bottom:30px; }
-		#todo-form 	 			{ margin-bottom:50px; }
-	</style>
-
-	<!-- SPELLS -->
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.4/angular.min.js"></script><!-- load angular 1.2.4 -->
-
-	<script src="js/controllers/qaController.js"></script> <!-- load up our controller -->
-	<script src="js/services/qaService.js"></script> <!-- load our todo service -->
-	<script src="js/coreQA.js"></script> <!-- load our main application -->
-
-</head>
+<html ng-app="QAApp">
+<% include header %>
+<% include navbar %>
 <!-- SET THE CONTROLLER -->
-<body ng-controller="mainController">
-	<div class="container">
+<body class="container" ng-controller="QAController as qa">
+<!---Tabs creation, selection of active and set of default to the requirements tab-->
+	<section class="tab" ng-controller="TabController as tab">
+		<!-- the tabs of our results -->
+        <ul class="nav nav-tabs">
+          	<li ng-class="{active: tab.isSet(1)}">
+	            <a href ng-click="tab.setTab(1)">Requirements</a>
+            </li>
+	        <li ng-class="{active: tab.isSet(2)}">
+	            <a href ng-click="tab.setTab(2)">Use Case Diagrams</a>
+            </li>
+          	<li ng-class="{active: tab.isSet(3)}">
+	            <a href ng-click="tab.setTab(3)">Activity Diagrams</a>
+            </li>
+            <li ng-class="{active: tab.isSet(4)}">
+	            <a href ng-click="tab.setTab(4)">Analysis Class Diagrams</a>
+            </li>
+            <li ng-class="{active: tab.isSet(5)}">
+	            <a href ng-click="tab.setTab(5)">Storyboards Diagrams</a>
+            </li>
+            <li ng-class="{active: tab.isSet(6)}">
+	            <a href ng-click="tab.setTab(6)">Source Codes</a>
+            </li>
+            <li ng-class="{active: tab.isSet(7)}">
+	            <a href ng-click="tab.setTab(7)">S-CASE services</a>
+            </li>
+        </ul>
+        <!-- Requirements -->
+        <div class="tab" ng-show="tab.isSet(1)">
+			<div class="panel panel-info">
+	  		<div class="panel-heading">Requirements</div>
+		  	<div class="panel-body">
+			  	<ul class="list-group" ng-repeat="req in qa.reqs">
+			  	  	<li class="list-group-item">Classification: {{req.requirement}}</li>
+				  	<li class="list-group-item">Text: {{req.text}} </li>
+				  	<li class="list-group-item">Belong to Project: {{req.projectId}}</li>
+				  	<li class="list-group-item">Link to File: {{req.link}}</li>
+				  	<li class="list-group-item">Language: {{req.language}}</li>
+				</ul>
+		  	</div>
+      	</div>
+		<!-- Use case Diagrams -->
+        <div class="tab" ng-show="tab.isSet(2)">
+	        <div class="panel panel-info">
+		  	<div class="panel-heading">Use Case Diagrams</div>
+		  	<div class="panel-body">
+		  		<ul class="list-group" ng-repeat="usecasediagram in qa.usecasediagrams">
+		  			<!-- separate panel for actors -->
+		  			<li class="list-group-item">
+			  			<div class="panel-heading">Actors</div>
+			  			<div class="panel-body">
+				 			<ul class="list-group">
+				 				<li class="list-group-item" ng-repeat="actor in usecasediagram.actors">Actor: {{actor}}</li>
+				 			</ul>
+			 			</div>
+		 			</li>
+		 			<!-- separate panel for Use Cases -->
+		 			<li class="list-group-item">
+			  			<div class="panel-heading">Use Case</div>
+			  			<div class="panel-body">
+				 			<ul class="list-group">
+				 				<li class="list-group-item" ng-repeat="usecase in usecasediagrams.usecases">Usecase:{{usecase}}</li>
+				 			</ul>
+			 			</div>
+		 			</li>
+				  	<li class="list-group-item">Belong to Project: {{usecase.projectId}}</li>
+			  	  	<li class="list-group-item">Format: {{usecase.format}}</li>
+				  	<li class="list-group-item">Link to File: {{usecase.link}}</li>
+			  		<li class="list-group-item">Relation: {{req.relation}}</li>
+				</ul>
+		  	</div>
+			</div> 
+        </div>
 
-		<!-- HEADER AND TODO COUNT -->
-		<div class="jumbotron text-center">
-			<h1>I'm a Todo-aholic <span class="label label-info">{{ todos.length }}</span></h1>
-		</div>
-
-		<!-- TODO LIST -->
-		<div id="todo-list" class="row">
-			<div class="col-sm-4 col-sm-offset-4">
-
-				<!-- LOOP OVER THE TODOS IN $scope.todos -->
-				<div class="checkbox" ng-repeat="todo in todos">
-					<label>
-						<input type="checkbox" ng-click="deleteTodo(todo._id)"> {{ todo.text }}
-					</label>
-				</div>
-
+		<!---display usecases data-->
+        <div class="tab" ng-show="tab.isSet(3)">
+         	<div class = "usecases row" ng-repeat="usecase in qa.usecases">
+		
 			</div>
-		</div>
+        </div>
 
-		<!-- FORM TO CREATE TODOS -->
-		<div id="todo-form" class="row">
-			<div class="col-sm-8 col-sm-offset-2 text-center">
-				<form>
-					<div class="form-group">
-
-						<!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
-						<input type="text" class="form-control input-lg text-center" placeholder="I want to buy a puppy that will love me forever" ng-model="formData.text">
-					</div>
-
-					<!-- createToDo() WILL CREATE NEW TODOS -->
-					<button type="submit" class="btn btn-primary btn-lg" ng-click="createTodo()">Add</button>
-				</form>
+        <!---display activitydiagrams data-->
+        <div class="tab" ng-show="tab.isSet(4)">
+         	<div class = "activitydiagrams row" ng-repeat="acitivitydiagram in qa.activitydiagrams">
+		
 			</div>
-		</div>
+        </div>
 
-		<div class="text-center text-muted">
-			<p>A demo by <a href="http://scotch.io">Scotch</a>.</p>
-			<p>Read the <a href="http://scotch.io/tutorials/javascript/creating-a-single-page-todo-app-with-node-and-angular">tutorial</a>.</p>
-		</div>
+        <!---display classdiagrams data-->
+        <div class="tab" ng-show="tab.isSet(5)">
+			<div class = "classdiagrams row" ng-repeat="classdiagram in qa.classdiagrams">
+				
+			</div>
+        </div>
 
-	</div>
+		<!---display storyboards data-->
+        <div class="tab" ng-show="tab.isSet(6)">
+			<div class = "storyboards row" ng-repeat="storyboard in qa.storyboards ">
+			
+			</div>
+        </div>
 
+        <!---display sourcecodes data-->
+        <div class="tab" ng-show="tab.isSet(7)">
+         	<div class = "sourcecodes row" ng-repeat="sourcecode in qa.sourcecodes">
+		
+			</div>
+        </div>
+
+        <!---display services data-->
+        <div class="tab" ng-show="tab.isSet(8)">
+         	<div class = "services row" ng-repeat="service in qa.services">
+		
+			</div>
+        </div>
+
+        
+  	</section>
+	
+	
+	
 </body>
 </html>
