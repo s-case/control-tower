@@ -33,7 +33,7 @@
             </li>
         </ul>
         <!-- Requirements -->
-        <div class="tab" ng-show="tab.isSet(1)">
+        <div ng-show="tab.isSet(1)">
 			<div class="panel panel-info">
 	  		<div class="panel-heading">Requirements</div>
 		  	<div class="panel-body">
@@ -47,7 +47,7 @@
 		  	</div>
       	</div>
 		<!-- Use case Diagrams -->
-        <div class="tab" ng-show="tab.isSet(2)">
+        <div ng-show="tab.isSet(2)">
 	        <div class="panel panel-info">
 		  	<div class="panel-heading">Use Case Diagrams</div>
 		  	<div class="panel-body">
@@ -80,42 +80,42 @@
         </div>
 
 		<!---display usecases data-->
-        <div class="tab" ng-show="tab.isSet(3)">
+        <div ng-show="tab.isSet(3)">
          	<div class = "usecases row" ng-repeat="usecase in qa.usecases">
 		
 			</div>
         </div>
 
         <!---display activitydiagrams data-->
-        <div class="tab" ng-show="tab.isSet(4)">
+        <div ng-show="tab.isSet(4)">
          	<div class = "activitydiagrams row" ng-repeat="acitivitydiagram in qa.activitydiagrams">
 		
 			</div>
         </div>
 
         <!---display classdiagrams data-->
-        <div class="tab" ng-show="tab.isSet(5)">
+        <div ng-show="tab.isSet(5)">
 			<div class = "classdiagrams row" ng-repeat="classdiagram in qa.classdiagrams">
 				
 			</div>
         </div>
 
 		<!---display storyboards data-->
-        <div class="tab" ng-show="tab.isSet(6)">
+        <div ng-show="tab.isSet(6)">
 			<div class = "storyboards row" ng-repeat="storyboard in qa.storyboards ">
 			
 			</div>
         </div>
 
         <!---display sourcecodes data-->
-        <div class="tab" ng-show="tab.isSet(7)">
+        <div ng-show="tab.isSet(7)">
          	<div class = "sourcecodes row" ng-repeat="sourcecode in qa.sourcecodes">
 		
 			</div>
         </div>
 
         <!---display services data-->
-        <div class="tab" ng-show="tab.isSet(8)">
+        <div ng-show="tab.isSet(8)">
          	<div class = "services row" ng-repeat="service in qa.services">
 		
 			</div>

@@ -72,14 +72,16 @@
 	link: link to file
 	domainOntology: link to domain ontology residing in the ontology repo
   */
-  
+
   //controller to set the default tab value and to check if it is active
   app.controller('TabController',function(){
-  	this.tab=1;
-    this.selectTab = function(setTab){
+  	this.tab=1;//default tab to be active
+  	//set the tab active on click
+    this.setTab = function(setTab){
     	this.tab=setTab;
     };
-    this.isSelected = function(checkTab){
+    //returns true/false checking if the tab is active
+    this.isSet = function(checkTab){
     	return this.tab===checkTab;
     };
   });
