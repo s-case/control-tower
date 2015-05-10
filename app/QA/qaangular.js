@@ -130,7 +130,7 @@
 		  		console.log(status);
 		  	});
 	    };
-  	});
+  	}]);
 
 	
   	//controller to display the data that we got from the S-CASE artefacts repo
