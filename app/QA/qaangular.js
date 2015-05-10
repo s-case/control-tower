@@ -1,5 +1,5 @@
-//(function(){
-module.exports = function(app, passport) {
+(function(){
+//module.exports = function(app, passport) {
 	var domains = [];//all the domains that exist in the S-CASE artefacts repo
 	var subdomains = [];//all the subdomains that exist in the S-CASE artefacts repo
 	var projects = []; //projects of S-CASE artefacts repo
@@ -169,7 +169,7 @@ module.exports = function(app, passport) {
 
 }
 
-function isLoggedIn(req, res, next) {
+/*function isLoggedIn(req, res, next) {
 	var connConstant = require('../../config/ConnectConstant');
 	var connection;
 	connection = connConstant.connection;
@@ -177,6 +177,6 @@ function isLoggedIn(req, res, next) {
 		return next();
 
 	res.redirect('/');
-}
+}*/
 
 )();
