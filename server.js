@@ -71,7 +71,8 @@ require('./app/api/addOwnerProjOwnAPI.js') (app);//add an owner to a project I o
 require('./app/api/addCollabProjOwnAPI.js') (app);//add a collaborator to a project I own
 require('./app/api/createProjOwnAPI.js') (app);//create a project I own
 require('./app/api/changePrivacyProjOwnAPI.js') (app);//change privacy level in a project I own
-require('./app/routes/QA/qaangular.js') (app);//access the QA
+require('./app/QA/qaangular.js');//access the QA
+require('./app/routes/qaroutes/routeQAbringResults.js');//access the QA
 // launch ======================================================================
 app.listen(port);
 console.log('The magic happens on port ' + port);
