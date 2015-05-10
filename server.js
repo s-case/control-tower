@@ -31,7 +31,7 @@ app.use(bodyParser.json()); // get information from html forms
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set('view engine', 'ejs'); // set up ejs for templating
-
+app.engine('html', require('ejs').renderFile);
 // required for passport
 app.use(session({ secret: process.env.SCASE_SECRET })); // session secret
 app.use(passport.initialize());

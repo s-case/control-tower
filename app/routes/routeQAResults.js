@@ -7,7 +7,7 @@ module.exports = function(app, passport) {
 	// Got to QA ======================================
 	// =============================================================================
 	app.get('/QA', isLoggedIn, function(req, res) {
-		res.render('QA.html')
+		res.render('/views/QA.html')
 	});
 };
 // route middleware to ensure user is logged i
