@@ -89,8 +89,8 @@
 		  	error(function(status){
 		  		console.log(status);
 		  	});
-	  	domains=SearchPage.domains;//we set the global variable of domains equal to the domains that we got from S-CASE artefacts repo
-	  	subdomains=SearchPage.subdomains;//we set the global variable of subdomains equal to the subdomains that we got from S-CASE artefacts repo
+	  	this.domains=SearchPage.domains;//we set the global variable of domains equal to the domains that we got from S-CASE artefacts repo
+	  	this.subdomains=SearchPage.subdomains;//we set the global variable of subdomains equal to the subdomains that we got from S-CASE artefacts repo
 
 	  	this.searchQuery = {};//it will contain the query to perform to the S-CASE artefacts repo
 	  	//it will contain the following:
@@ -132,18 +132,6 @@
 		  	});
 	    };
   	}]);
-
-	
-  	//controller to display the data that we got from the S-CASE artefacts repo
-  	app.controller('ResultsController', function(){
-	  	this.requirements = requirements;
-	  	this.usecasediagrams = usecasediagrams;
-	  	this.activitydiagrams = activitydiagrams;
-	  	this.classdiagrams = classdiagrams;
-	  	this.storyboards = storyboards;
-	  	this.sourcecodes = sourcecodes;
-	  	this.scaseservices = scaseservices;
-  	});
   	
 	//controller to set the default tab value and to check if it is active
   	app.controller('TabController',function(){
@@ -158,26 +146,4 @@
 	    };
   	});
 
-
- 
-
-  
-
-
-
-
-
-
-}
-
-/*function isLoggedIn(req, res, next) {
-	var connConstant = require('../../config/ConnectConstant');
-	var connection;
-	connection = connConstant.connection;
-	if (req.isAuthenticated())
-		return next();
-
-	res.redirect('/');
-}*/
-
-)();
+})();
