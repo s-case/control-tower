@@ -2,7 +2,7 @@
 <% include header %>
 <% include navbar %>
 <!-- ASSIGN OUR ANGULAR MODULE -->
-<html ng-app="QAApp">
+<html ng-app="qaApp">
 <!-- SET THE CONTROLLER -->
 <body class="container" ng-controller="SearchController as searchCtrl">
 <!---Tabs creation, selection of active and set of default to the requirements tab-->
@@ -10,7 +10,7 @@
 		<!-- the tabs of our results -->
         <ul class="nav nav-tabs">
         	<li ng-class="{active: tab.isSet(1)}">
-	            <a href ng-click="tab.setTab(1)">SearchController</a>
+	            <a href ng-click="tab.setTab(1)">Search</a>
             </li>
           	<li ng-class="{active: tab.isSet(2)}">
 	            <a href ng-click="tab.setTab(2)">Requirements</a>

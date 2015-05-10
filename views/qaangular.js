@@ -1,4 +1,5 @@
 (function(){
+	var app = angular.module('qaApp', []);
 //module.exports = function(app, passport) {
 	var domains = [];//all the domains that exist in the S-CASE artefacts repo
 	var subdomains = [];//all the subdomains that exist in the S-CASE artefacts repo
@@ -66,7 +67,7 @@
 	  link: link to file
 	  domainOntology: link to domain ontology residing in the ontology repo
 	  */
-  	var app = angular.module('QAApp', []);
+  	
 
   	//controloller to perform the search to the S-CASE artefacts repo
   	app.controller('SearchController',['http',function($http){
