@@ -5,166 +5,36 @@
 <% include header %>
 <% include navbar %>
 
-<input ng-model="qasearch."
-
-
-<!-- SET THE CONTROLLER -->
-<body class="container" ng-controller="QAController as qaCtrl">
-	<form name="reviewForm" ng-controller="SearchController as searchCtrl" ng-submit="searchCtrl.doSearch(searchQuery)">
-		
+<!-- controller from which we get the info from the S-CASE artefacts Repo-->
+<body class="container" ng-controller="SearchController as searchCtrl">
+	<!-- controller to which we pass data to perform the search to the S-CASE artefacts Repo -->
+	<form name="reviewForm"  ng-submit="searchCtrl.doSearch()">
 
 		<!-- we have to add checked box and angularjs connection-->
 		<fieldset class="form-group">
 		  <h2>Domain(s) of Interest</h2>
-		    <div ng-model="searchCtrl.domain" ng-repeat="domain in searchCtrl.domains" class="checkbox">
-		      <label><input type="checkbox" value="">{{domain}}</label>
-		    </div>
+		    <input ng-model="searchCtrl.searchQuery.domainQuery" ng-repeat="domain in qaCtrl.domains" type="checkbox" />{{domain}}
 		</fieldset>
 
 		<fieldset class="form-group">
 		  <h2>Sub-Domain(s) of Interest</h2>
-		    <div ng-model="searchCtrl.subdomain" class="checkbox" ng-repeat="subdomain in searchCtrl.subdomains">
-		      <label><input type="checkbox" value="">{{subdomain}}</label>
-		    </div>
+		    <input ng-model="searchCtrl.searchQuery.subdomainQuery" type="checkbox" ng-repeat="subdomain in qaCtrl.subdomains">{{subdomain}}
 		</fieldset>
 
 		<fieldset class="form-group">
-	        <select ng-model="searchCtrl.requirementsClass" class="form-control" ng-options="reqsClass for reqsClasses in [Functional,Non-Functional (Quality), Both]" title="Stars">
+	        <select ng-model="searchCtrl.searchQuery.requirementsClass" class="form-control" ng-options="reqsClass for reqsClasses in [Functional,Non-Functional (Quality), Both]" title="Stars">
 	          <option value>Requirements classification</option>
 	        </select>
      	</fieldset>
 
 		<fieldset class="form-group">
 			<h2>Operations</h2>
-			<textarea ng-model="searchCtrl.operations" class="form-control" placeholder="Operations (separated by comma)" title="Operations"></textarea>
+			<textarea ng-model="searchCtrl.searchQuery.operations" class="form-control" placeholder="Operations (separated by comma)" title="Operations"></textarea>
 		</fieldset>
 
 		<fieldset class="form-group">
         	<input type="submit" class="btn btn-primary pull-right" value="Submit Review" />
       	</fieldset>
-	</form>
-
-<!-- SET THE CONTROLLER -->
-<body class="container" ng-controller="QAController as qaCtrl">
-<!---Tabs creation, selection of active and set of default to the requirements tab-->
-	<section class="tab" ng-controller="TabController as tab">
-		<!-- the tabs of our results -->
-        <ul class="nav nav-tabs">
-          	<li ng-class="{active: tab.isSet(1)}">
-	            <a href ng-click="tab.setTab(1)">Requirements</a>
-            </li>
-	        <li ng-class="{active: tab.isSet(2)}">
-	            <a href ng-click="tab.setTab(2)">Use Case Diagrams</a>
-            </li>
-          	<li ng-class="{active: tab.isSet(3)}">
-	            <a href ng-click="tab.setTab(3)">Activity Diagrams</a>
-            </li>
-            <li ng-class="{active: tab.isSet(4)}">
-	            <a href ng-click="tab.setTab(4)">Analysis Class Diagrams</a>
-            </li>
-            <li ng-class="{active: tab.isSet(5)}">
-	            <a href ng-click="tab.setTab(5)">Storyboards Diagrams</a>
-            </li>
-            <li ng-class="{active: tab.isSet(6)}">
-	            <a href ng-click="tab.setTab(6)">Source Codes</a>
-            </li>
-            <li ng-class="{active: tab.isSet(7)}">
-	            <a href ng-click="tab.setTab(7)">S-CASE services</a>
-            </li>
-        </ul>
-        <!-- Requirements -->
-        <div ng-show="tab.isSet(1)">
-			<div class="panel panel-info">
-	  		<div class="panel-heading">Requirements</div>
-		  	<div class="panel-body">
-			  	<ul class="list-group" ng-repeat="req in qaCtrl.reqs">
-			  	  	<li class="list-group-item">Classification: {{req.requirement}}</li>
-				  	<li class="list-group-item">Text: {{req.text}} </li>
-				  	<li class="list-group-item">Belong to Project: {{req.projectId}}</li>
-				  	<li class="list-group-item">Link to File: {{req.link}}</li>
-				  	<li class="list-group-item">Language: {{req.language}}</li>
-				</ul>
-		  	</div>
-      	</div>
-		<!-- Use case Diagrams -->
-        <div ng-show="tab.isSet(2)">
-	        <div class="panel panel-info">
-		  	<div class="panel-heading">Use Case Diagrams</div>
-		  	<div class="panel-body">
-		  		<ul class="list-group" ng-repeat="usecasediagram in qaCtrl.usecasediagrams">
-		  			<!-- separate panel for actors -->
-		  			<li class="list-group-item">
-			  			<div class="panel-heading">Actors</div>
-			  			<div class="panel-body">
-				 			<ul class="list-group">
-				 				<li class="list-group-item" ng-repeat="actor in usecasediagram.actors">Actor: {{actor}}</li>
-				 			</ul>
-			 			</div>
-		 			</li>
-		 			<!-- separate panel for Use Cases -->
-		 			<li class="list-group-item">
-			  			<div class="panel-heading">Use Case</div>
-			  			<div class="panel-body">
-				 			<ul class="list-group">
-				 				<li class="list-group-item" ng-repeat="usecase in usecasediagrams.usecases">Usecase:{{usecase}}</li>
-				 			</ul>
-			 			</div>
-		 			</li>
-				  	<li class="list-group-item">Belong to Project: {{usecase.projectId}}</li>
-			  	  	<li class="list-group-item">Format: {{usecase.format}}</li>
-				  	<li class="list-group-item">Link to File: {{usecase.link}}</li>
-			  		<li class="list-group-item">Relation: {{req.relation}}</li>
-				</ul>
-		  	</div>
-			</div> 
-        </div>
-
-		<!---display usecases data-->
-        <div ng-show="tab.isSet(3)">
-         	<div class = "usecases row" ng-repeat="usecase in qaCtrl.usecases">
-		
-			</div>
-        </div>
-
-        <!---display activitydiagrams data-->
-        <div ng-show="tab.isSet(4)">
-         	<div class = "activitydiagrams row" ng-repeat="acitivitydiagram in qaCtrl.activitydiagrams">
-		
-			</div>
-        </div>
-
-        <!---display classdiagrams data-->
-        <div ng-show="tab.isSet(5)">
-			<div class = "classdiagrams row" ng-repeat="classdiagram in qaCtrl.classdiagrams">
-				
-			</div>
-        </div>
-
-		<!---display storyboards data-->
-        <div ng-show="tab.isSet(6)">
-			<div class = "storyboards row" ng-repeat="storyboard in qaCtrl.storyboards ">
-			
-			</div>
-        </div>
-
-        <!---display sourcecodes data-->
-        <div ng-show="tab.isSet(7)">
-         	<div class = "sourcecodes row" ng-repeat="sourcecode in qaCtrl.sourcecodes">
-		
-			</div>
-        </div>
-
-        <!---display services data-->
-        <div ng-show="tab.isSet(8)">
-         	<div class = "services row" ng-repeat="service in qaCtrl.services">
-		
-			</div>
-        </div>
-
-        
-  	</section>
-	
-	
-	
+	</form>	
 </body>
 </html>
