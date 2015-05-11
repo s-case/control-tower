@@ -31,9 +31,10 @@ app.use(bodyParser.json()); // get information from html forms
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //app.set("view options", {layout: false});
-//app.use(express.static(__dirname + '/views'));
+//
 
 app.set('view engine', 'ejs'); // set up ejs for templating
+app.use(express.static(__dirname + '/views'));
 app.engine('html', require('ejs').renderFile);
 
 // required for passport

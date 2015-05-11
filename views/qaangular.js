@@ -1,8 +1,9 @@
 (function(){
-	var app = angular.module('qaApp', []);
-//module.exports = function(app, passport) {
-	var domains = [];//all the domains that exist in the S-CASE artefacts repo
-	var subdomains = [];//all the subdomains that exist in the S-CASE artefacts repo
+	var app = angular.module('qaApp', ["checklist-model"]);
+
+  	var requirementsClasses = [{name: 'Functional'},{name: 'Quality'},{name: 'Both'}];
+  	var domains = [{name: 'skata'},{name:'hoho'},{name: 'yep'}];//all the domains that exist in the S-CASE artefacts repo
+	var subdomains = [{name: 'skata2'},{name:'hoho2'},{name:'yep2'}];//all the subdomains that exist in the S-CASE artefacts repo
 	var projects = []; //projects of S-CASE artefacts repo
 	  /* Project detals
 	    domain: value picked out of a pre-specified list of domains
@@ -67,32 +68,36 @@
 	  link: link to file
 	  domainOntology: link to domain ontology residing in the ontology repo
 	  */
-  	
 
   	//controloller to perform the search to the S-CASE artefacts repo
-  	app.controller('SearchController',['http',function($http){
+  	app.controller('SearchController',['$http',function($http){
 
   		var SearchPage  = this;//we set this to a variable in order to use it in http
 	  	SearchPage.domains=[];//we are going to save the domains here
 	  	SearchPage.subdomains=[];//we are going to save the subdomains here
-	  	$http.get('/api/ArtsRepo/Domains').
-		  	success(function(data){
+	  	SearchPage.domains=domains;
+	  	SearchPage.subdomains=subdomains;
+	  	SearchPage.requirementsClasses=requirementsClasses;
+	  	//console.log(domains);
+	  	$http.get('/api/ArtsRepo/Domains')
+	  		.success(function(data){
 		  		SearchPage.domains=data;
-		  	}).
-		  	error(function(status){
+		  	})
+		  	.error(function(status){
 		  		console.log(status);
 		  	});
-	  	$http.get('/api/ArtsRepo/Subdomains').
-		  	success(function(data){
+	  	$http.get('/api/ArtsRepo/Subdomains')
+	  		.success(function(data){
 		  		SearchPage.subdomains=data;
-		  	}).
-		  	error(function(status){
+		  	})
+		  	.error(function(status){
 		  		console.log(status);
 		  	});
-	  	domains=SearchPage.domains;//we set the global variable of domains equal to the domains that we got from S-CASE artefacts repo
-	  	subdomains=SearchPage.subdomains;//we set the global variable of subdomains equal to the subdomains that we got from S-CASE artefacts repo
-
-	  	this.searchQuery = {};//it will contain the query to perform to the S-CASE artefacts repo
+	  	//domains=SearchPage.domains;//we set the global variable of domains equal to the domains that we got from S-CASE artefacts repo
+	  	//subdomains=SearchPage.subdomains;//we set the global variable of subdomains equal to the subdomains that we got from S-CASE artefacts repo
+	  	
+	  	
+	  	SearchPage.searchQuery = {};//it will contain the query to perform to the S-CASE artefacts repo
 	  	//it will contain the following:
 	  	//searchQuery.domainQuery the domain of interest of the user
 	  	//searchQuery.subdomainQuery the subdomain of interest of the use
@@ -100,18 +105,57 @@
 	  	//searchQuery.operations (the operations in free text)
 
 	    SearchPage.searchResults=[];//it will include the results for the specific search
-
+	    
+	    this.checkAllDomains = function(){
+	    	SearchPage.searchQuery.domainQuery = SearchPage.domains;
+	    };
+	    this.uncheckAllDomains = function(){
+	    	SearchPage.searchQuery.domainQuery = [];
+	    };
+	    this.checkAllSubDomains = function(){
+	    	SearchPage.searchQuery.subdomainQuery = SearchPage.subdomains;
+	    };
+	    this.uncheckAllSubDomains = function(){
+	    	SearchPage.searchQuery.subdomainQuery = [];
+	    };
 	    //function to perform the search to S-CASE artefacts repo
 	    this.doSearch = function(){
 	    	//it will contain the current query because inside http "this" refers to http and not to the controller
-	    	var currentQuery = this.searchQuery;
+	    	var currentQuery = SearchPage.searchQuery;
+	    	console.log(currentQuery);
+	    	var domainsString="";
+	    	if(currentQuery.domainQuery){
+	    		currentQuery.domainQuery.forEach(function(i){
+		    		console.log(i.name);
+		    		domainsString=domainsString+"+"+i.name;
+		    	});
+		    	if(domainsString.indexOf("+")>-1){
+		    		domainsString = domainsString.substring(1);
+		    	}
+	    	}
+	    	if(domainsString===""){
+	    		domainsString="all";
+	    	}	    	
+	    	var subdomainsString="";
+	    	if(currentQuery.subdomainQuery){
+	    		currentQuery.subdomainQuery.forEach(function(i){
+		    		console.log(i.name);
+		    		subdomainsString=subdomainsString+"+"+i.name;
+		    	});
+		    	if(subdomainsString.indexOf("+")>-1){
+		    		subdomainsString = subdomainsString.substring(1);
+		    	}	
+	    	}
+	    	if(subdomainsString===""){
+	    		subdomainsString="all";
+	    	}	    	
 	    	$http({
 	   			url: 'api/ArtsRepo/Results',
 	   			method: "GET",
 	   			params: {
-	   				domain: currentQuery.domainQuery,
-	   				subdomain: currentQuery.subdomainQuery,
-	   				requirements: currentQuery.requirementsClass,
+	   				domains: domainsString,
+	   				subdomains: subdomainsString,
+	   				requirements: currentQuery.requirementsClass.name,
 	   				operations: currentQuery.operations
 	   			}
 	   		})
@@ -158,26 +202,4 @@
 	    };
   	});
 
-
- 
-
-  
-
-
-
-
-
-
-}
-
-/*function isLoggedIn(req, res, next) {
-	var connConstant = require('../../config/ConnectConstant');
-	var connection;
-	connection = connConstant.connection;
-	if (req.isAuthenticated())
-		return next();
-
-	res.redirect('/');
-}*/
-
-)();
+})();

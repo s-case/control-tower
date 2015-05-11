@@ -1,11 +1,12 @@
 <!doctype html>
-<% include header %>
-<% include navbar %>
 <!-- ASSIGN OUR ANGULAR MODULE -->
 <html ng-app="qaApp">
+<% include header %>
+<% include navbar %>
 <!-- SET THE CONTROLLER -->
-<body class="container" ng-controller="SearchController as searchCtrl">
+<body class="container">
 <!---Tabs creation, selection of active and set of default to the requirements tab-->
+	<!--<section class="tab" ng-controller="TabController as tab">-->
 	<section class="tab" ng-controller="TabController as tab">
 		<!-- the tabs of our results -->
         <ul class="nav nav-tabs">
@@ -38,32 +39,41 @@
         <div ng-show="tab.isSet(1)">
 			<div class="panel panel-info">
 		  		<div class="panel-heading">Search</div>
-			  	<div class="panel-body">
-			        <form name="reviewForm"  ng-submit="searchCtrl.doSearch()">
-						<!-- we have to add checked box and angularjs connection-->
-						<fieldset class="form-group">
-						  <h2>Domain(s) of Interest</h2>
-						    <input ng-model="searchCtrl.searchQuery.domainQuery" ng-repeat="domain in searchCtrl.domains" type="checkbox" />{{domain}}
-						</fieldset>
-
-						<fieldset class="form-group">
-						  <h2>Sub-Domain(s) of Interest</h2>
-						    <input ng-model="searchCtrl.searchQuery.subdomainQuery" type="checkbox" ng-repeat="subdomain in searchCtrl.subdomains">{{subdomain}}
-						</fieldset>
-
-						<fieldset class="form-group">
-					        <select ng-model="searchCtrl.searchQuery.requirementsClass" class="form-control" ng-options="reqsClass for reqsClasses in [Functional,Non-Functional (Quality), Both]" title="Stars">
-					          <option value>Requirements classification</option>
+			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
+			        <form name="reviewForm">
+			        	<h3>Domain(s) of Interest</h3>
+						<div class="input-group" ng-repeat="domain in searchCtrl.domains">
+					      	<span class="input-group-addon">
+						        <input type="checkbox" checklist-model="searchCtrl.searchQuery.domainQuery" checklist-value="domain">{{domain.name}}
+					      	</span>
+				    	</div><!-- /input-group -->
+				    	<button ng-click="searchCtrl.checkAllDomains()" style="margin-right: 5px">Check all</button>
+				    	<button ng-click="searchCtrl.uncheckAllDomains()" style="margin-right: 5px">UnCheck all</button>
+				    	<h3>Sub-Domain(s) of Interest</h3>
+						<div class="input-group" ng-repeat="subdomain in searchCtrl.subdomains">
+					      	<span class="input-group-addon">
+						        <input type="checkbox" aria-label="..." checklist-model="searchCtrl.searchQuery.subdomainQuery" checklist-value="subdomain">{{subdomain.name}}
+					      	</span>
+				    	</div><!-- /input-group -->
+				    	<button ng-click="searchCtrl.checkAllSubDomains()" style="margin-right: 5px">Check all</button>
+				    	<button ng-click="searchCtrl.uncheckAllSubDomains()" style="margin-right: 5px">UnCheck all</button>
+				    	<h3>Requirements Classification</h3>
+						<div class="input-group">
+							<span class="input-group-addon">
+					        <select ng-init="searchCtrl.searchQuery.requirementsClass = searchCtrl.requirementsClasses[0]" ng-model="searchCtrl.searchQuery.requirementsClass" ng-options="reqsClass.name for reqsClass in searchCtrl.requirementsClasses">
 					        </select>
-				     	</fieldset>
+					        </span>
+				     	</div>
 
-						<fieldset class="form-group">
-							<h2>Operations</h2>
+				     	<h3>Operations</h3>
+						<div class="input-group">
+							<span class="input-group-addon">
 							<textarea ng-model="searchCtrl.searchQuery.operations" class="form-control" placeholder="Operations (separated by comma)" title="Operations"></textarea>
-						</fieldset>
+							</span>
+						</div>
 
 						<fieldset class="form-group">
-				        	<input type="submit" class="btn btn-primary pull-right" value="Submit Review" />
+				        	<input type="submit" class="btn btn-primary pull-right" ng-click="searchCtrl.doSearch()" value="Submit Review" />
 				      	</fieldset>
 					</form>	
 				</div>
@@ -73,7 +83,7 @@
         <div ng-show="tab.isSet(2)">
 			<div class="panel panel-info">
 		  		<div class="panel-heading">Requirements</div>
-			  	<div class="panel-body">
+			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
 				  	<ul class="list-group" ng-repeat="req in searchCtrl.requirements">
 				  	  	<li class="list-group-item">Classification: {{req.requirement}}</li>
 					  	<li class="list-group-item">Text: {{req.text}} </li>
@@ -88,7 +98,7 @@
         <div ng-show="tab.isSet(3)">
 	        <div class="panel panel-info">
 			  	<div class="panel-heading">Use Case Diagrams</div>
-			  	<div class="panel-body">
+			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
 			  		<ul class="list-group" ng-repeat="usecasediagram in searchCtrl.usecasediagrams">
 			  			<!-- separate panel for actors -->
 			  			<li class="list-group-item">
@@ -119,42 +129,42 @@
 
 		<!---display usecases data-->
         <div ng-show="tab.isSet(4)">
-         	<div class = "usecases row" ng-repeat="usecase in searchCtrl.usecases">
+         	<div class = "usecases row" ng-controller="SearchController as searchCtrl" ng-repeat="usecase in searchCtrl.usecases">
 		
 			</div>
         </div>
 
         <!---display activitydiagrams data-->
         <div ng-show="tab.isSet(5)">
-         	<div class = "activitydiagrams row" ng-repeat="acitivitydiagram in searchCtrl.activitydiagrams">
+         	<div class = "activitydiagrams row" ng-controller="SearchController as searchCtrl" ng-repeat="acitivitydiagram in searchCtrl.activitydiagrams">
 		
 			</div>
         </div>
 
         <!---display classdiagrams data-->
         <div ng-show="tab.isSet(6)">
-			<div class = "classdiagrams row" ng-repeat="classdiagram in searchCtrl.classdiagrams">
+			<div class = "classdiagrams row" ng-controller="SearchController as searchCtrl" ng-repeat="classdiagram in searchCtrl.classdiagrams">
 				
 			</div>
         </div>
 
 		<!---display storyboards data-->
         <div ng-show="tab.isSet(7)">
-			<div class = "storyboards row" ng-repeat="storyboard in searchCtrl.storyboards ">
+			<div class = "storyboards row" ng-controller="SearchController as searchCtrl" ng-repeat="storyboard in searchCtrl.storyboards ">
 			
 			</div>
         </div>
 
         <!---display sourcecodes data-->
         <div ng-show="tab.isSet(8)">
-         	<div class = "sourcecodes row" ng-repeat="sourcecode in searchCtrl.sourcecodes">
+         	<div class = "sourcecodes row" ng-controller="SearchController as searchCtrl" ng-repeat="sourcecode in searchCtrl.sourcecodes">
 		
 			</div>
         </div>
 
         <!---display services data-->
         <div ng-show="tab.isSet(9)">
-         	<div class = "services row" ng-repeat="service in searchCtrl.scaseservices">
+         	<div class = "services row"  ng-controller="SearchController as searchCtrl" ng-repeat="service in searchCtrl.scaseservices">
 		
 			</div>
         </div>
