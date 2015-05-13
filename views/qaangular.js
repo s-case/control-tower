@@ -202,4 +202,17 @@
 	    };
   	});
 
+  	//controller to set the default tab value and to check if it is active
+  	app.controller('AdvancedTabController',function(){
+	    this.advancedTab=1;//default tab to be active
+	    //set the tab active on click
+	    this.setTab = function(setTab){
+	      this.advancedTab=setTab;
+	    };
+	    //returns true/false checking if the tab is active
+	    this.isSet = function(checkTab){
+	      return this.advancedTab===checkTab;
+	    };
+  	});
+
 })();

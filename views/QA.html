@@ -40,40 +40,49 @@
 			<div class="panel panel-info">
 		  		<div class="panel-heading">Search</div>
 			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
-			        <form name="reviewForm">
-			        	<h3>Domain(s) of Interest</h3>
-						<div class="input-group" ng-repeat="domain in searchCtrl.domains">
-					      	<span class="input-group-addon">
-						        <input type="checkbox" checklist-model="searchCtrl.searchQuery.domainQuery" checklist-value="domain">{{domain.name}}
-					      	</span>
-				    	</div><!-- /input-group -->
-				    	<button ng-click="searchCtrl.checkAllDomains()" style="margin-right: 5px">Check all</button>
-				    	<button ng-click="searchCtrl.uncheckAllDomains()" style="margin-right: 5px">UnCheck all</button>
-				    	<h3>Sub-Domain(s) of Interest</h3>
-						<div class="input-group" ng-repeat="subdomain in searchCtrl.subdomains">
-					      	<span class="input-group-addon">
-						        <input type="checkbox" aria-label="..." checklist-model="searchCtrl.searchQuery.subdomainQuery" checklist-value="subdomain">{{subdomain.name}}
-					      	</span>
-				    	</div><!-- /input-group -->
-				    	<button ng-click="searchCtrl.checkAllSubDomains()" style="margin-right: 5px">Check all</button>
-				    	<button ng-click="searchCtrl.uncheckAllSubDomains()" style="margin-right: 5px">UnCheck all</button>
-				    	<h3>Requirements Classification</h3>
+			        <form name="queryForm" ng-controller="AdvancedTabController as advancedTab">
+				        <ul class="nav nav-tabs">
+				        	<li ng-class="{active: advancedTab.isSet(1)}">
+					            <a href ng-click="advancedTab.setTab(1)">Simple Search</a>
+				            </li>
+				          	<li ng-class="{active: advancedTab.isSet(2)}">
+					            <a href ng-click="advancedTab.setTab(2)">Advanced Search</a>
+				            </li>
+			            <ul>
+			            <br>
 						<div class="input-group">
 							<span class="input-group-addon">
-					        <select ng-init="searchCtrl.searchQuery.requirementsClass = searchCtrl.requirementsClasses[0]" ng-model="searchCtrl.searchQuery.requirementsClass" ng-options="reqsClass.name for reqsClass in searchCtrl.requirementsClasses">
-					        </select>
-					        </span>
-				     	</div>
-
-				     	<h3>Operations</h3>
-						<div class="input-group">
-							<span class="input-group-addon">
-							<textarea ng-model="searchCtrl.searchQuery.operations" class="form-control" placeholder="Operations (separated by comma)" title="Operations"></textarea>
+							<textarea ng-model="searchCtrl.searchQuery.operations" class="form-control" placeholder="Operations Query (separated by comma)" title="Operations"></textarea>
 							</span>
 						</div>
-
+			            <div ng-show="advancedTab.isSet(2)">
+							<h3>Domain(s) of Interest</h3>
+							<div class="input-group" ng-repeat="domain in searchCtrl.domains">
+						      	<span class="input-group-addon">
+							        <input type="checkbox" checklist-model="searchCtrl.searchQuery.domainQuery" checklist-value="domain">{{domain.name}}
+						      	</span>
+					    	</div><!-- /input-group -->
+					    	<button ng-click="searchCtrl.checkAllDomains()" style="margin-right: 5px">Check all</button>
+					    	<button ng-click="searchCtrl.uncheckAllDomains()" style="margin-right: 5px">UnCheck all</button>
+					    	<h3>Sub-Domain(s) of Interest</h3>
+							<div class="input-group" ng-repeat="subdomain in searchCtrl.subdomains">
+						      	<span class="input-group-addon">
+							        <input type="checkbox" aria-label="..." checklist-model="searchCtrl.searchQuery.subdomainQuery" checklist-value="subdomain">{{subdomain.name}}
+						      	</span>
+					    	</div><!-- /input-group -->
+					    	<button ng-click="searchCtrl.checkAllSubDomains()" style="margin-right: 5px">Check all</button>
+					    	<button ng-click="searchCtrl.uncheckAllSubDomains()" style="margin-right: 5px">UnCheck all</button>
+					    	<h3>Requirements Classification</h3>
+							<div class="input-group">
+								<span class="input-group-addon">
+						        <select ng-init="searchCtrl.searchQuery.requirementsClass = searchCtrl.requirementsClasses[0]" ng-model="searchCtrl.searchQuery.requirementsClass" ng-options="reqsClass.name for reqsClass in searchCtrl.requirementsClasses">
+						        </select>
+						        </span>
+					     	</div>
+			            </div>
+			            <br>
 						<fieldset class="form-group">
-				        	<input type="submit" class="btn btn-primary pull-right" ng-click="searchCtrl.doSearch()" value="Submit Review" />
+				        	<input type="submit" class="btn btn-primary pull-right" ng-click="searchCtrl.doSearch()" value="Submit Query" />
 				      	</fieldset>
 					</form>	
 				</div>
