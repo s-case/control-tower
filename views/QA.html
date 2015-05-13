@@ -56,15 +56,13 @@
 							</span>
 						</div>
 			            <div ng-show="advancedTab.isSet(2)">
-							<h3>Domain(s) of Interest</h3>
-							$(".js-example-basic-multiple").select2();
-							<select class="js-example-basic-multiple" multiple="multiple">
-							  <option ng-repeat="domain in searchCtrl.domains" ng-model="" value="AL">Alabama</option>
-							</select>
-							<div class="input-group" ng-repeat="domain in searchCtrl.domains">
-						      	<span class="input-group-addon">
-							        <input type="checkbox" checklist-model="searchCtrl.searchQuery.domainQuery" checklist-value="domain">{{domain.name}}
-						      	</span>
+							<h3>Domain of Interest (select only one or All)</h3>
+							<div class="list-group">
+								<div ng-repeat="domain in searchCtrl.domains">
+							      	<li class="list-group-item" ng-if="searchCtrl.parentFilter(domain)">
+								        <input  type="checkbox" checklist-model="searchCtrl.searchQuery.domainQuery" checklist-value="domain">{{domain.Category}}
+							      	</li>
+						      	</div>
 					    	</div><!-- /input-group -->
 					    	<button ng-click="searchCtrl.checkAllDomains()" style="margin-right: 5px">Check all</button>
 					    	<button ng-click="searchCtrl.uncheckAllDomains()" style="margin-right: 5px">UnCheck all</button>
