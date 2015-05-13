@@ -48,7 +48,7 @@
 				          	<li ng-class="{active: advancedTab.isSet(2)}">
 					            <a href ng-click="advancedTab.setTab(2)">Advanced Search</a>
 				            </li>
-			            <ul>
+			            </ul>
 			            <br>
 						<div class="input-group">
 							<span class="input-group-addon">
@@ -57,6 +57,10 @@
 						</div>
 			            <div ng-show="advancedTab.isSet(2)">
 							<h3>Domain(s) of Interest</h3>
+							$(".js-example-basic-multiple").select2();
+							<select class="js-example-basic-multiple" multiple="multiple">
+							  <option ng-repeat="domain in searchCtrl.domains" ng-model="" value="AL">Alabama</option>
+							</select>
 							<div class="input-group" ng-repeat="domain in searchCtrl.domains">
 						      	<span class="input-group-addon">
 							        <input type="checkbox" checklist-model="searchCtrl.searchQuery.domainQuery" checklist-value="domain">{{domain.name}}
