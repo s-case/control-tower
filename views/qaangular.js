@@ -120,39 +120,26 @@
 	    this.doSearch = function(){
 	    	//it will contain the current query because inside http "this" refers to http and not to the controller
 	    	var currentQuery = SearchPage.searchQuery;
-	    	console.log(currentQuery);
-	    	var domainsString="";
+	    	var domainString="";
 	    	if(currentQuery.domainQuery){
-	    		currentQuery.domainQuery.forEach(function(i){
-		    		console.log(i.name);
-		    		domainsString=domainsString+"+"+i.name;
-		    	});
-		    	if(domainsString.indexOf("+")>-1){
-		    		domainsString = domainsString.substring(1);
-		    	}
+	    		domainString=currentQuery.domainQuery.Category;
 	    	}
-	    	if(domainsString===""){
-	    		domainsString="all";
+	    	if(domainString==undefined||domainString===""){
+	    		domainString="all";
 	    	}	    	
-	    	var subdomainsString="";
+	    	var subdomainString="";
 	    	if(currentQuery.subdomainQuery){
-	    		currentQuery.subdomainQuery.forEach(function(i){
-		    		//console.log(i.name);
-		    		subdomainsString=subdomainsString+"+"+i.name;
-		    	});
-		    	if(subdomainsString.indexOf("+")>-1){
-		    		subdomainsString = subdomainsString.substring(1);
-		    	}	
+	    		subdomainString=currentQuery.subdomainQuery.Category;
 	    	}
-	    	if(subdomainsString===""){
-	    		subdomainsString="all";
+	    	if(subdomainString==undefined||subdomainString===""){
+	    		subdomainString="all";
 	    	}	    	
 	    	$http({
 	   			url: 'api/ArtsRepo/Results',
 	   			method: "GET",
 	   			params: {
-	   				domains: domainsString,
-	   				subdomains: subdomainsString,
+	   				domain: domainString,
+	   				subdomain: subdomainString,
 	   				requirements: currentQuery.requirementsClass.name,
 	   				operations: currentQuery.operations
 	   			}
@@ -175,6 +162,32 @@
 	    };
 	    this.parentFilter = function(item){
 	  		if (item.Parent=="0"){
+	  			return true;
+	  		}
+	  		else{
+	  			return false;
+	  		}
+	  	};
+	  	this.subdomainFilter = function(item){
+	  		if(SearchPage.searchQuery.domainQuery!=undefined&&SearchPage.searchQuery.domainQuery!='undefined'){
+  				if (item.Parent===SearchPage.searchQuery.domainQuery.ID){
+	  				return true;
+	  			}
+		  		else{
+	  				return false;
+	  			}
+	  		}
+	  		else{
+	  			return false;
+	  		}
+	  	};
+
+	  	this.setDomain=function(domainSet){
+	  		SearchPage.searchQuery.domainQuery = domainSet;
+	  	}
+
+	  	this.checkIfsubdomainActiveFilter = function(item){
+	  		if(SearchPage.searchQuery.domainQuery!=undefined&&SearchPage.searchQuery.domainQuery!='undefined'){
 	  			return true;
 	  		}
 	  		else{
@@ -205,6 +218,19 @@
 	    //returns true/false checking if the tab is active
 	    this.isSet = function(checkTab){
 	      return this.tab===checkTab;
+	    };
+  	});
+
+  	//controller to set the default tab value and to check if it is active
+  	app.controller('SearchModeTabController',function(){
+	    this.advancedTab=1;//default tab to be active
+	    //set the tab active on click
+	    this.setTab = function(setTab){
+	      this.advancedTab=setTab;
+	    };
+	    //returns true/false checking if the tab is active
+	    this.isSet = function(checkTab){
+	      return this.advancedTab===checkTab;
 	    };
   	});
 

@@ -35,57 +35,90 @@
 	            <a href ng-click="tab.setTab(8)">S-CASE services</a>
             </li>
         </ul>
-
+        <!-- tab of search -->
         <div ng-show="tab.isSet(1)">
 			<div class="panel panel-info">
 		  		<div class="panel-heading">Search</div>
-			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
-			        <form name="queryForm" ng-controller="AdvancedTabController as advancedTab">
-				        <ul class="nav nav-tabs">
-				        	<li ng-class="{active: advancedTab.isSet(1)}">
-					            <a href ng-click="advancedTab.setTab(1)">Simple Search</a>
+			  	<div class="panel-body" ng-controller="SearchController as searchCtrl"><!--Controller for the search options-->
+			        <form name="queryForm" ng-controller="SearchModeTabController as searchModeTab"><!--controller for the simple or advanced search tabs-->
+				        <ul class="nav nav-tabs"><!--the tabs of search-->
+				        	<li ng-class="{active: searchModeTab.isSet(1)}">
+					            <a href ng-click="searchModeTab.setTab(1)">Simple Search</a>
 				            </li>
-				          	<li ng-class="{active: advancedTab.isSet(2)}">
-					            <a href ng-click="advancedTab.setTab(2)">Advanced Search</a>
+				          	<li ng-class="{active: searchModeTab.isSet(2)}">
+					            <a href ng-click="searchModeTab.setTab(2)">Advanced Search</a>
 				            </li>
 			            </ul>
 			            <br>
+			            <!-- The query text box that contains the operations the user is interested in (shown in both advanced and simple search-->
 						<div class="input-group">
 							<span class="input-group-addon">
 							<textarea ng-model="searchCtrl.searchQuery.operations" class="form-control" placeholder="Operations Query (separated by comma)" title="Operations"></textarea>
 							</span>
 						</div>
-			            <div ng-show="advancedTab.isSet(2)">
-							<h3>Domain of Interest (select only one or All)</h3>
-							<div class="list-group">
-								<div ng-repeat="domain in searchCtrl.domains">
-							      	<li class="list-group-item" ng-if="searchCtrl.parentFilter(domain)">
-								        <input  type="checkbox" checklist-model="searchCtrl.searchQuery.domainQuery" checklist-value="domain">{{domain.Category}}
-							      	</li>
-						      	</div>
-					    	</div><!-- /input-group -->
-					    	<button ng-click="searchCtrl.checkAllDomains()" style="margin-right: 5px">Check all</button>
-					    	<button ng-click="searchCtrl.uncheckAllDomains()" style="margin-right: 5px">UnCheck all</button>
-					    	<h3>Sub-Domain(s) of Interest</h3>
-							<div class="input-group" ng-repeat="subdomain in searchCtrl.subdomains">
-						      	<span class="input-group-addon">
-							        <input type="checkbox" aria-label="..." checklist-model="searchCtrl.searchQuery.subdomainQuery" checklist-value="subdomain">{{subdomain.name}}
-						      	</span>
-					    	</div><!-- /input-group -->
-					    	<button ng-click="searchCtrl.checkAllSubDomains()" style="margin-right: 5px">Check all</button>
-					    	<button ng-click="searchCtrl.uncheckAllSubDomains()" style="margin-right: 5px">UnCheck all</button>
-					    	<h3>Requirements Classification</h3>
-							<div class="input-group">
-								<span class="input-group-addon">
-						        <select ng-init="searchCtrl.searchQuery.requirementsClass = searchCtrl.requirementsClasses[0]" ng-model="searchCtrl.searchQuery.requirementsClass" ng-options="reqsClass.name for reqsClass in searchCtrl.requirementsClasses">
-						        </select>
-						        </span>
+						<!-- advanced search tab options -->
+			            <div ng-show="searchModeTab.isSet(2)">
+			            	<div ng-controller="AdvancedTabController as advancedTab"><!--controller for tabs in the advance options set-->
+				            	<fieldset class="form-group">
+				        			<input type="submit" class="btn btn-primary pull-right" ng-click="searchCtrl.doSearch()" value="Submit Query" />
+				      			</fieldset>
+				            	<ul class="nav nav-tabs"><!--the tabs of search-->
+						        	<li ng-class="{active: advancedTab.isSet(1)}">
+							            <a href ng-click="advancedTab.setTab(1)">Domains</a>
+						            </li>
+						          	<li ng-class="{active: advancedTab.isSet(2)}">
+							            <a href ng-click="advancedTab.setTab(2)">SubDomains</a>
+						            </li>
+						            <li ng-class="{active: advancedTab.isSet(3)}">
+							            <a href ng-click="advancedTab.setTab(3)">Requirements</a>
+						            </li>
+				            	</ul>
+				            	<!--tab with the domains a user can choose-->
+				            	<div ng-show="advancedTab.isSet(1)">
+									<h3>Domains of Interest (select only one or All)</h3>
+									<h4> Pick only one (if you do not make a choice, All the domains will be selected)</h4>
+							    	<button type="button" class="btn btn-primary" ng-click="searchCtrl.uncheckAllDomains()">Uncheck all Domains</button> 
+									<div class="list-group">
+										<div ng-repeat="domain in searchCtrl.domains">
+									      	<li class="list-group-item" ng-if="searchCtrl.parentFilter(domain)">
+										        <input  type="checkbox" ng-model="searchCtrl.searchQuery.domainQuery" ng-True-value="{{domain}}" ng-false-value="false" ng-change="searchCtrl.setDomain(domain)">{{domain.Category}}
+									      	</li>
+								      	</div>
+							    	</div><!-- /input-group -->
+							    	<fieldset class="form-group">
+				        				<input type="submit" class="btn btn-primary pull-right" ng-click="searchCtrl.doSearch()" value="Submit Query" />
+				      				</fieldset>
+						    	</div>
+						    	<!--tab with the subdomains the user can choose according to the domains selected-->
+						    	<div ng-show="advancedTab.isSet(2)">
+						    		<h3>Sub-Domains of Interest (Depend on your Domain selection)</h3>
+						    		<h4> Pick only one (if you do not make a choice, All the subdomains will be selected)</h4>
+						    		<button type="button" class="btn btn-primary" ng-click="searchCtrl.uncheckAllSubDomains()">Uncheck all Subdomains</button>
+							    	<div class="list-group">
+										<div ng-repeat="subdomain in searchCtrl.domains">
+									      	<li class="list-group-item" ng-if="searchCtrl.subdomainFilter(subdomain)">
+										        <input  type="checkbox" ng-model="searchCtrl.searchQuery.subdomainQuery" ng-True-value="{{subdomain}}" ng-change="searchCtrl.setSubdomain()">{{subdomain.Category}}
+									      	</li>
+								      	</div>
+							    	</div>
+							    	<fieldset class="form-group">
+				        				<input type="submit" ng-if="searchCtrl.checkIfsubdomainActiveFilter()" class="btn btn-primary pull-right" ng-click="searchCtrl.doSearch()" value="Submit Query" />
+				      				</fieldset>									
+						    	</div>
+						    	<!--tab with the requirements classification as functional or non functionl or both-->
+						    	<div ng-show="advancedTab.isSet(3)">
+							    	<h3>Requirements Classification</h3>
+								        <select ng-init="searchCtrl.searchQuery.requirementsClass = searchCtrl.requirementsClasses[0]" ng-model="searchCtrl.searchQuery.requirementsClass" ng-options="reqsClass.name for reqsClass in searchCtrl.requirementsClasses">
+								        </select>
+						     	</div>
 					     	</div>
 			            </div>
 			            <br>
-						<fieldset class="form-group">
-				        	<input type="submit" class="btn btn-primary pull-right" ng-click="searchCtrl.doSearch()" value="Submit Query" />
-				      	</fieldset>
+			            <div ng-show="searchModeTab.isSet(1)">
+							<fieldset class="form-group">
+					        	<input type="submit" class="btn btn-primary pull-right" ng-click="searchCtrl.doSearch()" value="Submit Query" />
+					      	</fieldset>
+				      	</div>
 					</form>	
 				</div>
 			</div>
