@@ -108,14 +108,14 @@
 	    		domainString=currentQuery.domainQuery.Category;
 	    	}
 	    	if(domainString==undefined||domainString===""){
-	    		domainString="all";
+	    		domainString="All";
 	    	}	    	
 	    	var subdomainString="";
 	    	if(currentQuery.subdomainQuery){
 	    		subdomainString=currentQuery.subdomainQuery.Category;
 	    	}
 	    	if(subdomainString==undefined||subdomainString===""){
-	    		subdomainString="all";
+	    		subdomainString="All";
 	    	}	    	
 	    	$http({
 	   			url: 'api/ArtsRepo/Results',
@@ -180,15 +180,19 @@
 	  	};
 	  	var subdomainsSelected = [];
 	  	this.subdomainJSON = function (domainSelected){
-			for(var i=0;i<subdomains.length;i++){
-				var flag_parent_found=0;
-				for(var j=0;j<parentDomains.length;j++){
-					if(subdomains[i].Parent==domainSelected.ID&&flag_parent_found==0){
-						subdomainsSelected.push(subdomains[i]);
-						flag_parent_found=1;
+	  		subdomainsSelected = [];
+	  		if(domainSelected.Category!="All"){
+	  			for(var i=0;i<subdomains.length;i++){
+					var flag_parent_found=0;
+					for(var j=0;j<parentDomains.length;j++){
+						if(subdomains[i].Parent==domainSelected.ID&&flag_parent_found==0){
+							subdomainsSelected.push(subdomains[i]);
+							flag_parent_found=1;
+						}
 					}
 				}
-			}
+	  		}
+			
 			SearchPage.subdomains = subdomainsSelected;
 			console.log(SearchPage.subdomains);
 		}
@@ -249,6 +253,7 @@
   	
 
   	var domains = [
+
   {
     Category:"Arts & Entertainment",
     ID:"3",
@@ -11357,6 +11362,12 @@
 ];
 //function to create the parent domains
 var parentDomains = [
+	{	
+    Category:"All",
+    ID:"999999",
+    Parent:"0"
+  },
+
   {
     Category: "Arts & Entertainment",
     ID: "3",
