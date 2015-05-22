@@ -110,19 +110,38 @@ module.exports = function(app, passport) {
 							}
 						});	 
 					}
+					function getPrivacyDomaionSubdomain (callback){
+						//query to select all collaborators
+						var getProjectDetails = "SELECT project_id,domain,subdomain FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
+								+ proj_name +"'";//query to get the project's
+						connection.query(getProjectDetails, function(err, rows){
+							privacy_level='private';
+							if(rows.length>0){
+								privacy_level=rows[0].privacy_level;
+								domain = rows[0].domain;
+								subdomain = rows[0].subdomain;
+				                callback();//callback at the end of the query
+							}
+							else{
+								res.redirect('/manageprojects'+'?project_name='+proj_name);
+							}
+						});	 
+					}
 					displayOwners(function(){
 						//console.log("owners"+owners);
 						//console.log("collabs"+collaborators);
 						displayCollaborators(function(){
 						//console.log("collabs"+collaborators);
-							getPrivacy (function(){
+							getPrivacyDomaionSubdomain  (function(){
 								res.render('projectSpecific.ejs', {
 									privacylevel:privacy_level,//the level of privacy
 									ownersnames : owners,//we return owners
 									collaboratorsnames : collaborators,//we return collaborators
 									projectname : proj_name,//we return project name
 									username : user.github_name,//we return the active's User name (it is used in order be able to remove your own account from the project)
-									user: user
+									user: user,
+									domain: domain,
+									subdomain: subdomain
 								});
 							});
 						});

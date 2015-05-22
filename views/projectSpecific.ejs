@@ -1,8 +1,10 @@
 <!doctype html>
-<html>
+<html ng-app="domainApp">
 <% include header %>
 <% include navbar %>
 <body>
+<% var projName = projectname %>
+<script> projectCurrent = "<%=projName%>";</script>
 <div class="container">
 	<div class="row">
 		<div class="col-sm-8 col-sm-offset-2">
@@ -32,7 +34,7 @@
 					    <h1 class="panel-title"><i class="fa fa-cloud">Public Project: <%=projectname%></i></h1>
 					    <% } %>	
 				  	</div>
-				  	<div class="panel-body">
+				  	<div class="panel-body" ng-controller="domainController as domainCtrl" ng-init="domainCtrl.init()">
 						<% if (ownerflag) { %>
 							<!-- Privacy button -->
 							<div class="btn-group">
@@ -48,6 +50,31 @@
 							    <li><a href=<%=privateProjectUrl%>>Private</a></li>
 							    <% } %>							    
 							  </ul>
+							</div>
+							<!-- domain button -->
+							<h4>Domain</h4>
+							<ui-select ng-model="domainCtrl.projectDetails.domainset" theme="bootstrap" ng-disabled="disabled" style="min-width: 300px;" ng-change="domainCtrl.subdomainJSON(domainCtrl.projectDetails.domainset)">
+						    	<ui-select-match placeholder="Select domain for the list or search for a domain...">{{$select.selected.Category}}</ui-select-match>
+							    <ui-select-choices repeat="domain in domainCtrl.domains | filter: $select.search">
+						      	<div ng-bind-html="domain.Category | highlight: $select.search "></div>
+							    </ui-select-choices>
+			  				</ui-select>
+			  				<h4>SubDomain</h4>
+			  				<ui-select ng-model="domainCtrl.projectDetails.subdomainset" theme="bootstrap" ng-disabled="!domainCtrl.subdomains.length" style="min-width: 300px;">
+							    <ui-select-match placeholder="Select subdomain for the list or search for a subdomain...">{{$select.selected.Category}}</ui-select-match>
+							    <% var subDomain = subdomain_set %>
+		            	    	<script> subdomainCurrent = "<%=subDomain%>";</script>
+							    <ui-select-choices repeat="subdomain in domainCtrl.subdomains | filter: $select.search" value=window.subdomainCurrent>
+						      	<div ng-bind-html="subdomain.Category | highlight: $select.search "></div>
+							    </ui-select-choices>
+						  	</ui-select>
+						  	<div class="btn-group">
+							  	<div>
+				            	    <fieldset class="form-group">
+				            	    	
+				        			    <input type="submit" class="btn btn-primary pull-right" ng-click="domainCtrl.setDomainSubdomain(domainCtrl.projectDetails.domainset.Category,domainCtrl.projectDetails.subdomainset.Category)" value="Submit Domain (SubDomains) selection(s)" />
+				      			    </fieldset>
+				      			</div>
 							</div>
 						<% } %>
 							

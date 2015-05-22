@@ -61,6 +61,8 @@ require('./app/routes/routeCreateProjOwnSpecific.js')(app, passport);//load the 
 require('./app/routes/routeAddOwnProjOwnSpecific.js')(app, passport);//load the route for adding an owner in a project I own 
 require('./app/routes/routeAddCollabProjOwnSpecific.js')(app, passport);//load the route for adding a collaborator in a project I own
 require('./app/routes/routeChangeProjectsPrivacy.js')(app, passport);//load the route for changing the privacy level of a project I own 
+require('./app/routes/routeChangeProjectsDomainSubdomain.js')(app, passport);//load the route for changing the domains and subdomains of a project I own 
+require('./app/routes/routeGetProjectsDomainSubdomain.js')(app, passport);//load the route for getting the domains and subdomains of a project I own 
 //================API routes=============================
 require('./app/api/checkUserValidityAPI.js') (app);//check if a user is Valid (API) route
 require('./app/api/deleteAccAPI.js') (app);//delete account
