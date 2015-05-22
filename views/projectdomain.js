@@ -4,33 +4,28 @@
   	app.controller('domainController',['$http',function($http){
 
   		var ProjectPage  = this;//we set this to a variable in order to use it in http
-	  	ProjectPage.domains=[];//we are going to save the domains here
-	  	ProjectPage.subdomains=[];//we are going to save the subdomains here
-	  	ProjectPage.domains=parentDomains;
-	  	//domains=ProjectPage.domains;//we set the global variable of domains equal to the domains that we got from S-CASE artefacts repo
-	  	//subdomains=ProjectPage.subdomains;//we set the global variable of subdomains equal to the subdomains that we got from S-CASE artefacts repo
+	  	ProjectPage.domains=[];//we are going to save the all the domains (all the domains from Google Verticals) here
+	  	ProjectPage.subdomains=[];//we are going to save all subdomains (domains level 2 (with only one parent above)) here
+	  	ProjectPage.domains=parentDomains;//we are saving here the level 1 domains (the ones that do not have parent, (they have parent 0))
 	  	
-	  	
-	  	ProjectPage.projectDetails = {};//it will contain the query to perform to the S-CASE artefacts repo
+	  	ProjectPage.projectDetails = {};//it will contain the information of the specific project we examine/edit
 	  	//it will contain the following:
-	  	//projectDetails.domainset the domain of interest of the user
-	  	//projectDetails.subdomainQuery the subdomain of interest of the user
-	    //function to perform the search to S-CASE artefacts repo
+	  	//projectDetails.domainset: the domain of the project
+	  	//projectDetails.subdomainset: the subdomain of project
 
-	  	var subdomainsSelected = [];
+	  	var subdomainsSelected = [];//it will contain all the subdomains that correspond to the domain selected
+      //the function finds all the subdomains (domains level 2) for a provided parent domain
 	  	this.subdomainJSON = function (domainSelected){
-	  		subdomainsSelected = [];
-	  		if(domainSelected.Category!="All"){
-	  			for(var i=0;i<subdomains.length;i++){
-  					var flag_parent_found=0;
-  					for(var j=0;j<parentDomains.length;j++){
-  						if(subdomains[i].Parent==domainSelected.ID&&flag_parent_found==0){
-  							subdomainsSelected.push(subdomains[i]);
-  							flag_parent_found=1;
-  						}
-  					}
-  				}
-	  		}
+	  		subdomainsSelected = [];//we initialize the subdomains selected
+  			for(var i=0;i<subdomains.length;i++){//we loop over all the subdomains 
+					var flag_parent_found=0;//flag for finding the domainSelected as parent domain in the parentDomains
+					for(var j=0;j<parentDomains.length;j++){
+						if(subdomains[i].Parent==domainSelected.ID&&flag_parent_found==0){//if the parent ID of a subdomain equals to the ID of the domain selected then this subdomain should be pushed to 
+							subdomainsSelected.push(subdomains[i]);
+							flag_parent_found=1;
+						}
+					}
+				}
         ProjectPage.subdomains = subdomainsSelected;
         ProjectPage.projectDetails.subdomainset = [];
         //console.log(ProjectPage.subdomains);
