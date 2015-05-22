@@ -35,6 +35,29 @@
         ProjectPage.projectDetails.subdomainset = [];
         //console.log(ProjectPage.subdomains);
       };
+      this.subdomainJSONifAlreadySubdomainSelected = function (domainSelected){
+        subdomainsSelected = [];
+        var domainID;
+        for(var j=0;j<parentDomains.length;j++){
+          if(parentDomains[j].Category===domainSelected.Category){
+            domainID=parentDomains[j].ID;
+            console.log(domainID)
+          }
+        }
+        if(domainSelected.Category!="All"){
+          for(var i=0;i<subdomains.length;i++){
+            var flag_parent_found=0;
+            for(var j=0;j<parentDomains.length;j++){
+                if(subdomains[i].Parent==domainID&&flag_parent_found==0){
+                  subdomainsSelected.push(subdomains[i]);
+                  flag_parent_found=1;
+                }
+            }
+          }
+        }
+        ProjectPage.subdomains = subdomainsSelected;
+        console.log(ProjectPage.subdomains);
+      };
 
       this.init = function(){
         var currentProjectName = window.projectCurrent;   
@@ -49,6 +72,7 @@
           console.log('Domain and Subdomain Got');
           ProjectPage.projectDetails.domainset=data[0];
           ProjectPage.projectDetails.subdomainset=data[1];
+          ProjectPage.subdomainJSONifAlreadySubdomainSelected(ProjectPage.projectDetails.domainset);
         })
         .error(function(status){
           console.log(status);
@@ -74,6 +98,16 @@
         .error(function(status){
           console.log(status);
         });
+      };
+
+      this.subdomainsDisabled = function (){
+        if(!ProjectPage.subdomains.length&&!ProjectPage.projectDetails.subdomainset){
+          return true;
+        }
+        else{
+          return false;
+        }
+
       };
 
   	}]);

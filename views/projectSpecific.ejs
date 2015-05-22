@@ -60,7 +60,7 @@
 							    </ui-select-choices>
 			  				</ui-select>
 			  				<h4>SubDomain</h4>
-			  				<ui-select ng-model="domainCtrl.projectDetails.subdomainset" theme="bootstrap" ng-disabled="!domainCtrl.subdomains.length" style="min-width: 300px;">
+			  				<ui-select ng-model="domainCtrl.projectDetails.subdomainset" theme="bootstrap" ng-disabled="domainCtrl.subdomainsDisabled()" style="min-width: 300px;">
 							    <ui-select-match placeholder="Select subdomain for the list or search for a subdomain...">{{$select.selected.Category}}</ui-select-match>
 							    <% var subDomain = subdomain_set %>
 		            	    	<script> subdomainCurrent = "<%=subDomain%>";</script>
