@@ -48,7 +48,7 @@ module.exports = function(app, passport) {
 		//console.log('projectname to add owner '+proj_name);
 		var user = req.user;
 		var ownerflag;//flag to check if I am owner
-		checkIfOwner(user,proj_name,function(ownerflag){
+		checkIfOwner(user,proj_name,function(ownerflag){//check if the user is owner of the project
 			if(ownerflag==true){
 				connection=connConstant.connection;
 				connection.query(checkIfUserExistsQuery, function(err,rows){
@@ -58,13 +58,17 @@ module.exports = function(app, passport) {
 										+ proj_name +"'";//if the user exists, get the project's id
 						connection=connConstant.connection;
 						connection.query(getProjectId, function(err, rows){
-							var createOwnerQuery = "INSERT INTO " +dbconfig.owners_table+ "(user_id,project_id)" +
-								" VALUES (" + "'"+ user_id + "'"+ ",'"+rows[0].project_id+"')";//then insert the user as an owner in the owner's table
-							connection=connConstant.connection;
-							//console.log(createOwnerQuery);
-							connection.query(createOwnerQuery, function(err, rows){
+							if(err){
 								res.redirect('/manageprojects'+'?project_name='+proj_name);
-							});
+							}
+							else{
+								var createOwnerQuery = "INSERT INTO " +dbconfig.owners_table+ "(user_id,project_id)" +
+								" VALUES (" + "'"+ user_id + "'"+ ",'"+rows[0].project_id+"')";//then insert the user as an owner in the owner's table
+								connection=connConstant.connection;//get new connection to the database
+								connection.query(createOwnerQuery, function(err, rows){
+									res.redirect('/manageprojects'+'?project_name='+proj_name);
+								});
+							}
 						});
 					}
 					else{

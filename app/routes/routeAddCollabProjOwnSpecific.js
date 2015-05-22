@@ -47,23 +47,29 @@ module.exports = function(app, passport) {
 		//console.log('projectname to add collaborator '+proj_name);
 		var user = req.user;//the user that attempts to add collaborator
 		var ownerflag;//flag to check if I am owner
-		checkIfOwner(user,proj_name,function(ownerflag){
+		checkIfOwner(user,proj_name,function(ownerflag){//we check if the user is owner in the project
 			if(ownerflag==true){
-				connection=connConstant.connection;
-				connection.query(checkIfUserExistsQuery, function(err,rows){
+				connection=connConstant.connection;//we get a new connection to the database
+				connection.query(checkIfUserExistsQuery, function(err,rows){// we perform the query to get the id of the user with the provided github name of google email
 					if(rows.length>0){
 						var user_id = rows[0].id
 						var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
-										+ proj_name +"'";//if the user exists, get the project's id
-						connection=connConstant.connection;
-						connection.query(getProjectId, function(err, rows){
-							var createCollabQuery = "INSERT INTO " +dbconfig.collaborators_table+ "(user_id,project_id)" +
-								" VALUES (" + "'"+ user_id + "'"+ ",'"+rows[0].project_id+"')";//then insert the user as a collaborator in the collaborators' table
-							connection=connConstant.connection;
-							//console.log(createCollabQuery);
-							connection.query(createCollabQuery, function(err, rows){
+										+ proj_name +"'";//if the user exists, we create a query to get the project's id
+						connection=connConstant.connection;//we get a new connection to the database
+						connection.query(getProjectId, function(err, rows){//we perform the query to get the project's id
+							if(err){
 								res.redirect('/manageprojects'+'?project_name='+proj_name);
-							});
+							}
+							else{
+								var createCollabQuery = "INSERT INTO " +dbconfig.collaborators_table+ "(user_id,project_id)" +
+								" VALUES (" + "'"+ user_id + "'"+ ",'"+rows[0].project_id+"')";// insert the user as a collaborator in the collaborators' table
+								connection=connConstant.connection;
+								//console.log(createCollabQuery);
+								connection.query(createCollabQuery, function(err, rows){
+									res.redirect('/manageprojects'+'?project_name='+proj_name);
+								});
+							}
+							
 						});
 					}
 					else{
@@ -74,7 +80,7 @@ module.exports = function(app, passport) {
 		});
 	});
 };
-// route middleware to ensure user is logged i
+// route middleware to ensure user is logged in
 function isLoggedIn(req, res, next) {
 	var connConstant = require('../../config/ConnectConstant');
 	var connection;

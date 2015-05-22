@@ -33,26 +33,21 @@ module.exports = function(app, passport) {
 		proj_name = proj_name.trim();
 		var privacy_level='private';
 		if(proj_name.length>0){
-			//console.log('projectname to create'+proj_name);
 			var user = req.user;
-			//var proj_name = req.param('project_name');
 			var createProjectQuery = "INSERT INTO " + dbconfig.projects_table +
 					" (project_name,privacy_level)" +
 					" VALUES ("+ "'" + proj_name+"','"+privacy_level+"')";//query to create the project
-			//console.log(createProjectQuery);
-			connection=connConstant.connection;
+			connection=connConstant.connection;//get a new connection to the database
 			connection.query(createProjectQuery, function(err, rows){
 				if(rows){
 					var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
 								+ proj_name +"'";//query to get the project's ID to insert in the Owners table as a project the user owns
-					connection=connConstant.connection;
-					//console.log(getProjectId);
+					connection=connConstant.connection;//get a new connection to the database
 					connection.query(getProjectId, function(err, rows){
 						if(rows.length>0){
 							var createOwnerQuery = "INSERT INTO " +dbconfig.owners_table+ "(user_id,project_id)" +
-							" VALUES (" + "'"+ user.id + "'"+ ",'"+rows[0].project_id+"')";
-							connection=connConstant.connection;
-							//console.log(createOwnerQuery);
+							" VALUES (" + "'"+ user.id + "'"+ ",'"+rows[0].project_id+"')";//query to create a new owner
+							connection=connConstant.connection;//get a new connection to the database
 							connection.query(createOwnerQuery, function(err, rows){
 								res.redirect('/manageprojects'+'?project_name='+proj_name);
 							});
@@ -68,11 +63,11 @@ module.exports = function(app, passport) {
 	        }); 
 		}
 		else{
-					res.redirect('/profile');
+			res.redirect('/profile');
 		}
 	});
 };
-// route middleware to ensure user is logged i
+// route middleware to ensure user is logged in
 function isLoggedIn(req, res, next) {
 	var connConstant = require('../../config/ConnectConstant');
 	var connection;

@@ -29,17 +29,17 @@ module.exports = function(app, passport) {
 // =============================================================================
 // Delete account =============================================================
 // =============================================================================
-// used to delete accounts. 
 	app.get('/delete', isLoggedIn, function(req, res) {
 		var user = req.user;
 		var user_id = req.param('user_id');
 		//the query checks if the user owns a project
 		var ownerflag;//flag to check if I am owner
+		//Query to select all the project names that the user owns
 		var CheckOwnershipQuery = " SELECT " + dbconfig.projects_table+".`project_name`, "+ dbconfig.owners_table+".`user_id` FROM "+ dbconfig.projects_table +
 							" JOIN "+ dbconfig.owners_table+ " ON "+ dbconfig.projects_table + ".`project_id`="+dbconfig.owners_table+".`project_id` " +
-								" WHERE " +dbconfig.owners_table+".`user_id`="+"'"+user.id+"'";//Query to select all the project names that the user owns
+								" WHERE " +dbconfig.owners_table+".`user_id`="+"'"+user.id+"'";
 		connection=connConstant.connection;
-		if(!user_id){
+		if(!user_id){//at first we create a message with all the projects the user owns to alert about the potential deletion
 			connection.query(CheckOwnershipQuery, function(err, rows) {
 	         	if (err) throw err;
 	         	var newmessage;//we create the message that contains the projects that the user owns
@@ -56,15 +56,16 @@ module.exports = function(app, passport) {
 					connection=connConstant.connection;
 					var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'";
 					connection.query(selectUsersQuery, function(err, rows){
-	                    if (err)
-	                        return done(err);
+	                    if (err){
+	                    	res.redirect('/profile');
+	                    }
 	                    if (rows.length > 0) {
 	                        var userProfile = rows[0];
 	                        userProfile.Message=newmessage;
                             var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
                                 "`message` = '" + userProfile.Message + "' " +
                                 "WHERE `id` = '" + user.id + "' LIMIT 1";//query to insert the alert message in the user's profile in the db
-                            connection=connConstant.connection;
+                            connection=connConstant.connection;//get a new connection
                             connection.query(updateQuery, function(err, rows) {
                             	res.redirect('/profile');
                             });
@@ -76,7 +77,7 @@ module.exports = function(app, passport) {
 				}
 			});
 		}
-		if(user_id){
+		if(user_id){//if the user id is specified then the user has already seen the message
             //delete any project I am the only owner (the only large SQL statement)
         	var DeleteProjectsOnlyOwnerQuery = "DELETE FROM " + dbconfig.projects_table + 
         		" WHERE " + dbconfig.projects_table + ".project_id IN (SELECT project_id "+
@@ -84,23 +85,19 @@ module.exports = function(app, passport) {
 	        	" WHERE " +dbconfig.owners_table +".project_id IN (SELECT project_id FROM " +
 	        	dbconfig.owners_table + " WHERE "+ dbconfig.owners_table + ".user_id=" + user_id +
 	        	")) AS projectsofuser GROUP BY project_id HAVING COUNT(project_id)=1)";
-			//console.log(DeleteProjectsOnlyOwnerQuery);
             connection=connConstant.connection;
             connection.query(DeleteProjectsOnlyOwnerQuery, function(err, rows) {
                 //delete from owners
 				var DeleteFromOwnerQuery = "DELETE FROM " + dbconfig.owners_table +                          
-	                                " WHERE `user_id` = " + user_id;
-                //console.log(DeleteFromOwnerQuery);
+	                                " WHERE `user_id` = " + user_id;//we delete the user from the owners
                 connection=connConstant.connection;
                 connection.query(DeleteFromOwnerQuery, function(err, rows) {
             		var DeleteFromCollabQuery = "DELETE FROM " + dbconfig.collaborators_table +                          
-                                " WHERE `user_id` = " + user_id;
-                    //console.log(DeleteFromCollabQuery);
+                                " WHERE `user_id` = " + user_id;//we delete the user from the collaborators
                     connection=connConstant.connection;
                     connection.query(DeleteFromCollabQuery, function(err, rows) {
                     	var DeleteFromUsersQuery = "DELETE FROM " + dbconfig.users_table +                          
-                			" WHERE `id` = " + user_id;
-            			//console.log(DeleteFromUsersQuery);
+                			" WHERE `id` = " + user_id;//we delete the user from the users
     				  	connection.query(DeleteFromUsersQuery, function(err, rows) {
                             	res.redirect('/'); 
                         });

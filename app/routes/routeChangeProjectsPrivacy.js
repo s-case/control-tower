@@ -3,8 +3,6 @@ module.exports = function(app, passport) {
 	var mysql = require('mysql');
 	var dbconfig = require('../../config/database');
 	var connConstant = require('../../config/ConnectConstant');
-	//var connection = mysql.createConnection(dbconfig.connection);
-	//var connection = require('../config/ConnectConstant.js');
 	var connection;
 	var ownerflag;//flag used to check if the user is an owner
 	//function to check if the user is owner of a specific project
@@ -32,31 +30,19 @@ module.exports = function(app, passport) {
 		var user = req.user;
 		var proj_name = req.param('project_name');//name of the project to manage
 		//console.log('projectname to create'+proj_name);
-		var privacy = req.param('privacy_level');
-		checkIfOwner(user,proj_name,function(ownerflag){
-				if(ownerflag==true){
-					connection=connConstant.connection;
-					var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
-								+ proj_name +"'";//query to get the project's ID 
-					//console.log(getProjectId);
-					connection.query(getProjectId, function(err, rows){
-						if(rows.length>0){
-							var changePrivacyQuery = "UPDATE " +dbconfig.projects_table+ " SET `privacy_level`='" +privacy
-								+ "' WHERE `project_id`='"+rows[0].project_id+"'";
-							connection=connConstant.connection;
-							console.log(changePrivacyQuery);
-							connection.query(changePrivacyQuery, function(err, rows){
-								res.redirect('/manageprojects'+'?project_name='+proj_name);
-							});
-						}
-						else{
-							res.redirect('/profile');
-						}
-					});			
-				}
-				else{
-					res.redirect('/profile');
-				}
+		var privacy = req.param('privacy_level');//the privacy level (private or public)
+		checkIfOwner(user,proj_name,function(ownerflag){//we check if the user is owner
+			if(ownerflag==true){
+				var changePrivacyQuery = "UPDATE " +dbconfig.projects_table+ " SET `privacy_level`='" +privacy
+					+ "' WHERE `project_name`='"+proj_name+"'";//the query to update the privacy level
+				connection=connConstant.connection;//we get a new connection to the database
+				connection.query(changePrivacyQuery, function(err, rows){
+					res.redirect('/manageprojects'+'?project_name='+proj_name);
+				});		
+			}
+			else{
+				res.redirect('/manageprojects'+'?project_name='+proj_name);
+			}
 
 		});		
 	});

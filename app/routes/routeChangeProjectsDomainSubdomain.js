@@ -3,8 +3,6 @@ module.exports = function(app, passport) {
 	var mysql = require('mysql');
 	var dbconfig = require('../../config/database');
 	var connConstant = require('../../config/ConnectConstant');
-	//var connection = mysql.createConnection(dbconfig.connection);
-	//var connection = require('../config/ConnectConstant.js');
 	var connection;
 	var ownerflag;//flag used to check if the user is an owner
 	//function to check if the user is owner of a specific project
@@ -21,48 +19,33 @@ module.exports = function(app, passport) {
         			}
             	}
 	        }
-	        console.log(ownerflag);
+	        //console.log(ownerflag);
 	        callback(ownerflag);
 		});
 	}
 	// ===============================================================
-	// Create a Project I own ========================================
+	// Create a Domain and Subdomain of aproject I own ========================================
 	// ===============================================================
 	app.get('/changeDomainSubdomain', isLoggedIn, function(req, res) {
 		var user = req.user;
 		var proj_name = req.param('project_name');//name of the project to manage
-		var domain = req.param('domain');
-		var subdomain = req.param('subdomain');
-		//console.log('projectname to create'+proj_name);
-		checkIfOwner(user,proj_name,function(ownerflag){
-				if(ownerflag==true){
-					connection=connConstant.connection;
-					var getProjectId = "SELECT project_id FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
-								+ proj_name +"'";//query to get the project's ID 
-					//console.log(getProjectId);
-					connection.query(getProjectId, function(err, rows){
-						if(rows.length>0){
-							var changePrivacyQuery = "UPDATE " +dbconfig.projects_table+ " SET `domain`='" +domain
-								+ "' , `subdomain`= '"+subdomain+"' WHERE `project_id`='"+rows[0].project_id+"'";
-							connection=connConstant.connection;
-							console.log(changePrivacyQuery);
-							connection.query(changePrivacyQuery, function(err, rows){
-								res.redirect('/manageprojects'+'?project_name='+proj_name);
-							});
-						}
-						else{
-							res.redirect('/profile');
-						}
-					});			
-				}
-				else{
-					res.redirect('/profile');
-				}
-
+		var domain = req.param('domain');//the new domain of the project
+		var subdomain = req.param('subdomain');//the new subdomain of the project
+		checkIfOwner(user,proj_name,function(ownerflag){//we check if the user is owner of the project
+			if(ownerflag==true){
+				connection=connConstant.connection;//we update the connection to the mysql database
+				var changePrivacyQuery = "UPDATE " +dbconfig.projects_table+ " SET `domain`='" +domain
+					+ "' , `subdomain`= '"+subdomain+"' WHERE `project_name`='"+proj_name+"'";//the query to update the domain and subdomain
+				connection.query(changePrivacyQuery, function(err, rows){//perform the query
+					res.redirect('/manageprojects'+'?project_name='+proj_name);
+				});	
+			}else{
+				res.redirect('/manageprojects'+'?project_name='+proj_name);
+			}
 		});		
 	});
 };
-// route middleware to ensure user is logged i
+// route middleware to ensure user is logged in
 function isLoggedIn(req, res, next) {
 	var connConstant = require('../../config/ConnectConstant');
 	var connection;
