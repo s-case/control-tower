@@ -1,12 +1,8 @@
-module.exports = function(app, passport) {
-	
+module.exports = function(app, passport) {	
 	var mysql = require('mysql');
 	var dbconfig = require('../../config/database');
 	var connConstant = require('../../config/ConnectConstant');
-	//var connection = mysql.createConnection(dbconfig.connection);
-	//var connection = require('../config/ConnectConstant.js');
 	var connection;
-	
 	var ownerflag;//flag used to check if the user is an owner
 	//function to check if the user is owner of a specific project
 	function checkIfOwner(user,proj_name,callback){
@@ -26,18 +22,17 @@ module.exports = function(app, passport) {
 	        callback(ownerflag);
 		});
 	}
-
 	// =============================================================================
-	// Refresh S-CASE token ACCOUNTS ===============================================
+	// Refresh S-CASE Secret ===============================================
 	// =============================================================================
-	//we create a new scase token
+	//we create a new scase secret
 	var crypto = require('crypto');
 	var base64url = require('base64url');
 	//function to crete an S-CASE token
-	function scasetokenCreate(size){
+	function scaseSecretCreate(size){
 	    return base64url(crypto.randomBytes(size));
 	}
-	//we create the route to refresh the token
+	//we create the route to refresh the secret
 	app.get('/refreshscasesecret', isLoggedIn, function(req, res) {
 		var user            = req.user;
 		connection=connConstant.connection;
@@ -45,9 +40,9 @@ module.exports = function(app, passport) {
 		connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'", function(err, rows){
             if (rows.length > 0) {
                 user = rows[0];
-                var scase_secret = scasetokenCreate(35)//we create a new scase token
+                var scase_secret = scaseSecretCreate(35)//we create a new scase secret
                 user.scase_secret=scase_secret;
-                //we update the token
+                //we update the secret
                 var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
                         "`scase_secret` = '" + user.scase_secret + "' " +
                         "WHERE `id` = '" + user.id + "' LIMIT 1";
@@ -56,12 +51,13 @@ module.exports = function(app, passport) {
                   	res.redirect('/profile');//we redirect back to the profile
                 });
             }
+            else{
+            	res.redirect('/profile');
+            }
         });
-
-
 	});
 };
-// route middleware to ensure user is logged i
+// route middleware to ensure user is logged in
 function isLoggedIn(req, res, next) {
 	var connConstant = require('../../config/ConnectConstant');
 	var connection;

@@ -3,10 +3,7 @@ module.exports = function(app, passport) {
 	var mysql = require('mysql');
 	var dbconfig = require('../../config/database');
 	var connConstant = require('../../config/ConnectConstant');
-	//var connection = mysql.createConnection(dbconfig.connection);
-	//var connection = require('../config/ConnectConstant.js');
 	var connection;
-	
 	var ownerflag;//flag used to check if the user is an owner
 	//function to check if the user is owner of a specific project
 	function checkIfOwner(user,proj_name,callback){
@@ -26,8 +23,6 @@ module.exports = function(app, passport) {
 	        callback(ownerflag);
 		});
 	}
-
-	
 	// =============================================================================
 	// Remove a Collaborator from a Project I own or If I want to remove myself ====
 	// =============================================================================
@@ -48,7 +43,6 @@ module.exports = function(app, passport) {
 			else{//check if I am a collaborator in the project, so I can remove myself!
 				var getCollabInfo = "SELECT user_id FROM " + dbconfig.collaborators_table +
 					" WHERE " + dbconfig.collaborators_table + ".id=" + "'" + collab_id + "'";
-				//console.log(getCollabInfo);
 				connection=connConstant.connection;
 				connection.query(getCollabInfo, function(err, rows){
 						if(rows.length>0){

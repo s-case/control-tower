@@ -31,7 +31,7 @@ module.exports = function(app, passport) {
 // =============================================================================
 	app.get('/delete', isLoggedIn, function(req, res) {
 		var user = req.user;
-		var user_id = req.param('user_id');
+		var user_id = req.param('user_id');//the user id of the user to delete
 		//the query checks if the user owns a project
 		var ownerflag;//flag to check if I am owner
 		//Query to select all the project names that the user owns

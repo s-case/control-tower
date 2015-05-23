@@ -30,22 +30,19 @@ module.exports = function(app, passport) {
 	// ===============================================================
 	app.get('/getDomainSubdomain', isLoggedIn, function(req, res) {
 		var user = req.user;
-		var proj_name = req.param('project_name');//name of the project to manage
-		//console.log('projectname to create'+proj_name);
+		var proj_name = req.param('project_name');//name of the project to get domain and subdomain
+		res.setHeader('Content-Type', 'application/json');
 		checkIfOwner(user,proj_name,function(ownerflag){
 				if(ownerflag==true){
-					connection=connConstant.connection;
+					connection=connConstant.connection;//get a new connection
 					var getProjectDomainSubdomainQuery= "SELECT `domain`,`subdomain` FROM " + dbconfig.projects_table + " WHERE `project_name`="+ "'"
 								+ proj_name +"'";//query to get the project's ID 
-					//console.log(getProjectId);
 					connection.query(getProjectDomainSubdomainQuery, function(err, rows){
-						res.setHeader('Content-Type', 'application/json');
 						if(rows.length>0){
-							console.log(rows[0]);
 							var projectDomainSubdomain = [{Category : rows[0].domain},{Category : rows[0].subdomain}];							
 							res.status(200).send(projectDomainSubdomain);
 						}
-						else{
+						else{//we return empty domain and subdomain
 							var domainset;
 							var subdomainset;
 							var projectDomainSubdomain = [{domain : domainset },{subdomain : subdomainset}]; 
@@ -53,18 +50,17 @@ module.exports = function(app, passport) {
 						}
 					});			
 				}
-				else{
+				else{//we return empty domain and subdomain
 					var domainset;
-							var subdomainset;
-							var projectDomainSubdomain = [{domain : domainset },{subdomain : subdomainset}]; 
-							
-							res.status(500).send(projectDomainSubdomain);
+					var subdomainset;
+					var projectDomainSubdomain = [{domain : domainset },{subdomain : subdomainset}];
+					res.status(500).send(projectDomainSubdomain);
 				}
 
 		});		
 	});
 };
-// route middleware to ensure user is logged i
+// route middleware to ensure user is logged in
 function isLoggedIn(req, res, next) {
 	var connConstant = require('../../config/ConnectConstant');
 	var connection;

@@ -1,7 +1,7 @@
 (function(){
-	var app = angular.module('qaApp', ['ngSanitize', 'ui.select',"checklist-model"]);
+	var app = angular.module('qaApp', ['ngSanitize', 'ui.select']);
   	var requirementsClasses = [{name: 'Functional'},{name: 'Quality'},{name: 'Both'}];
-	var projects = []; //projects of S-CASE artefacts repo
+	  var projects = []; //projects of S-CASE artefacts repo
 	  /* Project detals
 	    domain: value picked out of a pre-specified list of domains
 	    sub-domains: ["sub1", "sub2", ...]
@@ -65,7 +65,11 @@
 	  link: link to file
 	  domainOntology: link to domain ontology residing in the ontology repo
 	  */
-
+    //==we use Google verticals for domains and subdomains
+    //https://developers.google.com/adwords/api/docs/appendix/verticals
+    //Domains with no parent are the domains in our case (var parentDomains below)
+    //Domains with parents the domains with no parent are the subdomains in our case (var subdomains below)
+    
   	//controloller to perform the search to the S-CASE artefacts repo
   	app.controller('SearchController',['$http',function($http){
 
@@ -87,18 +91,6 @@
 
 	    SearchPage.searchResults=[];//it will include the results for the specific search
 	    
-	    this.checkAllDomains = function(){
-	    	SearchPage.searchQuery.domainQuery = SearchPage.domains;
-	    };
-	    this.uncheckAllDomains = function(){
-	    	SearchPage.searchQuery.domainQuery = [];
-	    };
-	    this.checkAllSubDomains = function(){
-	    	SearchPage.searchQuery.subdomainQuery = SearchPage.subdomains;
-	    };
-	    this.uncheckAllSubDomains = function(){
-	    	SearchPage.searchQuery.subdomainQuery = [];
-	    };
 	    //function to perform the search to S-CASE artefacts repo
 	    this.doSearch = function(){
 	    	//it will contain the current query because inside http "this" refers to http and not to the controller
@@ -180,22 +172,25 @@
 	  	};
 	  	var subdomainsSelected = [];
 	  	this.subdomainJSON = function (domainSelected){
-	  		subdomainsSelected = [];
+	  		subdomainsSelected = [];//we initialize the subdomains selected
 	  		if(domainSelected.Category!="All"){
 	  			for(var i=0;i<subdomains.length;i++){
-					var flag_parent_found=0;
-					for(var j=0;j<parentDomains.length;j++){
-						if(subdomains[i].Parent==domainSelected.ID&&flag_parent_found==0){
-							subdomainsSelected.push(subdomains[i]);
-							flag_parent_found=1;
-						}
-					}
-				}
+  					var flag_parent_found=0;//flag to set to 1 when we find the parent
+  					for(var j=0;j<parentDomains.length;j++){
+  						if(subdomains[i].Parent==domainSelected.ID&&flag_parent_found==0){
+  							subdomainsSelected.push(subdomains[i]);//the subdomains is of the domain selected
+  							flag_parent_found=1;
+  						}
+  					}
+  				}//we also push the all option in the subdomains
+          subdomainsSelected.push({
+            Category:"All",
+            ID:"1234567890123456789",
+            Parent: domainSelected.ID
+          })
 	  		}
-			
-			SearchPage.subdomains = subdomainsSelected;
-			console.log(SearchPage.subdomains);
-		}
+  			SearchPage.subdomains = subdomainsSelected;
+		  }
 
   	}]);
 
@@ -236,20 +231,6 @@
 	      return this.advancedTab===checkTab;
 	    };
   	});
-
-  	//controller to set the default tab value and to check if it is active
-  	app.controller('AdvancedTabController',function(){
-	    this.advancedTab=1;//default tab to be active
-	    //set the tab active on click
-	    this.setTab = function(setTab){
-	      this.advancedTab=setTab;
-	    };
-	    //returns true/false checking if the tab is active
-	    this.isSet = function(checkTab){
-	      return this.advancedTab===checkTab;
-	    };
-  	});
-
   	
 
   	var domains = [

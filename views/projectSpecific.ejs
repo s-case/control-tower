@@ -3,14 +3,13 @@
 <% include header %>
 <% include navbar %>
 <body>
+<!-- we define a variable projectCurrent to contain the projectname -->
 <% var projName = projectname %>
 <script> projectCurrent = "<%=projName%>";</script>
 <div class="container">
 	<div class="row">
 		<div class="col-sm-8 col-sm-offset-2">
 			<div class="well well-lg">
-				<!--<h3 class="text-primary"><span class="fa fa-github"></span> Github</h3>-->
-				<!--<h3 class="btn btn-default btn-lg btn-block">Project Panel of: <%=projectname%><br></h3>-->
 				<!-- check if the user is an owner of this project-->
 				<% var ownerflag %>
 				<% for (var i in ownersnames) { %>
@@ -20,28 +19,34 @@
 								} 
 							}%>
 				<% } %>
+				<!--if the project is private we set the panel to panel-danger (red)-->
 				<% if (privacylevel=='private') { %>
 					<div class="panel panel-danger">
 				<%}%> 
+				<!--if the project is public we set the panel to panel-success (green)-->
 				<% if (privacylevel=='public') { %>
 					<div class="panel panel-success">
 				<%}%> 
-				
-					<div class="panel-heading">
-					    <% if (privacylevel=='private') { %> 
-					  	<h1 class="panel-title"><i class="fa fa-user-secret">Private Project: <%=projectname%></i></h1>
-					  	<% } if (privacylevel=='public') { %> 
-					    <h1 class="panel-title"><i class="fa fa-cloud">Public Project: <%=projectname%></i></h1>
-					    <% } %>	
-				  	</div>
-				  	<div class="panel-body" ng-controller="domainController as domainCtrl" ng-init="domainCtrl.init()">
+
+				<div class="panel-heading">
+					<!--if the project is private we set the title to Private Project [Project Name]-->
+				    <% if (privacylevel=='private') { %> 
+				  	<h1 class="panel-title"><i class="fa fa-user-secret">Private Project: <%=projectname%></i></h1>
+					<!--if the project is public we set the title to Public Project [Project Name]-->
+				  	<% } if (privacylevel=='public') { %> 
+				    <h1 class="panel-title"><i class="fa fa-cloud">Public Project: <%=projectname%></i></h1>
+				    <% } %>	
+			  	</div>
+				  	<div class="panel-body" ng-controller="domainController as domainCtrl" ng-init="domainCtrl.init()"><!--we initialize the controller to get the already set domain and subdomain-->
+				  		<!--if the user is owner-->
 						<% if (ownerflag) { %>
-							<!-- Privacy button -->
+							<!-- Privacy button to  change the project to either private or public-->
 							<div class="btn-group">
 							  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
 							    Privacy Level: <%= privacylevel %> <span class="caret"></span>
 							  </button>
 							  <ul class="dropdown-menu" role="menu" col-sm-12>
+							  	<!--we create to different urls depending if we would like to set the privacy to private or public-->
 							  	<% var privateProjectUrl="/changePrivacy?privacy_level=private&project_name="+projectname%>
 							  	<% var publicProjectUrl="/changePrivacy?privacy_level=public&project_name="+projectname%>
 							  	<% if (privacylevel=='private') { %> 
@@ -51,27 +56,31 @@
 							    <% } %>							    
 							  </ul>
 							</div>
-							<!-- domain button -->
+							<!-- domain select -->
 							<h4>Domain</h4>
-							<ui-select ng-model="domainCtrl.projectDetails.domainset" theme="bootstrap" ng-disabled="disabled" style="min-width: 300px;" ng-change="domainCtrl.subdomainJSON(domainCtrl.projectDetails.domainset)">
+							<!--we present all the domains using ui-select of Angularjs https://github.com/angular-ui/ui-select-->
+							<ui-select ng-model="domainCtrl.projectDetails.domainset" theme="bootstrap" ng-disabled="disabled" style="min-width: 300px;" ng-change="domainCtrl.subdomainJSON(domainCtrl.projectDetails.domainset)"><!--on the change we get the new subdomains according to the domain selected-->
 						    	<ui-select-match placeholder="Select domain for the list or search for a domain...">{{$select.selected.Category}}</ui-select-match>
 							    <ui-select-choices repeat="domain in domainCtrl.domains | filter: $select.search">
 						      	<div ng-bind-html="domain.Category | highlight: $select.search "></div>
 							    </ui-select-choices>
 			  				</ui-select>
+			  				<!--subdomain select-->
 			  				<h4>SubDomain</h4>
 			  				<ui-select ng-model="domainCtrl.projectDetails.subdomainset" theme="bootstrap" ng-disabled="domainCtrl.subdomainsDisabled()" style="min-width: 300px;">
 							    <ui-select-match placeholder="Select subdomain for the list or search for a subdomain...">{{$select.selected.Category}}</ui-select-match>
+							    <!--we create a variable for the current subdomain-->
 							    <% var subDomain = subdomain_set %>
 		            	    	<script> subdomainCurrent = "<%=subDomain%>";</script>
-							    <ui-select-choices repeat="subdomain in domainCtrl.subdomains | filter: $select.search" value=window.subdomainCurrent>
+		            	    	<!-- ============================= -->
+							    <ui-select-choices repeat="subdomain in domainCtrl.subdomains | filter: $select.search" value=window.subdomainCurrent><!--we set the default value to the current subdomain-->
 						      	<div ng-bind-html="subdomain.Category | highlight: $select.search "></div>
 							    </ui-select-choices>
 						  	</ui-select>
+						  	<!--button to submit the domain and subdomain selection-->
 						  	<div class="btn-group">
 							  	<div>
 				            	    <fieldset class="form-group">
-				            	    	
 				        			    <input type="submit" class="btn btn-primary pull-right" ng-click="domainCtrl.setDomainSubdomain(domainCtrl.projectDetails.domainset.Category,domainCtrl.projectDetails.subdomainset.Category)" value="Submit Domain (SubDomains) selection(s)" />
 				      			    </fieldset>
 				      			</div>

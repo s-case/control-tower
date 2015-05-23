@@ -1,8 +1,8 @@
 var mysql = require('mysql');
 var dbconfig = require('../config/database');
 var connection; 
+//function to handle the disconnections to the Mysql database
 function handleDisconnect(connection) {
-
   connection = mysql.createConnection(dbconfig.connection); // Recreate the connection, since
   connection.connect(function(err) {              // The server is either down
     if(err) {                                     // or restarting (takes a while sometimes).

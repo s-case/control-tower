@@ -21,7 +21,6 @@ module.exports = function(app, passport) {
         			}
             	}
 	        }
-	        //console.log(ownerflag);
 	        callback(ownerflag);
 		});
 	}
@@ -41,8 +40,8 @@ module.exports = function(app, passport) {
         connection = connConstant.connection;
 		connection.query('USE ' + dbconfig.database);
 		connection.query(updateQuery, function(err, rows) {
-                                res.redirect('/profile');
-                            });
+            res.redirect('/profile');
+        });
 	});
 
 	// google -------------------------------
@@ -54,11 +53,11 @@ module.exports = function(app, passport) {
         connection = connConstant.connection;
 		connection.query('USE ' + dbconfig.database);
 		connection.query(updateQuery, function(err, rows) {
-                                res.redirect('/profile');
-                            });
+            res.redirect('/profile');
+        });
 	});
 };
-// route middleware to ensure user is logged i
+// route middleware to ensure user is logged in
 function isLoggedIn(req, res, next) {
 	var connConstant = require('../../config/ConnectConstant');
 	var connection;

@@ -3,10 +3,7 @@ module.exports = function(app, passport) {
 	var mysql = require('mysql');
 	var dbconfig = require('../../config/database');
 	var connConstant = require('../../config/ConnectConstant');
-	//var connection = mysql.createConnection(dbconfig.connection);
-	//var connection = require('../config/ConnectConstant.js');
 	var connection;
-	
 	var ownerflag;//flag used to check if the user is an owner
 	//function to check if the user is owner of a specific project
 	function checkIfOwner(user,proj_name,callback){
@@ -22,13 +19,12 @@ module.exports = function(app, passport) {
         			}
             	}
 	        }
-	        //console.log(ownerflag);
 	        callback(ownerflag);
 		});
 	}
 
 	// =============================================================================
-	// Refresh S-CASE token ACCOUNTS ===============================================
+	// Refresh S-CASE token   ===============================================
 	// =============================================================================
 	//we create a new scase token
 	var crypto = require('crypto');
@@ -56,12 +52,15 @@ module.exports = function(app, passport) {
                   	res.redirect('/profile');//we redirect back to the profile
                 });
             }
+            else{
+            	res.redirect('/profile');//we redirect back to the profile
+            }
         });
 
 
 	});
 };
-// route middleware to ensure user is logged i
+// route middleware to ensure user is logged in
 function isLoggedIn(req, res, next) {
 	var connConstant = require('../../config/ConnectConstant');
 	var connection;

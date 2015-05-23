@@ -38,14 +38,17 @@ module.exports = function(app, passport) {
 			checkIfOwner(user,proj_name,function(ownerflag){
 				if(ownerflag==true){
 					var deleteProjectQuery = "DELETE FROM " + dbconfig.projects_table+
-						" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";
-					console.log(deleteProjectQuery);
-					connection=connConstant.connection;
+						" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";//the query to delete the project
+					//console.log(deleteProjectQuery);
+					connection=connConstant.connection;//get a new connection to the DB
 					connection.query(deleteProjectQuery, function(err, rows){
 		                    res.redirect('/displayOwnprojects');
 	                });
 				}
 			});	
+		}
+		else{
+			res.redirect('/displayOwnprojects');
 		}
 
 	});
