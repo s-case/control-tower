@@ -58,36 +58,34 @@
 						</div>
 						<!-- advanced search tab options -->
 			            <div ng-show="searchModeTab.isSet(2)">
-			            	<div ng-controller="AdvancedTabController as advancedTab"><!--controller for tabs in the advance options set-->
-				            	<div>
-				            	    <fieldset class="form-group">
-				        			    <input type="submit" class="btn btn-primary pull-right" ng-click="searchCtrl.doSearch()" value="Submit Query" />
-				      			    </fieldset>
-				      			</div>
-								<!--angular UI-Select-->
-		      				 	<h3>Domains of Interest (select only one or All)</h3>
-								<h4> Pick only one (if you do not make a choice, All the domains will be selected)</h4>
-							  	<ui-select ng-model="searchCtrl.searchQuery.domainQuery" theme="bootstrap" ng-disabled="disabled" style="min-width: 300px;" ng-change="searchCtrl.subdomainJSON(searchCtrl.searchQuery.domainQuery)">
-							    	<ui-select-match placeholder="Select domain for the list or search for a domain...">{{$select.selected.Category}}</ui-select-match>
-								    <ui-select-choices repeat="domain in searchCtrl.domains | filter: $select.search">
-							      	<div ng-bind-html="domain.Category | highlight: $select.search "></div>
-								    </ui-select-choices>
-							  	</ui-select>
+			            	<div>
+			            	    <fieldset class="form-group">
+			        			    <input type="submit" class="btn btn-primary pull-right" ng-click="searchCtrl.doSearch()" value="Submit Query" />
+			      			    </fieldset>
+			      			</div>
+							<!--angular UI-Select-->
+	      				 	<h3>Domains of Interest (select only one or All)</h3>
+							<h4> Pick only one (if you do not make a choice, All the domains will be selected)</h4>
+						  	<ui-select ng-model="searchCtrl.searchQuery.domainQuery" theme="bootstrap" ng-disabled="disabled" style="min-width: 300px;" ng-change="searchCtrl.subdomainJSON(searchCtrl.searchQuery.domainQuery)">
+						    	<ui-select-match placeholder="Select domain for the list or search for a domain...">{{$select.selected.Category}}</ui-select-match>
+							    <ui-select-choices repeat="domain in searchCtrl.domains | filter: $select.search">
+						      	<div ng-bind-html="domain.Category | highlight: $select.search "></div>
+							    </ui-select-choices>
+						  	</ui-select>
 
-						    	<h3>Sub-Domains of Interest (Depending on your Domain selection)</h3>
-					    		<h4> Pick only one (if you do not make a choice, All the subdomains will be selected)</h4>
-						    	
-					    		<ui-select ng-model="searchCtrl.searchQuery.subdomainQuery" theme="bootstrap" ng-disabled="!searchCtrl.subdomains.length" style="min-width: 300px;">
-								    <ui-select-match placeholder="Select subdomain for the list or search for a subdomain...">{{$select.selected.Category}}</ui-select-match>
-								    <ui-select-choices repeat="subdomain in searchCtrl.subdomains | filter: $select.search">
-							      	<div ng-bind-html="subdomain.Category | highlight: $select.search "></div>
-								    </ui-select-choices>
-							  	</ui-select>
+					    	<h3>Sub-Domains of Interest (Depending on your Domain selection)</h3>
+				    		<h4> Pick only one (if you do not make a choice, All the subdomains will be selected)</h4>
+					    	
+				    		<ui-select ng-model="searchCtrl.searchQuery.subdomainQuery" theme="bootstrap" ng-disabled="!searchCtrl.subdomains.length" style="min-width: 300px;">
+							    <ui-select-match placeholder="Select subdomain for the list or search for a subdomain...">{{$select.selected.Category}}</ui-select-match>
+							    <ui-select-choices repeat="subdomain in searchCtrl.subdomains | filter: $select.search">
+						      	<div ng-bind-html="subdomain.Category | highlight: $select.search "></div>
+							    </ui-select-choices>
+						  	</ui-select>
 
-							  	<h3>Requirements Classification</h3>
-						        <select ng-init="searchCtrl.searchQuery.requirementsClass = searchCtrl.requirementsClasses[2]" ng-model="searchCtrl.searchQuery.requirementsClass" ng-options="reqsClass.name for reqsClass in searchCtrl.requirementsClasses">
-						        </select>
-					     	</div>
+						  	<h3>Requirements Classification</h3>
+					        <select ng-init="searchCtrl.searchQuery.requirementsClass = searchCtrl.requirementsClasses[2]" ng-model="searchCtrl.searchQuery.requirementsClass" ng-options="reqsClass.name for reqsClass in searchCtrl.requirementsClasses">
+					        </select>
 			            </div>
 			            <br>
 			            <div ng-show="searchModeTab.isSet(1)">

@@ -1,18 +1,15 @@
 (function(){
-	var app = angular.module('domainApp', ['ngSanitize', 'ui.select',"checklist-model"]);
+	var app = angular.module('domainApp', ['ngSanitize', 'ui.select']);
   	//controloller to perform the search to the S-CASE artefacts repo
   	app.controller('domainController',['$http',function($http){
-      //==we use Google verticals for domains and subdomains
-      //https://developers.google.com/adwords/api/docs/appendix/verticals
-      //Domains with no parent are the domains in our case (var parentDomains below)
-      //Domains with parents the domains with no parent are the subdomains in our case (var subdomains below)
-  		var ProjectPage  = this;//we set 'this' to a variable in order to use it inside functions (and inside $http)
+
+  		var ProjectPage  = this;//we set this to a variable in order to use it in http
 	  	ProjectPage.domains=[];//we are going to save the all the domains (all the domains from Google Verticals) here
 	  	ProjectPage.subdomains=[];//we are going to save all subdomains (domains level 2 (with only one parent above)) here
 	  	ProjectPage.domains=parentDomains;//we are saving here the level 1 domains (the ones that do not have parent, (they have parent 0))
 	  	
 	  	ProjectPage.projectDetails = {};//it will contain the information of the specific project we examine/edit
-	  	//In specific, it will contain the following:
+	  	//it will contain the following:
 	  	//projectDetails.domainset: the domain of the project
 	  	//projectDetails.subdomainset: the subdomain of project
 
@@ -23,41 +20,40 @@
   			for(var i=0;i<subdomains.length;i++){//we loop over all the subdomains 
 					var flag_parent_found=0;//flag for finding the domainSelected as parent domain in the parentDomains
 					for(var j=0;j<parentDomains.length;j++){
-						if(subdomains[i].Parent==domainSelected.ID&&flag_parent_found==0){//if the parent ID of a subdomain equals to the ID of the domain selected then this subdomain should be pushed to 
+						if(subdomains[i].Parent==domainSelected.ID&&flag_parent_found==0){//if the parent ID of a subdomain equals to the ID of the domain selected then this subdomain should be pushed to the subdomains to be presented to the user
 							subdomainsSelected.push(subdomains[i]);
 							flag_parent_found=1;
 						}
 					}
 				}
-        ProjectPage.subdomains = subdomainsSelected;//the subdomains that have parent the domain selected are presented to the user
-        ProjectPage.projectDetails.subdomainset = [];//we set the subdomain selected to be nothing, since we present the new options to the user
+        ProjectPage.subdomains = subdomainsSelected;
+        ProjectPage.projectDetails.subdomainset = [];
         //console.log(ProjectPage.subdomains);
       };
-      //function to be called in the init function of the controller
-      //it presents the subdomains of the parent domain that is selected when the user already has chosen a domain previously
       this.subdomainJSONifAlreadySubdomainSelected = function (domainSelected){
         subdomainsSelected = [];
         var domainID;
-        //we try to find the id of the domain selected
         for(var j=0;j<parentDomains.length;j++){
           if(parentDomains[j].Category===domainSelected.Category){
             domainID=parentDomains[j].ID;
-            //console.log(domainID)
+            console.log(domainID)
           }
         }
-        for(var i=0;i<subdomains.length;i++){
-          var flag_parent_found=0;
-          for(var j=0;j<parentDomains.length;j++){
-              if(subdomains[i].Parent==domainID&&flag_parent_found==0){
-                subdomainsSelected.push(subdomains[i]);
-                flag_parent_found=1;
-              }
+        if(domainSelected.Category!="All"){
+          for(var i=0;i<subdomains.length;i++){
+            var flag_parent_found=0;
+            for(var j=0;j<parentDomains.length;j++){
+                if(subdomains[i].Parent==domainID&&flag_parent_found==0){
+                  subdomainsSelected.push(subdomains[i]);
+                  flag_parent_found=1;
+                }
+            }
           }
         }
         ProjectPage.subdomains = subdomainsSelected;
+        console.log(ProjectPage.subdomains);
       };
-      //the init function of the controller
-      //it gets the current domain and subdomain of the project and call the subdomainJSONifAlreadySubdomainSelected to display the list of subdomains that correspond to the current domain selection
+
       this.init = function(){
         var currentProjectName = window.projectCurrent;   
         $http({
@@ -77,7 +73,7 @@
           console.log(status);
         });
       };
-      //function to set the new domain and subdomain to the project's fields in the database
+
       this.setDomainSubdomain = function(domain,subdomain){
         var currentDomain = domain;
         var currentSubdomain = subdomain;
@@ -98,7 +94,7 @@
           console.log(status);
         });
       };
-      //function to check if the subdomains option should be disabled
+
       this.subdomainsDisabled = function (){
         if(!ProjectPage.subdomains.length&&!ProjectPage.projectDetails.subdomainset){
           return true;
@@ -111,7 +107,7 @@
 
   	}]);
   	
-    //it contains all the domains of google verticals
+
   	var domains = [
 
   {
@@ -11220,7 +11216,7 @@
     Parent:"5000"
   }
 ];
-//it contains all parent domains (domains with no parent)
+//function to create the parent domains
 var parentDomains = [
 	
   {
@@ -11354,7 +11350,6 @@ var parentDomains = [
     Parent: "0"
   }
 ];
-//it contains all the subdomains (domains with parents the domains with no parent)
 var subdomains = [
   {
     Category: "Celebrities & Entertainment News",

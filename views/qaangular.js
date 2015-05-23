@@ -173,6 +173,12 @@
 	  	var subdomainsSelected = [];
 	  	this.subdomainJSON = function (domainSelected){
 	  		subdomainsSelected = [];//we initialize the subdomains selected
+        //we also push the all option in the subdomains
+        subdomainsSelected.push({
+            Category:"All",
+            ID:"1234567890123456789",
+            Parent: domainSelected.ID
+          });
 	  		if(domainSelected.Category!="All"){
 	  			for(var i=0;i<subdomains.length;i++){
   					var flag_parent_found=0;//flag to set to 1 when we find the parent
@@ -182,12 +188,7 @@
   							flag_parent_found=1;
   						}
   					}
-  				}//we also push the all option in the subdomains
-          subdomainsSelected.push({
-            Category:"All",
-            ID:"1234567890123456789",
-            Parent: domainSelected.ID
-          })
+  				}
 	  		}
   			SearchPage.subdomains = subdomainsSelected;
 		  }
