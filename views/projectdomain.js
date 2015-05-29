@@ -16,6 +16,7 @@
 	  	var subdomainsSelected = [];//it will contain all the subdomains that correspond to the domain selected
       //the function finds all the subdomains (domains level 2) for a provided parent domain
 	  	this.subdomainJSON = function (domainSelected){
+        ProjectPage.DomainSubdomainSelectSuccess=0//we set the flag for the alert message to zero in order not to display either success or danger message
 	  		subdomainsSelected = [];//we initialize the subdomains selected
   			for(var i=0;i<subdomains.length;i++){//we loop over all the subdomains 
 					var flag_parent_found=0;//flag for finding the domainSelected as parent domain in the parentDomains
@@ -31,6 +32,7 @@
         //console.log(ProjectPage.subdomains);
       };
       this.subdomainJSONifAlreadySubdomainSelected = function (domainSelected){
+        ProjectPage.DomainSubdomainSelectSuccess=0//we set the flag for the alert message to zero in order not to display either success or danger message
         subdomainsSelected = [];
         var domainID;
         for(var j=0;j<parentDomains.length;j++){
@@ -77,7 +79,8 @@
       this.setDomainSubdomain = function(domain,subdomain){
         var currentDomain = domain;
         var currentSubdomain = subdomain;
-        var currentProjectName = window.projectCurrent;   
+        var currentProjectName = window.projectCurrent;
+        ProjectPage.DomainSubdomainSelectSuccess=0;   
         $http({
           url: 'http://scouter.ee.auth.gr:3000/changeDomainSubdomain',
           method: "GET",
@@ -88,10 +91,12 @@
           }
         })
         .success(function(data){
-          console.log('Domain and Subdomain Set')
+          console.log('Domain and Subdomain Set');
+          ProjectPage.DomainSubdomainSelectSuccess=1;
         })
         .error(function(status){
           console.log(status);
+          ProjectPage.DomainSubdomainSelectSuccess=2;
         });
       };
 
