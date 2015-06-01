@@ -35,7 +35,7 @@ module.exports = function(app, passport) {
 	app.post('/createProject', isLoggedIn, function(req, res) {
 		var proj_name = req.body.name;
 		proj_name = proj_name.trim();
-		var privacy_level='private';
+		var privacy_level='PRIVATE';
 		if(proj_name.length>0){
 			var user = req.user;
 			var createProjectQuery = "INSERT INTO " + dbconfig.projects_table +
@@ -54,7 +54,7 @@ module.exports = function(app, passport) {
 							connection=connConstant.connection;//get a new connection to the database
 							var projectData ={ 
 								id:null,
-								createdBy:user.id,
+								createdBy:user.id.toString(),
 								updatedBy:null,
 								createdAt:Date.now(),
 								updatedAt:null,
@@ -73,9 +73,10 @@ module.exports = function(app, passport) {
 								    headers: {
 								        "content-type": "application/json",
 								    },
-								    body: JSON.stringify(projectData)
+								    body: projectData
 								},function(error, response, body){
 									console.log(response);
+									console.log(response.code)
 									if(!error && response.code == 200){
 										console.log(response);
 										res.redirect('/manageprojects'+'?project_name='+proj_name);
