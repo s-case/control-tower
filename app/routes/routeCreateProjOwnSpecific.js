@@ -52,7 +52,7 @@ module.exports = function(app, passport) {
 							var createOwnerQuery = "INSERT INTO " +dbconfig.owners_table+ "(user_id,project_id)" +
 							" VALUES (" + "'"+ user.id + "'"+ ",'"+rows[0].project_id+"')";//query to create a new owner
 							connection=connConstant.connection;//get a new connection to the database
-							var projectData ={ 
+							var projectData ={ //create the JSON for theproject to be sent to the S-CASE artefacts registry
 								id:null,
 								createdBy:user.id.toString(),
 								updatedBy:null,
@@ -65,15 +65,15 @@ module.exports = function(app, passport) {
 								privacyLevel:privacy_level,
 								artefacts:[]
 							};
-							connection.query(createOwnerQuery, function(err, rows){
-								request({
+							connection.query(createOwnerQuery, function(err, rows){//create the owner in the Owners Table
+								request({//create the project 
 									url: ArtRepoURL+'assetregistry/project',
 								    method: "POST",
 								    json: true,
 								    headers: {
 								        "content-type": "application/json",
 								    },
-								    body: projectData
+								    body: projectData //do not use JSON stringify
 								},function(error, response, body){
 									console.log(response);
 									console.log(response.code)

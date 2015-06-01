@@ -4,6 +4,9 @@ module.exports = function(app, passport) {
 	var dbconfig = require('../../config/database');
 	var connConstant = require('../../config/ConnectConstant');
 	var connection;
+	var http = require('http');
+	var request = require('request');
+	var ArtRepoURL = ArtRepoConfig.SCASEartRepo.URL;
 	var ownerflag;//flag used to check if the user is an owner
 	//function to check if the user is owner of a specific project
 	function checkIfOwner(user,proj_name,callback){
@@ -37,6 +40,9 @@ module.exports = function(app, passport) {
 				var changePrivacyQuery = "UPDATE " +dbconfig.projects_table+ " SET `domain`='" +domain
 					+ "' , `subdomain`= '"+subdomain+"' WHERE `project_name`='"+proj_name+"'";//the query to update the domain and subdomain
 				connection.query(changePrivacyQuery, function(err, rows){//perform the query
+					request(ArtRepoURL+'assetregistry/project', function (error, response, body){
+						console.log(body);
+					});
 					res.redirect('/manageprojects'+'?project_name='+proj_name);
 				});	
 			}else{
