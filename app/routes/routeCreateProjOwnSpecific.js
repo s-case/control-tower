@@ -3,6 +3,10 @@ module.exports = function(app, passport) {
 	var mysql = require('mysql');
 	var dbconfig = require('../../config/database');
 	var connConstant = require('../../config/ConnectConstant');
+	var ArtRepoConfig = require('../../confg/ArtRepo'); // use this one for testing
+	var http = require('http');
+	var request = require('request');
+	var ArtRepoURL = ArtRepoConfig.SCASEartRepo.URL;
 	//var connection = mysql.createConnection(dbconfig.connection);
 	//var connection = require('../config/ConnectConstant.js');
 	var connection;
@@ -48,8 +52,33 @@ module.exports = function(app, passport) {
 							var createOwnerQuery = "INSERT INTO " +dbconfig.owners_table+ "(user_id,project_id)" +
 							" VALUES (" + "'"+ user.id + "'"+ ",'"+rows[0].project_id+"')";//query to create a new owner
 							connection=connConstant.connection;//get a new connection to the database
+							var projectData ={ 
+								id:null,
+								createdBy:user.id,
+								updatedBy:null,
+								createdAt:Date.now(),
+								updatedAt:null,
+								domain:null,
+								subDomain:null,
+								version:0,
+								name:proj_name,
+								privacyLevel:privacy_level,
+								artefacts:[]
+							};
 							connection.query(createOwnerQuery, function(err, rows){
-								res.redirect('/manageprojects'+'?project_name='+proj_name);
+								request.post({
+									url: ArtRepoURL+'assetregistry/project',
+								    method: "POST",
+								    json: true,
+								    headers: {
+								        "content-type": "application/json",
+								    },
+								    body: JSON.stringify(projectData)
+								},function(error, request, body){
+									if(!error && response.code == 200){
+										res.redirect('/manageprojects'+'?project_name='+proj_name);
+									}
+								});
 							});
 						}
 						else{
