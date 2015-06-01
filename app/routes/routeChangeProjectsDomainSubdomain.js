@@ -40,7 +40,7 @@ module.exports = function(app, passport) {
 				var changePrivacyQuery = "UPDATE " +dbconfig.projects_table+ " SET `domain`='" +domain
 					+ "' , `subdomain`= '"+subdomain+"' WHERE `project_name`='"+proj_name+"'";//the query to update the domain and subdomain
 				connection.query(changePrivacyQuery, function(err, rows){//perform the query
-					request(ArtRepoURL+'assetregistry/project', function (error, response, body){
+					request(ArtRepoURL+'assetregistry/project'+proj_name, function (error, response, body){
 						console.log(body);
 					});
 					res.redirect('/manageprojects'+'?project_name='+proj_name);
