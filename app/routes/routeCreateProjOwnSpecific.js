@@ -75,6 +75,7 @@ module.exports = function(app, passport) {
 								    },
 								    body: JSON.stringify(projectData)
 								},function(error, response, body){
+									console.log(response);
 									if(!error && response.code == 200){
 										console.log(response);
 										res.redirect('/manageprojects'+'?project_name='+proj_name);
