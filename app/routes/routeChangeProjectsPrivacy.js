@@ -3,6 +3,10 @@ module.exports = function(app, passport) {
 	var mysql = require('mysql');
 	var dbconfig = require('../../config/database');
 	var connConstant = require('../../config/ConnectConstant');
+	var ArtRepoConfig = require('../../config/ArtRepo'); // get the artefact repo url
+	var http = require('http');
+	var request = require('request');
+	var ArtRepoURL = ArtRepoConfig.SCASEartRepo.URL;
 	var connection;
 	var ownerflag;//flag used to check if the user is an owner
 	//function to check if the user is owner of a specific project
@@ -37,7 +41,20 @@ module.exports = function(app, passport) {
 					+ "' WHERE `project_name`='"+proj_name+"'";//the query to update the privacy level
 				connection=connConstant.connection;//we get a new connection to the database
 				connection.query(changePrivacyQuery, function(err, rows){
-					res.redirect('/manageprojects'+'?project_name='+proj_name);
+					//request to change the privacy in the project in the Assets Registry
+					//first we get the whole json project and then we perform another request to send the project with its new privacy
+					request(ArtRepoURL+'assetregistry/project/'+proj_name, function (error, response, body){
+						var projectData = JSON.parse(body);
+						projectData.privacyLevel=privacy;
+						request({
+							url: ArtRepoURL+'assetregistry/project/'+projectData.id,
+							method:'PUT',
+							json : projectData
+						},function(error,response){
+							console.log(response);
+							res.redirect('/manageprojects'+'?project_name='+proj_name);
+						});
+					});
 				});		
 			}
 			else{

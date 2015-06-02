@@ -4,6 +4,7 @@ module.exports = function(app, passport) {
 	var dbconfig = require('../../config/database');
 	var connConstant = require('../../config/ConnectConstant');
 	var connection;
+	var ArtRepoConfig = require('../../config/ArtRepo'); //get the artefact repo url
 	var http = require('http');
 	var request = require('request');
 	var ArtRepoURL = ArtRepoConfig.SCASEartRepo.URL;
@@ -40,10 +41,22 @@ module.exports = function(app, passport) {
 				var changePrivacyQuery = "UPDATE " +dbconfig.projects_table+ " SET `domain`='" +domain
 					+ "' , `subdomain`= '"+subdomain+"' WHERE `project_name`='"+proj_name+"'";//the query to update the domain and subdomain
 				connection.query(changePrivacyQuery, function(err, rows){//perform the query
-					request(ArtRepoURL+'assetregistry/project'+proj_name, function (error, response, body){
-						console.log(body);
+					request(ArtRepoURL+'assetregistry/project/'+proj_name, function (error, response, body){
+						//request to change the domain in the project in the Assets Registry
+						var projectData = JSON.parse(body);
+						projectData.domain=domain
+						projectData.subdomain=subdomain
+						console.log(projectData);
+						request({
+							url: ArtRepoURL+'assetregistry/project/'+projectData.id,
+							method:'PUT',
+							json : projectData
+						},function(error,response){
+							console.log(response);
+							res.redirect('/manageprojects'+'?project_name='+proj_name);
+						});
 					});
-					res.redirect('/manageprojects'+'?project_name='+proj_name);
+					
 				});	
 			}else{
 				res.redirect('/manageprojects'+'?project_name='+proj_name);

@@ -3,12 +3,10 @@ module.exports = function(app, passport) {
 	var mysql = require('mysql');
 	var dbconfig = require('../../config/database');
 	var connConstant = require('../../config/ConnectConstant');
-	var ArtRepoConfig = require('../../config/ArtRepo'); // use this one for testing
+	var ArtRepoConfig = require('../../config/ArtRepo'); // get the artefact repo url
 	var http = require('http');
 	var request = require('request');
 	var ArtRepoURL = ArtRepoConfig.SCASEartRepo.URL;
-	//var connection = mysql.createConnection(dbconfig.connection);
-	//var connection = require('../config/ConnectConstant.js');
 	var connection;
 	var ownerflag;//flag used to check if the user is an owner
 	//function to check if the user is owner of a specific project
@@ -75,12 +73,7 @@ module.exports = function(app, passport) {
 								    },
 								    body: projectData //do not use JSON stringify
 								},function(error, response, body){
-									console.log(response);
-									console.log(response.code)
-									if(!error && response.code == 200){
-										console.log(response);
-										res.redirect('/manageprojects'+'?project_name='+proj_name);
-									}
+									res.redirect('/manageprojects'+'?project_name='+proj_name);
 								});
 							});
 						}

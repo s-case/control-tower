@@ -108,22 +108,119 @@
 	    	}
 	    	if(subdomainString==undefined||subdomainString===""){
 	    		subdomainString="All";
-	    	}	    	
+	    	}	  
+	    	var requirementsClass = currentQuery.requirementsClass.name;
+	    	var operations =  currentQuery.operations;
+	    	var query;
+	    	if(domainString!="All"&&subdomainString!="All"){
+	    		query = {
+					  "filtered": {
+					    "query": {
+					      "match": {
+					        "_all": operations.replace(/,/g, '');
+					      }
+					    },
+					    "filter": {
+					      "bool": {
+					        "must": {
+					          [
+					            {
+					              "match": {
+					                "domain": domainString
+					              }
+					            },
+					            {
+					              "match": {
+					                "subdomain": subdomainString
+					              }
+					            }					           
+					          ]
+					        }
+					      }
+					    }
+					  }
+					}; 
+	    	}
+	    	if(subdomainString=="All"){
+	    		query = {
+					  "filtered": {
+					    "query": {
+					      "match": {
+					        "_all": operations.replace(/,/g, '');
+					      }
+					    },
+					    "filter": {
+					      "bool": {
+					        "must": {
+					            {
+					              "match": {
+					                "domain": domainString
+					              }
+					            }
+					        }
+					      }
+					    }
+					  }
+					}; 
+
+	    	}
+	    	if(domainString=="All"){
+	    		query = {
+					  "filtered": {
+					    "query": {
+					      "match": {
+					        "_all": operations.replace(/,/g, '');
+					      }
+					    }
+					  }
+					}; 
+	    	}	
 	    	$http({
-	   			url: 'api/ArtsRepo/Results',
+	   			url: 'http://109.231.121.125:8080/s-case/assetregistry/artefact/search',
 	   			method: "GET",
 	   			params: {
-	   				domain: domainString,
-	   				subdomain: subdomainString,
-	   				requirements: currentQuery.requirementsClass.name,
-	   				operations: currentQuery.operations
+	   				q: query
 	   			}
 	   		})
 	   		.success(function(data){
 		  		SearchPage.searchResults=data;//we get the data to the searchResults
 		  		//we set every different result to the corresponding global variable
-		  		SearchPage.requirements=SearchPage.searchResults.requirements;
-		  		SearchPage.usecasediagrams=SearchPage.searchResults.usecasediagrams;
+		  		for(var i=0;i<SearchPage.searchResults.length;i++){
+		  			//check if the project is public or if the user owns or collaborates on it
+		  			if(SearchPage.searchResults[i].privacyLevel==='PUBLIC'||isOwnerCollab(SearchPage.searchResults[i].projectName,SearchPage.usersProjects)){
+		  				if(SearchPage.searchResults[i].type==='TEXTUAL'){
+		  					if(requirementsClass=='Functional'){
+		  						if(SearchPage.searchResults[i].requirement=='functional'){
+		  							SearchPage.requirements.push(SearchPage.searchResults[i]);
+		  						}
+		  					}
+		  					if(requirementsClass=='Quality'){
+		  						if(SearchPage.searchResults[i].requirement=='non-functional'){
+		  							SearchPage.requirements.push(SearchPage.searchResults[i]);
+		  						}
+		  					}
+		  					if(requirementsClass=='Both'){
+		  						SearchPage.requirements.push(SearchPage.searchResults[i]);
+		  					}
+		  				}
+		  				if(SearchPage.searchResults[i].type==='activity diagram'){
+	  						SearchPage.activitydiagrams.push(SearchPage.searchResults[i]);
+		  				}
+		  				if(SearchPage.searchResults[i].type==='analysis class diagram'){
+	  						SearchPage.analysisclassdiagrams.push(SearchPage.searchResults[i]);
+		  				}
+		  				if(SearchPage.searchResults[i].type==='storyboard'){
+	  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
+		  				}
+		  				if(SearchPage.searchResults[i].type==='code'){
+	  						SearchPage.sourcecodes.push(SearchPage.searchResults[i]);
+		  				}
+		  				if(SearchPage.searchResults[i].type==='storyboard'){
+	  						SearchPage.sourcecodes.push(SearchPage.searchResults[i]);
+		  				}
+		  					
+		  			}
+		  		}
 		  		SearchPage.activitydiagrams=SearchPage.searchResults.activitydiagrams;
 		  		SearchPage.classdiagrams=SearchPage.searchResults.classdiagrams
 		  		SearchPage.storyboards=SearchPage.searchResults.storyboards;

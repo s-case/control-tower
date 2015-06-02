@@ -75,12 +75,12 @@
           console.log(status);
         });
       };
-
+      //function to set the new Domain and subdomain
       this.setDomainSubdomain = function(domain,subdomain){
         var currentDomain = domain;
         var currentSubdomain = subdomain;
         var currentProjectName = window.projectCurrent;
-        ProjectPage.DomainSubdomainSelectSuccess=0;   
+        ProjectPage.DomainSubdomainSelectSuccess=0; //flag to be used for the success or failure of the domain and subdomain set  
         $http({
           url: 'http://scouter.ee.auth.gr:3000/changeDomainSubdomain',
           method: "GET",

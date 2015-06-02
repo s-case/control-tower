@@ -20,20 +20,20 @@
 							}%>
 				<% } %>
 				<!--if the project is private we set the panel to panel-danger (red)-->
-				<% if (privacylevel=='private') { %>
+				<% if (privacylevel=='PRIVATE') { %>
 					<div class="panel panel-danger">
 				<%}%> 
 				<!--if the project is public we set the panel to panel-success (green)-->
-				<% if (privacylevel=='public') { %>
+				<% if (privacylevel=='PUBLIC') { %>
 					<div class="panel panel-success">
 				<%}%> 
 
 				<div class="panel-heading">
 					<!--if the project is private we set the title to Private Project [Project Name]-->
-				    <% if (privacylevel=='private') { %> 
+				    <% if (privacylevel=='PRIVATE') { %> 
 				  	<h1 class="panel-title"><i class="fa fa-user-secret">Private Project: <%=projectname%></i></h1>
 					<!--if the project is public we set the title to Public Project [Project Name]-->
-				  	<% } if (privacylevel=='public') { %> 
+				  	<% } if (privacylevel=='PUBLIC') { %> 
 				    <h1 class="panel-title"><i class="fa fa-cloud">Public Project: <%=projectname%></i></h1>
 				    <% } %>	
 			  	</div>
@@ -47,12 +47,12 @@
 							  </button>
 							  <ul class="dropdown-menu" role="menu" col-sm-12>
 							  	<!--we create to different urls depending if we would like to set the privacy to private or public-->
-							  	<% var privateProjectUrl="/changePrivacy?privacy_level=private&project_name="+projectname%>
-							  	<% var publicProjectUrl="/changePrivacy?privacy_level=public&project_name="+projectname%>
-							  	<% if (privacylevel=='private') { %> 
-							  	<li><a href=<%=publicProjectUrl%>>Public</a></li>
-							  	<% } if (privacylevel=='public') { %> 
-							    <li><a href=<%=privateProjectUrl%>>Private</a></li>
+							  	<% var privateProjectUrl="/changePrivacy?privacy_level=PRIVATE&project_name="+projectname%>
+							  	<% var publicProjectUrl="/changePrivacy?privacy_level=PUBLIC&project_name="+projectname%>
+							  	<% if (privacylevel=='PRIVATE') { %> 
+							  	<li><a href=<%=publicProjectUrl%>>PUBLIC</a></li>
+							  	<% } if (privacylevel=='PUBLIC') { %> 
+							    <li><a href=<%=privateProjectUrl%>>PRIVATE</a></li>
 							    <% } %>							    
 							  </ul>
 							</div>

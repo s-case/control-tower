@@ -3,8 +3,10 @@ module.exports = function(app, passport) {
 	var mysql = require('mysql');
 	var dbconfig = require('../../config/database');
 	var connConstant = require('../../config/ConnectConstant');
-	//var connection = mysql.createConnection(dbconfig.connection);
-	//var connection = require('../config/ConnectConstant.js');
+	var ArtRepoConfig = require('../../config/ArtRepo'); // get the artefact repo url
+	var http = require('http');
+	var request = require('request');
+	var ArtRepoURL = ArtRepoConfig.SCASEartRepo.URL;
 	var connection;
 	var ownerflag;//flag used to check if the user is an owner
 	//function to check if the user is owner of a specific project
@@ -42,7 +44,15 @@ module.exports = function(app, passport) {
 					//console.log(deleteProjectQuery);
 					connection=connConstant.connection;//get a new connection to the DB
 					connection.query(deleteProjectQuery, function(err, rows){
-		                    res.redirect('/displayOwnprojects');
+						//first get the project JSON and then delete the project using its id in the Art Registry
+						request(ArtRepoURL+'assetregistry/project/'+proj_name, function (error, response, body){
+							var projectData = JSON.parse(body);
+							console.log(projectData);
+							request.del(ArtRepoURL+'assetregistry/project/'+projectData.id,function(error,response){
+								console.log(response);
+								res.redirect('/displayOwnprojects');
+							});
+						}); 
 	                });
 				}
 			});	
