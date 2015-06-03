@@ -130,18 +130,13 @@
 					    "filter": {
 					      "bool": {
 					        "must": {
-					          [
-					            {
+					          
+					            
 					              "term": {
 					                "domain": domainString
 					              }
-					            },
-					            {
-					              "term": {
-					                "subdomain": subdomainString
-					              }
-					            }					           
-					          ]
+					            			           
+					          
 					        }
 					      }
 					    }
@@ -153,7 +148,7 @@
 				  	"filtered": {
 				    	"query": {
 				      		"match": {
-				        		"_all": operations.replace(/,/g, '');
+				        		"_all": operations.replace(/,/g, '')
 				      		}
 				      	},
 				    	"filter": {
@@ -172,7 +167,7 @@
 	    	if(domainString=="All"){
 	    		query = {
 					      "match": {
-					        "_all": operations.replace(/,/g, '');
+					        "_all": operations.replace(/,/g, '')
 					      }
 					}; 
 	    	}	

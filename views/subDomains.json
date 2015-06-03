@@ -1,6 +1,4 @@
-;
-var subdomains = [
-  {
+  [{
     "Category": "Celebrities & Entertainment News",
     "ID": "184",
     "Parent": "3"
