@@ -2,12 +2,15 @@
 	var app = angular.module('domainApp', ['ngSanitize', 'ui.select']);
   	//controloller to perform the search to the S-CASE artefacts repo
   	app.controller('domainController',['$http',function($http){
-
+      
+      
   		var ProjectPage  = this;//we set this to a variable in order to use it in http
 	  	ProjectPage.domains=[];//we are going to save the all the domains (all the domains from Google Verticals) here
 	  	ProjectPage.subdomains=[];//we are going to save all subdomains (domains level 2 (with only one parent above)) here
 	  	ProjectPage.domains=parentDomains;//we are saving here the level 1 domains (the ones that do not have parent, (they have parent 0))
-	  	
+	  	$http.get('parentDomains.json').then(function(res){
+        ProjectPage.domains=res.data;
+      });
 	  	ProjectPage.projectDetails = {};//it will contain the information of the specific project we examine/edit
 	  	//it will contain the following:
 	  	//projectDetails.domainset: the domain of the project

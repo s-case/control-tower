@@ -21,6 +21,7 @@
     "forever-monitor" : "~1.5.2",
     "express-jwt" : "*",
     "jsonwebtoken" : "*",
-    "request" : "*"
+    "request" : "*",
+    "requirejs": "*"
   }
 }
