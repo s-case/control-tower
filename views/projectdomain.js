@@ -10,6 +10,7 @@
 	  	ProjectPage.domains=parentDomains;//we are saving here the level 1 domains (the ones that do not have parent, (they have parent 0))
 	  	$http.get('parentDomains.json').then(function(res){
         ProjectPage.domains=res.data;
+        console.log(ProjectPage.domains)
       });
 	  	ProjectPage.projectDetails = {};//it will contain the information of the specific project we examine/edit
 	  	//it will contain the following:
