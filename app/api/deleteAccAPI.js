@@ -8,7 +8,7 @@ module.exports = function(app){
 	// =============================================================================
 	// Delete account API =============================================================
 	// =============================================================================
-	app.get('/api/deleteUser',function(req,res){
+	app.delete('/api/deleteUser',function(req,res){
 		var scase_token= req.param('scase_token');//require your scase token in order to authenticate
 		var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate
 		res.setHeader('Content-Type', 'application/json');

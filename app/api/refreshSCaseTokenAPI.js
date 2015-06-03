@@ -15,7 +15,7 @@ module.exports = function(app){
 	function scasetokenCreate(size){
 	    return base64url(crypto.randomBytes(size));
 	}
-	app.get('/api/refreshSCASEtoken',function(req,res){
+	app.put('/api/refreshSCASEtoken',function(req,res){
 		var scase_token=req.param('scase_token');
 		var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate
 		res.setHeader('Content-Type', 'application/json');

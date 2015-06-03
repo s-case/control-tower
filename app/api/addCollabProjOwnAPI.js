@@ -27,7 +27,7 @@ module.exports = function(app){
 	// =============================================================================
 	// Add an collaborator in a project I own API===================================
 	// =============================================================================
-	app.get('/api/addCollabProjOwn', function(req, res) {
+	app.put('/api/addCollabProjOwn', function(req, res) {
 		res.setHeader('Content-Type', 'application/json');
 		var scase_token= req.param('scase_token');//require your scase token in order to authenticate
 		var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate

@@ -55,7 +55,7 @@ module.exports = function(app, passport) {
 		
 	});
 };
-// route middleware to ensure user is logged iν
+// route middleware to ensure user is logged in
 function isLoggedIn(req, res, next) {
 	var connConstant = require('../../config/ConnectConstant');
 	var connection;

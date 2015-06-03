@@ -27,7 +27,7 @@ module.exports = function(app){
 	// =============================================================================
 	// Add an owner in a project I own API===============================================
 	// =============================================================================
-	app.get('/api/addOwnerProjOwn', function(req, res) {
+	app.put('/api/addOwnerProjOwn', function(req, res) {
 		var scase_token= req.param('scase_token');//require your scase token in order to authenticate
 		var proj_name= req.param('project_name');//require project name
 		var github_name = req.param('github_name');//require the github name of the user you would like to add as an owner

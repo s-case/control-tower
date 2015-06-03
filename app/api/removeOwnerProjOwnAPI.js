@@ -27,7 +27,7 @@ module.exports = function(app){
 	// =============================================================================
 	// Remove a collaborator from a project I own API===============================================
 	// =============================================================================
-	app.get('/api/removeOwnerProjOwn', function(req, res) {
+	app.delete('/api/removeOwnerProjOwn', function(req, res) {
 		var scase_token= req.param('scase_token');
 		var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate
 		var proj_name= req.param('project_name');

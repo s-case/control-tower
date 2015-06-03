@@ -30,15 +30,16 @@ module.exports = function(app){
 		});
 	}
 	// =============================================================================
-	// change privacy of a project I own API===================================
+	// Create a project I own API===================================
 	// =============================================================================
-	app.put('/api/changePrivacyProjOwn', function(req, res) {
+	app.post('/api/changePrivacyProjOwn', function(req, res) {
 		res.setHeader('Content-Type', 'application/json');
 		var scase_token= req.param('scase_token');//require your scase token in order to authenticate
 		var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate
 		var proj_name= req.param('project_name');//require project name
-		var privacy=req.param('privacy_level');
-		if(scase_token&&proj_name&&scase_signature&&privacy){
+		var domain = req.param('domain');//the new domain of the project
+		var subdomain = req.param('subdomain');//the new subdomain of the project
+		if(scase_token&&proj_name&&scase_signature){
 			connection=connConstant.connection;//ensure that there is a connection to the DB
 			//we select the user with the scase_token provided 
 			var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE scase_token = '" + scase_token + "'";//query to get all the info of the user with the provided scase token
@@ -64,21 +65,25 @@ module.exports = function(app){
 											//console.log(getProjectId);
 											connection.query(getProjectId, function(err, rows){
 												if(rows.length>0){
-													var changePrivacyQuery = "UPDATE " +dbconfig.projects_table+ " SET `privacy_level`='" +privacy
-														+ "' WHERE `project_id`='"+rows[0].project_id+"'";
+													var changeDomainSubdomain= "UPDATE " +dbconfig.projects_table+ " SET `domain`='" +domain
+														+ "' , `subdomain`= '"+subdomain+"' WHERE `project_name`='"+proj_name+"'";//the query to update the domain and subdomain
 													connection=connConstant.connection;
 													//console.log(changePrivacyQuery);
-													connection.query(changePrivacyQuery, function(err, rows){
+													connection.query(changeDomainSubdomain, function(err, rows){
 														//first we get the json of the project and then we do a put request to insert the project with its new privacyLevel value
 														request(ArtRepoURL+'assetregistry/project/'+proj_name, function (error, response, body){
 															var projectData = JSON.parse(body);
-															projectData.privacyLevel=privacy;//we set the new privacy
+															projectData.domain=domain//insert the new domain
+															projectData.subdomain=subdomain//insert the new subdomain
 															request({
 																url: ArtRepoURL+'assetregistry/project/'+projectData.id,
 																method:'PUT',
 																json : projectData
 															},function(error,response){
-																var obj = '{"message": "Privacy level of ' + proj_name +' set to '+ privacy+ '"}';
+																//================TBD==========================================================================================
+																//code that checks the response code to be added when the response codes are introduced in the Assets Registry
+																//=============================================================================================================
+																var obj = '{"message": "Domain and subdomain of ' + proj_name +' set"}';
 																var Jobj=JSON.parse(obj);
 																res.status(200).send(Jobj);
 															});

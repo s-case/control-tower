@@ -39,7 +39,7 @@ module.exports = function(app, passport) {
 							" JOIN "+ dbconfig.owners_table+ " ON "+ dbconfig.projects_table + ".`project_id`="+dbconfig.owners_table+".`project_id` " +
 								" WHERE " +dbconfig.owners_table+".`user_id`="+"'"+user.id+"'";
 		connection=connConstant.connection;
-		if(!user_id){//at first we create a message with all the projects the user owns to alert about the potential deletion
+		if(!user_id){//at first we create a message with all the projects the user owns to alert about the potential deletion (the message is stored in the database and shown to the user)
 			connection.query(CheckOwnershipQuery, function(err, rows) {
 	         	if (err) throw err;
 	         	var newmessage;//we create the message that contains the projects that the user owns
@@ -52,7 +52,7 @@ module.exports = function(app, passport) {
 					}
 				}
 				if(newmessage!=null){//we are going to insert this message in the DB, in order to know that the user attempted to delete the profile
-					newmessage = newmessage.substring(0,newmessage.length-4);
+					newmessage = newmessage.substring(0,newmessage.length-4);//remove the last "and"
 					connection=connConstant.connection;
 					var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'";
 					connection.query(selectUsersQuery, function(err, rows){
@@ -108,7 +108,7 @@ module.exports = function(app, passport) {
 		}
 	});
 };
-// route middleware to ensure user is logged i
+// route middleware to ensure user is logged in
 function isLoggedIn(req, res, next) {
 	var connConstant = require('../../config/ConnectConstant');
 	var connection;

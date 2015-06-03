@@ -20,14 +20,6 @@ module.exports = function(app, passport) {
 			user : req.user
 		});
 	});
-
-	// PROFILE SECTION =========================
-	app.get('/profile_alert', isLoggedIn, function(req, res) {
-		connection = connConstant.connection;
-		res.render('profile_alert.ejs', {
-			user : req.user
-		});
-	});
 	// LOGOUT ==============================
 	app.get('/logout', function(req, res) {
 		connection = connConstant.connection;

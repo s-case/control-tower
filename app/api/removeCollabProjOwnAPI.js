@@ -28,7 +28,7 @@ module.exports = function(app){
 	// =============================================================================
 	// Remove a collaborator from a project I own API===============================================
 	// =============================================================================
-	app.get('/api/removeCollabProjOwn', function(req, res) {
+	app.delete('/api/removeCollabProjOwn', function(req, res) {
 		var scase_token= req.param('scase_token');
 		var proj_name= req.param('project_name');
 		var github_name = req.param('github_name');

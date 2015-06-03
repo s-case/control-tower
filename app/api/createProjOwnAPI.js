@@ -5,7 +5,11 @@ module.exports = function(app){
 	var connConstant = require('../../config/ConnectConstant');//it loads a module that ensure continuous connection to the database
 	var connection;//variable used for the connection to the database
 	var ownerflag=false;//flag used to check if the user is an owner
-	var jwt = require('jsonwebtoken');//
+	var jwt = require('jsonwebtoken');
+	var ArtRepoConfig = require('../../config/ArtRepo'); // get the artefact repo url
+	var http = require('http');
+	var request = require('request');
+	var ArtRepoURL = ArtRepoConfig.SCASEartRepo.URL;
 	// =============================================================================
 	// Create a project I own API===================================
 	// =============================================================================
@@ -20,7 +24,7 @@ module.exports = function(app){
 			//we select the user with the scase_token provided 
 			var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE scase_token = '" + scase_token + "'";//query to get all the info of the user with the provided scase token
 			connection.query(selectUsersQuery, function(err, rows){
-                if (rows.length > 0) {
+                if (rows.length > 0) {//we verify the signature given with the provided secret
                 	jwt.verify(scase_signature,rows[0].scase_secret,function(err,decoded){
                 		if(err){
 							var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
@@ -33,7 +37,6 @@ module.exports = function(app){
 		                		var createProjectQuery = "INSERT INTO " + dbconfig.projects_table +
 										" (project_name,privacy_level)" +
 										" VALUES ("+ "'" + proj_name+"','"+privacy_level+"')";//query to create the project
-								//console.log(createProjectQuery);
 								connection=connConstant.connection;
 								connection.query(createProjectQuery, function(err, rows){
 									if(rows){
@@ -46,6 +49,19 @@ module.exports = function(app){
 												var createOwnerQuery = "INSERT INTO " +dbconfig.owners_table+ "(user_id,project_id)" +
 												" VALUES (" + "'"+ user.id + "'"+ ",'"+rows[0].project_id+"')";
 												connection=connConstant.connection;
+												var projectData ={ //create the JSON for theproject to be sent to the S-CASE artefacts registry
+													id:null,
+													createdBy:user.id.toString(),
+													updatedBy:null,
+													createdAt:Date.now(),
+													updatedAt:null,
+													domain:null,
+													subDomain:null,
+													version:0,
+													name:proj_name,
+													privacyLevel:privacy_level,
+													artefacts:[]
+												};
 												//console.log(createOwnerQuery);
 												connection.query(createOwnerQuery, function(err, rows){
 													if(err){
@@ -54,9 +70,20 @@ module.exports = function(app){
 														res.status(500).send(Jobj);
 													}
 													else if(rows){
-														var obj = '{'+ '"message": "'+proj_name + ' created"}';
-														var Jobj=JSON.parse(obj);
-														res.status(201).send(Jobj);
+														request({//create the project in the Assets Registry
+															url: ArtRepoURL+'assetregistry/project',
+														    method: "POST",
+														    json: true,
+														    headers: {
+														        "content-type": "application/json",
+														    },
+														    body: projectData //do not use JSON stringify
+														},function(error, response, body){
+															var obj = '{'+ '"message": "'+proj_name + ' created"}';
+															var Jobj=JSON.parse(obj);
+															res.status(201).send(Jobj);
+														});
+														
 													}
 												});
 											}

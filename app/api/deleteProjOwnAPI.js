@@ -27,7 +27,7 @@ module.exports = function(app){
 	// =============================================================================
 	// Delete a project I own API===============================================
 	// =============================================================================
-	app.get('/api/deleteProjectOwn', function(req, res) {
+	app.delete('/api/deleteProjectOwn', function(req, res) {
 		var scase_token= req.param('scase_token');
 		var proj_name= req.param('project_name');
 		var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate
@@ -62,9 +62,15 @@ module.exports = function(app){
 												res.status(500).send(Jobj);
 											}
 											else if(rows){
-												var obj = '{'+ '"message": "project '+ proj_name + ' deleted"}';
-												var Jobj=JSON.parse(obj);
-												res.status(200).send(Jobj);
+												//first get the project JSON and then delete the project using its id in the Art Registry
+												request(ArtRepoURL+'assetregistry/project/'+proj_name, function (error, response, body){
+													var projectData = JSON.parse(body);//we get the whole project and then use its id to delete the project
+													request.del(ArtRepoURL+'assetregistry/project/'+projectData.id,function(error,response){
+														var obj = '{'+ '"message": "project '+ proj_name + ' deleted"}';
+														var Jobj=JSON.parse(obj);
+														res.status(200).send(Jobj);
+													});
+												}); 
 											}
 						                });
 									}

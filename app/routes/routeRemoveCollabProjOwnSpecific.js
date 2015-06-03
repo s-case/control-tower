@@ -19,7 +19,6 @@ module.exports = function(app, passport) {
         			}
             	}
 	        }
-	        //console.log(ownerflag);
 	        callback(ownerflag);
 		});
 	}
@@ -65,7 +64,7 @@ module.exports = function(app, passport) {
 		
 	});
 };
-// route middleware to ensure user is logged i
+// route middleware to ensure user is logged in
 function isLoggedIn(req, res, next) {
 	var connConstant = require('../../config/ConnectConstant');
 	var connection;
