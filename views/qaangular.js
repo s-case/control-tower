@@ -76,7 +76,6 @@
   		var SearchPage  = this;//we set this to a variable in order to use it in http
 	  	SearchPage.domains=[];//we are going to save the domains here
 	  	SearchPage.subdomains=[];//we are going to save the subdomains here
-	  	SearchPage.domains=parentDomains;
 	  	$http.get('parentDomains.json').then(function(res){
 	        SearchPage.domains=res.data;
       	});

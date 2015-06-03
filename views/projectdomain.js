@@ -26,11 +26,11 @@
 	  	this.subdomainJSON = function (domainSelected){
         ProjectPage.DomainSubdomainSelectSuccess=0//we set the flag for the alert message to zero in order not to display either success or danger message
 	  		subdomainsSelected = [];//we initialize the subdomains selected
-  			for(var i=0;i<subdomains.length;i++){//we loop over all the subdomains 
+  			for(var i=0;i<subdomainsTotal.length;i++){//we loop over all the subdomains 
 					var flag_parent_found=0;//flag for finding the domainSelected as parent domain in the parentDomains
 					for(var j=0;j<ProjectPage.domains.length;j++){
-						if(subdomains[i].Parent==domainSelected.ID&&flag_parent_found==0){//if the parent ID of a subdomain equals to the ID of the domain selected then this subdomain should be pushed to the subdomains to be presented to the user
-							subdomainsSelected.push(subdomains[i]);
+						if(subdomainsTotal[i].Parent==domainSelected.ID&&flag_parent_found==0){//if the parent ID of a subdomain equals to the ID of the domain selected then this subdomain should be pushed to the subdomains to be presented to the user
+							subdomainsSelected.push(subdomainsTotal[i]);
 							flag_parent_found=1;
 						}
 					}
