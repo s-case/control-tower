@@ -31,7 +31,7 @@ module.exports = function(app, passport) {
 		var proj_name = req.param('project_name');//name of the project to manage
 		if(proj_name){
 			var collabflag;//flag to see if the user is collaborator
-			function checkIfCollab(callback){
+			function checkIfCollab(callback){//function to check if I am collaborator
 				var flag;
 				connection=connConstant.connection;
 				//check if I collaborate in a project

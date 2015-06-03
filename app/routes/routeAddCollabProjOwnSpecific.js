@@ -3,8 +3,6 @@ module.exports = function(app, passport) {
 	var mysql = require('mysql');
 	var dbconfig = require('../../config/database');
 	var connConstant = require('../../config/ConnectConstant');
-	//var connection = mysql.createConnection(dbconfig.connection);
-	//var connection = require('../config/ConnectConstant.js');
 	var connection;
 	var ownerflag;//flag used to check if the user is an owner
 	//function to check if the user is owner of a specific project
@@ -21,7 +19,6 @@ module.exports = function(app, passport) {
         			}
             	}
 	        }
-	        //console.log(ownerflag);
 	        callback(ownerflag);
 		});
 	}

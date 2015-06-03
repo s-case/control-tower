@@ -125,12 +125,12 @@
 					        "must": {
 					          [
 					            {
-					              "match": {
+					              "term": {
 					                "domain": domainString
 					              }
 					            },
 					            {
-					              "match": {
+					              "term": {
 					                "subdomain": subdomainString
 					              }
 					            }					           
@@ -143,36 +143,30 @@
 	    	}
 	    	if(subdomainString=="All"){
 	    		query = {
-					  "filtered": {
-					    "query": {
-					      "match": {
-					        "_all": operations.replace(/,/g, '');
-					      }
-					    },
-					    "filter": {
-					      "bool": {
-					        "must": {
-					            {
-					              "match": {
-					                "domain": domainString
-					              }
+				  	"filtered": {
+				    	"query": {
+				      		"match": {
+				        		"_all": operations.replace(/,/g, '');
+				      		}
+				      	},
+				    	"filter": {
+				      		"bool": {
+				        		"must": {
+					              	"term": {
+					                	"domain": domainString
+					              	}
 					            }
-					        }
-					      }
-					    }
-					  }
-					}; 
+				      		}
+				    	}
+				  	}
+				}; 
 
 	    	}
 	    	if(domainString=="All"){
 	    		query = {
-					  "filtered": {
-					    "query": {
 					      "match": {
 					        "_all": operations.replace(/,/g, '');
 					      }
-					    }
-					  }
 					}; 
 	    	}	
 	    	$http({
@@ -216,15 +210,11 @@
 	  						SearchPage.sourcecodes.push(SearchPage.searchResults[i]);
 		  				}
 		  				if(SearchPage.searchResults[i].type==='storyboard'){
-	  						SearchPage.sourcecodes.push(SearchPage.searchResults[i]);
+	  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
 		  				}
 		  					
 		  			}
 		  		}
-		  		SearchPage.activitydiagrams=SearchPage.searchResults.activitydiagrams;
-		  		SearchPage.classdiagrams=SearchPage.searchResults.classdiagrams
-		  		SearchPage.storyboards=SearchPage.searchResults.storyboards;
-		  		SearchPage.sourcecodes=SearchPage.searchResults.sourcecodes;
 		  		SearchPage.scaseservices=SearchPage.searchResults.scaseservices;
 		  		SearchPage.searchResults=[];//we reset the search results
 		  	})

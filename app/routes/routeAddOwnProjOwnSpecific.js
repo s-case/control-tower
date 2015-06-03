@@ -3,8 +3,6 @@ module.exports = function(app, passport) {
 	var mysql = require('mysql');
 	var dbconfig = require('../../config/database');
 	var connConstant = require('../../config/ConnectConstant');
-	//var connection = mysql.createConnection(dbconfig.connection);
-	//var connection = require('../config/ConnectConstant.js');
 	var jwt = require('jsonwebtoken');//require json web token package
 	var connection;
 	var ownerflag;//flag used to check if the user is an owner
@@ -22,7 +20,6 @@ module.exports = function(app, passport) {
         			}
             	}
 	        }
-	        //console.log(ownerflag);
 	        callback(ownerflag);
 		});
 	}
@@ -45,7 +42,6 @@ module.exports = function(app, passport) {
 			checkIfUserExistsQuery = "SELECT id FROM " + dbconfig.users_table + " WHERE " +
 						dbconfig.users_table +".github_name=" + "'" + github_name +"'";////check if the user's githubname exists			
 		}
-		//console.log('projectname to add owner '+proj_name);
 		var user = req.user;
 		var ownerflag;//flag to check if I am owner
 		checkIfOwner(user,proj_name,function(ownerflag){//check if the user is owner of the project
@@ -79,7 +75,7 @@ module.exports = function(app, passport) {
 		});
 	});
 };
-// route middleware to ensure user is logged i
+// route middleware to ensure user is logged in
 function isLoggedIn(req, res, next) {
 	var connConstant = require('../../config/ConnectConstant');
 	var connection;

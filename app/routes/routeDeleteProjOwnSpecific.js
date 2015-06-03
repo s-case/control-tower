@@ -37,19 +37,16 @@ module.exports = function(app, passport) {
 		var proj_id = req.param('project_id');//id of the project
 		if(proj_name){
 			var ownerflag;
-			checkIfOwner(user,proj_name,function(ownerflag){
+			checkIfOwner(user,proj_name,function(ownerflag){//we check if the user is owner
 				if(ownerflag==true){
 					var deleteProjectQuery = "DELETE FROM " + dbconfig.projects_table+
 						" WHERE " + dbconfig.projects_table + ".project_name=" + "'" + proj_name + "'";//the query to delete the project
-					//console.log(deleteProjectQuery);
 					connection=connConstant.connection;//get a new connection to the DB
 					connection.query(deleteProjectQuery, function(err, rows){
 						//first get the project JSON and then delete the project using its id in the Art Registry
 						request(ArtRepoURL+'assetregistry/project/'+proj_name, function (error, response, body){
-							var projectData = JSON.parse(body);
-							console.log(projectData);
+							var projectData = JSON.parse(body);//we get the whole project and then use its id
 							request.del(ArtRepoURL+'assetregistry/project/'+projectData.id,function(error,response){
-								console.log(response);
 								res.redirect('/displayOwnprojects');
 							});
 						}); 

@@ -64,7 +64,7 @@ module.exports = function(app, passport) {
 								artefacts:[]
 							};
 							connection.query(createOwnerQuery, function(err, rows){//create the owner in the Owners Table
-								request({//create the project 
+								request({//create the project in the Assets Registry
 									url: ArtRepoURL+'assetregistry/project',
 								    method: "POST",
 								    json: true,

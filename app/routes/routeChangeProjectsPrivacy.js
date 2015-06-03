@@ -45,13 +45,12 @@ module.exports = function(app, passport) {
 					//first we get the whole json project and then we perform another request to send the project with its new privacy
 					request(ArtRepoURL+'assetregistry/project/'+proj_name, function (error, response, body){
 						var projectData = JSON.parse(body);
-						projectData.privacyLevel=privacy;
+						projectData.privacyLevel=privacy;//we set the new privacy
 						request({
 							url: ArtRepoURL+'assetregistry/project/'+projectData.id,
 							method:'PUT',
 							json : projectData
 						},function(error,response){
-							console.log(response);
 							res.redirect('/manageprojects'+'?project_name='+proj_name);
 						});
 					});

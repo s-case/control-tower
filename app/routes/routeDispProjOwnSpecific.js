@@ -3,17 +3,13 @@ module.exports = function(app, passport) {
 	var mysql = require('mysql');
 	var dbconfig = require('../../config/database');
 	var connConstant = require('../../config/ConnectConstant');
-	//var connection = mysql.createConnection(dbconfig.connection);
-	//var connection = require('../config/ConnectConstant.js');
 	var connection;
-	
 	var ownerflag;//flag used to check if the user is an owner
 	//function to check if the user is owner of a specific project
 	function checkIfOwner(user,proj_name,callback){
 		connection=connConstant.connection;
 		var selectProjects = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
 		".`project_id` = "+ dbconfig.owners_table + ".`project_id` "+" WHERE "+ dbconfig.owners_table+".`user_id` = '" + user.id + "'";
-		//console.log(selectProjects)
 		connection.query(selectProjects, function(err, rows){
 			if (rows.length > 0) {
             	for(var i in rows){
@@ -22,7 +18,6 @@ module.exports = function(app, passport) {
         			}
             	}
 	        }
-	        //console.log(ownerflag);
 	        callback(ownerflag);
 		});
 	}
@@ -43,6 +38,7 @@ module.exports = function(app, passport) {
 					var owners;//it is going to include all the owners (names and ids)
 					var collaborators;//it is going to include all the collaborators (names and ids)
 					var privacy_level;
+					//function to get all the owners
 					function displayOwners (callback){
 						//query to select all owners
 						var selectOwnersQuery = "SELECT `github_name`,`google_email`,"+dbconfig.projects_table+".`project_id`," + dbconfig.owners_table + ".id AS owner_id FROM "  + dbconfig.users_table +" JOIN " + dbconfig.owners_table + 
@@ -57,6 +53,7 @@ module.exports = function(app, passport) {
 		                    callback();
 			            });
 					}
+					//function to get all the collaborators
 					function displayCollaborators (callback){
 						//query to select all collaborators
 		        		var selectCollaboratorsQuery = "SELECT `github_name`,`google_email`," + dbconfig.collaborators_table + ".id AS `collab_id` FROM " + dbconfig.users_table +" JOIN " + dbconfig.collaborators_table + 
@@ -72,6 +69,7 @@ module.exports = function(app, passport) {
 		                    callback();//callback at the end of the second query
 		        		});
 					}
+					//function to get the privacy level, the domain and the subdomain
 					function getPrivacyDomainSubdomain (callback){
 						//query to select all collaborators
 						var getProjectDetails = "SELECT `privacy_level`,`domain`,`subdomain` FROM " + dbconfig.projects_table + " WHERE project_name="+ "'"
