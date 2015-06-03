@@ -270,7 +270,7 @@
 	  		if(domainSelected.Category!="All"){
 	  			for(var i=0;i<this.subdomainsTotal.length;i++){
   					var flag_parent_found=0;//flag to set to 1 when we find the parent
-  					for(var j=0;j<parentDomains.length;j++){
+  					for(var j=0;j<SearchPage.domains.length;j++){
   						if(this.subdomainsTotal[i].Parent==domainSelected.ID&&flag_parent_found==0){
   							subdomainsSelected.push(this.subdomainsTotal[i]);//the subdomains is of the domain selected
   							flag_parent_found=1;
