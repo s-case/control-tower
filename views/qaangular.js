@@ -77,6 +77,13 @@
 	  	SearchPage.domains=[];//we are going to save the domains here
 	  	SearchPage.subdomains=[];//we are going to save the subdomains here
 	  	SearchPage.domains=parentDomains;
+	  	$http.get('parentDomains.json').then(function(res){
+	        SearchPage.domains=res.data;
+      	});
+      	SearchPage.subdomainsTotal = [];
+      	$http.get('subDomains.json').then(function(res){
+	        SearchPage.subdomainsTotal=res.data;
+      	});
 	  	SearchPage.requirementsClasses=requirementsClasses;
 	  	//domains=SearchPage.domains;//we set the global variable of domains equal to the domains that we got from S-CASE artefacts repo
 	  	//subdomains=SearchPage.subdomains;//we set the global variable of subdomains equal to the subdomains that we got from S-CASE artefacts repo
@@ -117,7 +124,7 @@
 					  "filtered": {
 					    "query": {
 					      "match": {
-					        "_all": operations.replace(/,/g, '');
+					        "_all": operations.replace(/,/g, '')
 					      }
 					    },
 					    "filter": {
@@ -267,11 +274,11 @@
             Parent: domainSelected.ID
           });
 	  		if(domainSelected.Category!="All"){
-	  			for(var i=0;i<subdomains.length;i++){
+	  			for(var i=0;i<this.subdomainsTotal.length;i++){
   					var flag_parent_found=0;//flag to set to 1 when we find the parent
   					for(var j=0;j<parentDomains.length;j++){
-  						if(subdomains[i].Parent==domainSelected.ID&&flag_parent_found==0){
-  							subdomainsSelected.push(subdomains[i]);//the subdomains is of the domain selected
+  						if(this.subdomainsTotal[i].Parent==domainSelected.ID&&flag_parent_found==0){
+  							subdomainsSelected.push(this.subdomainsTotal[i]);//the subdomains is of the domain selected
   							flag_parent_found=1;
   						}
   					}
