@@ -32,7 +32,7 @@ module.exports = function(app){
 	// =============================================================================
 	// Create a project I own API===================================
 	// =============================================================================
-	app.post('/api/changePrivacyProjOwn', function(req, res) {
+	app.post('/api/changeDomainSubdomainProjOwn', function(req, res) {
 		res.setHeader('Content-Type', 'application/json');
 		var scase_token= req.param('scase_token');//require your scase token in order to authenticate
 		var scase_signature = req.param('scase_signature');//require your scase_signature in order to authenticate
