@@ -80,7 +80,7 @@ require('./app/api/addCollabProjOwnAPI.js') (app);//add a collaborator to a proj
 require('./app/api/createProjOwnAPI.js') (app);//create a project I own
 require('./app/api/changePrivacyProjOwnAPI.js') (app);//change privacy level in a project I own
 require('./app/api/changeDomainSubdomainProjOwnAPI.js') (app);//change domain and subdomain in a project I own
-require('./app/api/checkUserRoleAPI.js') (app);//check the role (Owner or Collaborator) of a user in a project
+require('./app/api/checkUserRoleForProjectAPI.js') (app);//check the role (Owner or Collaborator) of a user in a project
 // launch ======================================================================
 app.listen(port);
 console.log('The magic happens on port ' + port);
