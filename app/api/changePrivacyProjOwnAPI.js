@@ -49,7 +49,7 @@ module.exports = function(app){
                 		if(err){
 							var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 							var Jobj=JSON.parse(obj);
-							res.status(401).send(Jobj);
+							res.status(404).send(Jobj);
                 		}
                 		if(decoded){
 							if(decoded.scasetoken==scase_token){//we check if the produced signature is the same with the one provided
@@ -104,20 +104,20 @@ module.exports = function(app){
 		                	else{
 								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
 	                		}
 	                	}
 	                	else{
 							var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 							var Jobj=JSON.parse(obj);
-							res.status(401).send(Jobj);
+							res.status(404).send(Jobj);
 	                	}
                 	});
                 }
                 else {
 					var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
-					res.status(401).send(Jobj);
+					res.status(404).send(Jobj);
 				}
             });
 		}

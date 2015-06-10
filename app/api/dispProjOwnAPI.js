@@ -51,7 +51,7 @@ module.exports = function(app){
 												res.status(200).send(Jobj);
 											}
 											else {
-												var obj = '{"projectnames-Own" : "no projects you Own"}';
+												var obj = '{"projectnames-Own" : ""}';
 												var Jobj=JSON.parse(obj);
 												res.status(200).send(Jobj);
 											}
@@ -62,12 +62,12 @@ module.exports = function(app){
 							else{
 								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
                 			}	
                 		}else{
 								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
 	                	}
                 	});
 	            }
@@ -79,7 +79,7 @@ module.exports = function(app){
 	            else{
 								var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
 				}
 		    });
         }

@@ -74,19 +74,22 @@ module.exports = function(app){
 														var obj;
 														if(rows.affectedRows>0){
 															obj = '{'+ '"message": "owner '+github_name + ' deleted"}';
+															var Jobj=JSON.parse(obj);
+															res.status(200).send(Jobj);
 														}
 														else{
 															obj = '{'+ '"message": "'+github_name +' does not own this project"}';
+															var Jobj=JSON.parse(obj);
+															res.status(403).send(Jobj);
 														}
-														var Jobj=JSON.parse(obj);
-														res.status(200).send(Jobj);
+														
 													}
 							                	});
 						              		}
 						              		else{
 						              			var obj = '{'+ '"message": "user with ' + github_name +' does not exist"}';
 												var Jobj=JSON.parse(obj);
-												res.status(500).send(Jobj);
+												res.status(404).send(Jobj);
 
 						              		}
 
@@ -103,13 +106,13 @@ module.exports = function(app){
 		                	else{
 								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
 	                		}
                 		}
                 		else{
 								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
 	                		}
                 	});
 					
@@ -117,7 +120,7 @@ module.exports = function(app){
                 else {
 					var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
-					res.status(401).send(Jobj);
+					res.status(404).send(Jobj);
 				}
             });
 		}
@@ -161,20 +164,23 @@ module.exports = function(app){
 														var obj;
 														if(rows.affectedRows>0){
 															obj = '{'+ '"message": "owner '+google_email + ' deleted"}';
+															var Jobj=JSON.parse(obj);
+															res.status(200).send(Jobj);
 														}
 														else{
 															obj = '{'+ '"message": "'+google_email +' does not own this project"}';
+															var Jobj=JSON.parse(obj);
+															res.status(403).send(Jobj);
 														}
-														var Jobj=JSON.parse(obj);
-														res.status(200).send(Jobj);
+														
 													}
 							                	});
 						              		}
 						              		else{
 
-						              			var obj = '{'+ '"message": "user with ' + google_email +' does not exist"}';
+						              			var obj = '{'+ '"message": "user with ' + google_email +' does not exist in S-Case"}';
 												var Jobj=JSON.parse(obj);
-												res.status(500).send(Jobj);
+												res.status(404).send(Jobj);
 						              		}
 						              		
 						              	});
@@ -190,13 +196,13 @@ module.exports = function(app){
 		                	else{
 								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
 	                		}
                 		}
                 		else{
 								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
                 		}
                 	});
 					
@@ -204,7 +210,7 @@ module.exports = function(app){
                 else {
 					var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
-					res.status(401).send(Jobj);
+					res.status(404).send(Jobj);
 				}
             });
 		}

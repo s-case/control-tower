@@ -32,7 +32,7 @@ module.exports = function(app){
                 		if(err){
 							var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 							var Jobj=JSON.parse(obj);
-							res.status(401).send(Jobj);
+							res.status(404).send(Jobj);
                 		}
                 		if(decoded){
 							if(decoded.scasetoken==scase_token){//we check if the produced signature is the same with the one provided
@@ -48,52 +48,59 @@ module.exports = function(app){
 										connection=connConstant.connection;
 										//console.log(getProjectId);
 										connection.query(getProjectId, function(err, rows){
-											if(rows.length>0){
-												var createOwnerQuery = "INSERT INTO " +dbconfig.owners_table+ "(user_id,project_id)" +
-												" VALUES (" + "'"+ user.id + "'"+ ",'"+rows[0].project_id+"')";
-												connection=connConstant.connection;
-												var projectData ={ //create the JSON for theproject to be sent to the S-CASE artefacts registry
-													id:null,
-													createdBy:user.id.toString(),
-													updatedBy:null,
-													createdAt:Date.now(),
-													updatedAt:null,
-													domain:null,
-													subDomain:null,
-													version:0,
-													name:proj_name,
-													privacyLevel:privacy_level,
-													artefacts:[]
-												};
-												//console.log(createOwnerQuery);
-												connection.query(createOwnerQuery, function(err, rows){
-													if(err){
-														var obj = '{'+ '"message": "'+ err.code +'"}';
-														var Jobj=JSON.parse(obj);
-														res.status(500).send(Jobj);
-													}
-													else if(rows){
-														request({//create the project in the Assets Registry
-															url: ArtRepoURL+'assetregistry/project',
-														    method: "POST",
-														    json: true,
-														    headers: {
-														        "content-type": "application/json",
-														    },
-														    body: projectData //do not use JSON stringify
-														},function(error, response, body){
-															var obj = '{'+ '"message": "'+proj_name + ' created"}';
-															var Jobj=JSON.parse(obj);
-															res.status(201).send(Jobj);
-														});
-														
-													}
-												});
-											}
-											else{
-												var obj = '{'+ '"message": "mysql failure, project cannot be created"}';
+											if(err){
+												var obj = '{'+ '"message": "'+ err.code +'"}';
 												var Jobj=JSON.parse(obj);
 												res.status(500).send(Jobj);
+											}
+											else if(rows){
+												if(rows.length>0){
+													var createOwnerQuery = "INSERT INTO " +dbconfig.owners_table+ "(user_id,project_id)" +
+													" VALUES (" + "'"+ user.id + "'"+ ",'"+rows[0].project_id+"')";
+													connection=connConstant.connection;
+													var projectData ={ //create the JSON for theproject to be sent to the S-CASE artefacts registry
+														id:null,
+														createdBy:user.id.toString(),
+														updatedBy:null,
+														createdAt:Date.now(),
+														updatedAt:null,
+														domain:null,
+														subDomain:null,
+														version:0,
+														name:proj_name,
+														privacyLevel:privacy_level,
+														artefacts:[]
+													};
+													//console.log(createOwnerQuery);
+													connection.query(createOwnerQuery, function(err, rows){
+														if(err){
+															var obj = '{'+ '"message": "'+ err.code +'"}';
+															var Jobj=JSON.parse(obj);
+															res.status(500).send(Jobj);
+														}
+														else if(rows){
+															request({//create the project in the Assets Registry
+																url: ArtRepoURL+'assetregistry/project',
+															    method: "POST",
+															    json: true,
+															    headers: {
+															        "content-type": "application/json",
+															    },
+															    body: projectData //do not use JSON stringify
+															},function(error, response, body){
+																var obj = '{'+ '"message": "'+proj_name + ' created"}';
+																var Jobj=JSON.parse(obj);
+																res.status(201).send(Jobj);
+															});
+															
+														}
+													});
+												}
+												else{
+													var obj = '{'+ '"message": "mysql failure, project cannot be created"}';
+													var Jobj=JSON.parse(obj);
+													res.status(500).send(Jobj);
+												}
 											}
 										});
 									}
@@ -112,20 +119,20 @@ module.exports = function(app){
 		                	else{
 								var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
 	                		}
 	                	}
 	                	else{
 							var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 							var Jobj=JSON.parse(obj);
-							res.status(401).send(Jobj);
+							res.status(404).send(Jobj);
 	                	}
                 	});
                 }
                 else {
 					var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
-					res.status(401).send(Jobj);
+					res.status(404).send(Jobj);
 				}
             });
 		}

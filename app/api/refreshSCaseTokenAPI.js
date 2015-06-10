@@ -53,14 +53,14 @@ module.exports = function(app){
 				                        connection = connConstant.connection;
 						                connection.query(updateQuery, function(err, rows) {
 											if (err){
-												var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
+												var obj = '{'+ '"message": "'+ err.code +'"}';
 												var Jobj=JSON.parse(obj);
-												res.status(401).send(Jobj);
+												res.status(500).send(Jobj);
 											}
 											else{
 												var obj = '{'+ '"newSCASEtoken" : "'+scasetoken+'"}';
 												var Jobj=JSON.parse(obj);
-												res.send(Jobj);
+												res.status(200).send(Jobj);
 											}
 						                });
 						            }
@@ -69,20 +69,20 @@ module.exports = function(app){
 		                	else{
 								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
 		                	}
                 		}
                 		 else{
 								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
 	                	}
                 	});
                 }
                 else{
 								var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
 		                	}
 			});
 		}

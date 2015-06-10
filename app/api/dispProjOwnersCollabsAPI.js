@@ -129,14 +129,14 @@ module.exports = function(app){
 							else{
 								var obj = '{"message": "an error in mysql happened, sorry!"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(500).send(Jobj);
 							}
 							
 						});
 					});
 				}
 				else if(ownerflag==false){
-					var obj = '{"message": "User with the given scase_token or signature does not own the project and/or the project does not exist in S-Case"}';
+					var obj = '{"message": "User with the given scase_token or signature does not own this project"}';
 					var Jobj=JSON.parse(obj);
 					res.status(401).send(Jobj);
 				}
