@@ -133,7 +133,7 @@ module.exports = function(app){
                 		if(err){
 								var obj = '{"message": "User with scase_signature '+scase_signature + 'does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
                 		}
                 		if(decoded){
                 			if(decoded.scasetoken=scase_token){//we check if the produced signature is the same with the one provided
