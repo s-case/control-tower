@@ -1,0 +1,878 @@
+#%RAML 0.8
+title: S-CASE Control Tower API
+version: 1.0
+#baseUri: http://scouter.ee.auth.gr:3000/api
+
+/addCollabProjOwn :
+  description: Add a Collaborator to a project I own.
+  put:
+    description: Add a Collaborator to a project I own by providing either the user's github username or the user's google e-mail account.
+    responses:
+      201:
+        description: Successful addition of a collaborator
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "collaborator johndoe@gmail.com (or johndoeUsername) added"
+              }
+      500: 
+        description: Error of the MySQL database
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "error description"
+              }
+      400:
+        description: The request misses some parameters
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "you miss some parameters
+              }
+      404:
+        description: The provided scase_signature or scase_token do not correspond to a user of S-CASE
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "user  with this scase_signature (or this scase_token) does not exist in S-Case"
+              }
+      401:
+        description: The provided scase_token does not correspond to an owner of the project
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "User with this scase_token is not owner of the project"
+              }
+    queryParameters:
+      scase_token:
+        description: The S-CASE token that is taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      scase_signature: 
+        description: The signature produced using JWT default settings. The S-CASE token is signed using the S-CASE secret taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      project_name: 
+        description: The name of the project that we would like to modify.
+        type: string
+        required: true
+      github_name: 
+        description: The github username of the user that we would like to add a collaborator.
+        type: string
+      google_email: 
+        description: The google e-mail of the user that we would like to add a collaborator.
+        type: string
+/addOwnerProjOwn : 
+  description: Add an owner to a project I own.
+  put:
+    description: Add an Owner to a project I own by providing either the user's github username or the user's google e-mail account.
+    responses:
+      201:
+        description: Successful addition of an owner
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "owner johndoe@gmail.com (or johndoeUsername) added"
+              }
+      500: 
+        description: Error of the MySQL database
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "error description"
+              }
+      400:
+        description: The request misses some parameters
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "you miss some parameters
+              }
+      404:
+        description: The provided scase_signature or scase_token do not correspond to a user of S-CASE
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "user  with this scase_signature (or this scase_token) does not exist in S-Case"
+              }
+      401:
+        description: The provided scase_token does not correspond to an owner of the project
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "User with this scase_token is not owner of the project"
+              }
+    queryParameters:
+      scase_token:
+        description: The S-CASE token that is taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      scase_signature: 
+        description: The signature produced using JWT default settings. The S-CASE token is signed using the S-CASE secret taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      project_name: 
+        description: The name of the project that we would like to modify.
+        type: string
+        required: true
+      github_name: 
+        description: The github username of the user that we would like to add an owner.
+        type: string
+      google_email: 
+        description: The google e-mail of the user that we would like to add an owner.
+        type: string
+/changeDomainSubdomainProjOwn :
+  description: Change the domain and subdomain of a project I own.
+  post:
+    description: Change the domain and subdomain of a project I own by providing the project's name, new domain and subdomain as strings
+    responses:
+      200:
+        description: Successful change of the project's domain and subdomain
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "Privacy level of RESTmarks set to PRIVATE "
+              }
+      500: 
+        description: Error of the MySQL database
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "error description"
+              }
+      400:
+        description: The request misses some parameters
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "you miss some parameters
+              }
+      404:
+        description: The provided scase_signature or scase_token do not correspond to a user of S-CASE or the project name does not correspond to a project in S-CASE
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "user  with this scase_signature (or this scase_token) does not exist in S-Case (or There is no project with name RESTmarks)"
+              }
+      401:
+        description: The provided scase_signature does not correspond to an owner of the project
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "User with this scase_signature is not owner of the project"
+              }
+    queryParameters:
+      scase_token:
+        description: The S-CASE token that is taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      scase_signature: 
+        description: The signature produced using JWT default settings. The S-CASE token is signed using the S-CASE secret taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      project_name: 
+        description: The name of the project that we would like to modify.
+        type: string
+        required: true
+      domain: 
+        description: The domain of the project
+        type: string
+        required: true
+      subdomain: 
+        description: The new subdomain of the project
+        type: string
+        required: true
+/changePrivacyProjOwn :
+  description: Change the privacy of a project I own.
+  post:
+    description: Change the privacy of a project I own by providing the project's name and privacy level (PUBLIC or PRIVATE) as strings.
+    responses:
+      200:
+        description: Successful change of the project's privacy
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "Privacy level of RESTmarks set to PRIVATE "
+              }
+      500: 
+        description: Error of the MySQL database
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "error description"
+              }
+      400:
+        description: The request misses some parameters
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "you miss some parameters
+              }
+      404:
+        description: The provided scase_signature or scase_token do not correspond to a user of S-CASE or the project name does not correspond to a project in S-CASE
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "user  with this scase_signature (or this scase_token) does not exist in S-Case (or There is no project with name RESTmarks)"
+              }
+      401:
+        description: The provided scase_signature does not correspond to an owner of the project
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "User with this scase_signature is not owner of the project"
+              }
+    queryParameters:
+      scase_token:
+        description: The S-CASE token that is taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      scase_signature: 
+        description: The signature produced using JWT default settings. The S-CASE token is signed using the S-CASE secret taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      project_name: 
+        description: The name of the project that we would like to modify.
+        type: string
+        required: true
+      privacy_level:
+        description: The level of privacy of the project (only PUBLIC or PRIVATE are allowed).
+        example: PUBLIC or PRIVATE
+        type: string
+        required: true
+/checkUserRole :
+  description: Check the user's role in a specific project
+  get:
+    description: Check the user's role in a specific project by providing the user's scase_token, scase_signature and project_name
+    responses:
+      200:
+        description: 
+        body:
+          application/json: 
+            example: |
+              [{ 
+                "message" : "User Valid"
+              },
+              {
+                "userRole" : "owner or collaborator"
+              }]
+      400: 
+        description: User not valid (or some parameters are missing)
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "User Not Valid"
+              }
+    queryParameters:
+      scase_token:
+        description: The S-CASE token that is taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      scase_signature: 
+        description: The signature produced using JWT default settings. The S-CASE token is signed using the S-CASE secret taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+/validateUser :
+  description: Validate the user credentials.
+  get:
+    description: Validate the user by providing the user's scase_token, scase_signature.
+    responses:
+      200:
+        description: User is valiad
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "User Valid"
+              }
+      400: 
+        description: User not valid (or some parameters are missing
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "User Not Valid"
+              }
+    queryParameters:
+      scase_token:
+        description: The S-CASE token that is taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      scase_signature: 
+        description: The signature produced using JWT default settings. The S-CASE token is signed using the S-CASE secret taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+/createProjOwn :
+  description: Create a project.
+  post:
+    description: Create a project I own providing the project's name (The project is created both in the Control Tower and in the S-CASE artefacts Registry)
+    responses:
+      201:
+        description: Successful creation of a project
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "RESTmarks created"
+              }
+      500: 
+        description: Error of the MySQL database
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "error description"
+              }
+      400:
+        description: The request misses some parameters
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "you miss some parameters
+              }
+      404:
+        description: The provided scase_signature or scase_token do not correspond to a user of S-CASE
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "user  with this scase_signature (or this scase_token) does not exist in S-Case"
+              }
+      409:
+        description: Project cannot be created (The project name already exists)
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "project cannot be created (project name already exists)"
+              }
+    queryParameters:
+      scase_token:
+        description: The S-CASE token that is taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      scase_signature: 
+        description: The signature produced using JWT default settings. The S-CASE token is signed using the S-CASE secret taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      project_name: 
+        description: The name of the project that we would like to create.
+        type: string
+        required: true
+      privacy_level:
+        description: The level of privacy of the project (only PUBLIC or PRIVATE are allowed).
+        example: PUBLIC or PRIVATE
+        type: string
+        required: true
+/deleteUser :
+  description: Delete a user.
+  delete:
+    description: Delete a user totally from S-CASE (the projects in which the user is sole owner are deleted too)
+    responses:
+      200:
+        description: Successful deletion of a user
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "user deleted"
+              }
+      500: 
+        description: Error of the MySQL database
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "error description"
+              }
+      400:
+        description: The request misses some parameters
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "you miss some parameters
+              }
+      404:
+        description: The provided scase_signature or scase_token do not correspond to a user of S-CASE
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "user  with this scase_signature (or this scase_token) does not exist in S-Case"
+              }
+    queryParameters:
+      scase_token:
+        description: The S-CASE token that is taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      scase_signature: 
+        description: The signature produced using JWT default settings. The S-CASE token is signed using the S-CASE secret taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+/deleteProjOwn :
+  description: Delete a project I own.
+  delete:
+    description: Delete a project I own providing its name.
+    responses:
+      200:
+        description: Successful deletion of a project
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "project RESTmarks deleted"
+              }
+      500: 
+        description: Error of the MySQL database
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "error description"
+              }
+      400:
+        description: The request misses some parameters
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "you miss some parameters
+              }
+      404:
+        description: The provided scase_signature or scase_token do not correspond to a user of S-CASE
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "user  with this scase_signature (or this scase_token) does not exist in S-Case"
+              }
+      401:
+        description: The provided scase_token does not correspond to an owner of the project
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "User with this scase_token does not collaborate on this project"
+              }
+    queryParameters:
+      scase_token:
+        description: The S-CASE token that is taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      scase_signature: 
+        description: The signature produced using JWT default settings. The S-CASE token is signed using the S-CASE secret taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      project_name: 
+        description: The name of the project that we would like to create.
+        type: string
+        required: true
+      privacy_level:
+        description: The level of privacy of the project (only PUBLIC or PRIVATE are allowed).
+        example: PUBLIC or PRIVATE
+        type: string
+        required: true
+/displayProjectsCollab :
+  description: Display the projects a user collaborates on.
+  get:
+    description: Display the projects a user collaborates on.
+    responses:
+      200:
+        description: Successful return of the projects the user collaborates on
+        body:
+          application/json: 
+            example: |
+              { 
+                "projectnames-Own" : "RESTmarks,RESTbucks,WSAT"
+              }
+      500: 
+        description: Error of the MySQL database
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "error description"
+              }
+      400:
+        description: The request misses some parameters
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "you miss some parameters
+              }
+      404:
+        description: The provided scase_signature or scase_token do not correspond to a user of S-CASE
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "user  with this scase_signature (or this scase_token) does not exist in S-Case"
+              }
+    queryParameters:
+      scase_token:
+        description: The S-CASE token that is taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      scase_signature: 
+        description: The signature produced using JWT default settings. The S-CASE token is signed using the S-CASE secret taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+/displayProjectsOwn :
+  description: Display the projects a user owns.
+  get:
+    description: Display the projects a user owns.
+    responses:
+      200:
+        description: Successful return of the projects the user owns
+        body:
+          application/json: 
+            example: |
+              { 
+                "projectnames-Own" : "RESTmarks,RESTbucks,WSAT"
+              }
+      500: 
+        description: Error of the MySQL database
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "error description"
+              }
+      400:
+        description: The request misses some parameters
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "you miss some parameters
+              }
+      404:
+        description: The provided scase_signature or scase_token do not correspond to a user of S-CASE
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "user  with this scase_signature (or this scase_token) does not exist in S-Case"
+              }
+    queryParameters:
+      scase_token:
+        description: The S-CASE token that is taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      scase_signature: 
+        description: The signature produced using JWT default settings. The S-CASE token is signed using the S-CASE secret taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+/displayOwnersCollabs:
+  description: Get the owners and collaborators of a project I own.
+  get:
+    description: Get the owners and collaborators of a project I own providing the project's name
+    responses:
+      200:
+        description: Successful return of the collaborators and owners
+        body:
+          application/json: 
+            example: |
+              [{ 
+                "owners" : "johndoe@gmail.com,Johnnie Doe,BestJavaProgrammer"
+              },
+              {
+                "collaborators" : "johndoe@gmail.com,Johnnie Doe,BestJavaProgrammer"
+              }]
+      500: 
+        description: Error of the MySQL database
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "error in mysql happened, sorry!"
+              }
+      400:
+        description: The request misses some parameters
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "you miss some parameters
+              }
+      401:
+        description: The provided scase_signature or scase_token do not correspond to an owner of this project
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "User with the given scase_token or signature does not own this project"
+              }
+    queryParameters:
+      scase_token:
+        description: The S-CASE token that is taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      scase_signature: 
+        description: The signature produced using JWT default settings. The S-CASE token is signed using the S-CASE secret taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      project_name: 
+        description: The name of the project that we would like to get the owners and collaborators
+        type: string
+        required: true
+/refreshSCASEsecret:
+  description: Refresh the S-CASE secret
+  put:
+    description: Refresh the S-CASE secret (be aware scase_signature will change too since it consists of scase_token signed by the secret)
+    responses:
+      200:
+        description: Successful refresh of S-CASE secret
+        body:
+          application/json: 
+            example: |
+              { 
+                "newSCASEtoken" : "nfadjisd0493jiodsa0d3kd-0ask"
+              }
+      500: 
+        description: Error of the MySQL database
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "error description"
+              }
+      400:
+        description: The request misses some parameters
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "you miss some parameters
+              }
+      404:
+        description: The provided google e-mail or github username or scase_signature or scase_token do not correspond to a user of S-CASE
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "user  with johndoe@gmail.com (or johndoeUsername or this scase_signature or this scase_token) does not exist in S-Case"
+              }
+    queryParameters:
+      scase_token:
+        description: The S-CASE token that is taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      scase_signature: 
+        description: The signature produced using JWT default settings. The S-CASE token is signed using the S-CASE secret taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+/refreshSCASEtoken:
+  description: Refresh the S-CASE token
+  put:
+    description: Refresh the S-CASE token(be aware scase_signature will change too since it consists of scase_token signed by the secret)
+    responses:
+      200:
+        description: Successful refresh of S-CASE token
+        body:
+          application/json: 
+            example: |
+              { 
+                "newSCASEtoken" : "nfadjisd0493jiodsa0d3kd-0ask"
+              }
+      500: 
+        description: Error of the MySQL database
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "error description"
+              }
+      400:
+        description: The request misses some parameters
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "you miss some parameters
+              }
+      404:
+        description: The provided google e-mail or github username or scase_signature or scase_token do not correspond to a user of S-CASE
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "user  with johndoe@gmail.com (or johndoeUsername or this scase_signature or this scase_token) does not exist in S-Case"
+              }
+    queryParameters:
+      scase_token:
+        description: The S-CASE token that is taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      scase_signature: 
+        description: The signature produced using JWT default settings. The S-CASE token is signed using the S-CASE secret taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+/removeCollabProjOwn:
+  description: Remove a collaborator from a project I own
+  delete:
+    description: Remove a collaborator from a project I own using the collaborator's github username or google_email
+    responses:
+      200:
+        description: Successful removal of Collaborator
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "collaborator johndoe@gmail.com deleted"
+              }
+      500: 
+        description: Error of the MySQL database
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "error description"
+              }
+      400:
+        description: The request misses some parameters
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "you miss some parameters
+              }
+      404:
+        description: The provided google e-mail or github username or scase_signature or scase_token do not correspond to a user of S-CASE
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "user  with johndoe@gmail.com (or johndoeUsername or this scase_signature or this scase_token) does not exist in S-Case"
+              }
+      403:
+        description: The provided google e-mail or github username do not correspond to an owner of the project.
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "user  with johndoe@gmail.com does not collaborate on this project"
+              } 
+      401:
+        description: The provided scase_token does not correspond to a collaborator of the project
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "User with this scase_token does not collaborate on this project"
+              }
+    queryParameters:
+      scase_token:
+        description: The S-CASE token that is taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      scase_signature: 
+        description: The signature produced using JWT default settings. The S-CASE token is signed using the S-CASE secret taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      project_name: 
+        description: The name of the project that we would like to modify.
+        type: string
+        required: true
+      github_name: 
+        description: The github username of the user that we would like to remove from the collaborators.
+        type: string
+      google_email: 
+        description: The google e-mail of the user that we would like to remove from the collaborators.
+        type: string
+/removeOwnerProjOwn:
+  description: Remove a collaborator from a project I own.
+  delete:
+    description: Remove a collaborator from a project I own using the collaborator's github username or google_email.
+    responses:
+      200:
+        description: Successful removal of Owner
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "owner johndoe@gmail.com deleted"
+              }
+      500: 
+        description: Error of the MySQL database
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "error description"
+              }
+      400:
+        description: The request misses some parameters
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "you miss some parameters
+              }
+      404:
+        description: The provided google e-mail or github username or scase_signature or scase_token do not correspond to a user of S-CASE
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "user  with johndoe@gmail.com (or johndoeUsername or this scase_signature or this scase_token) does not exist in S-Case"
+              }
+      403:
+        description: The provided google e-mail or github username do not correspond to an owner of the project.
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "user  with johndoe@gmail.com does not own this project"
+              } 
+      401:
+        description: The provided scase_token does not correspond to an owner of the project
+        body:
+          application/json: 
+            example: |
+              { 
+                "message" : "User with this scase_token does not own project RESTmarks"
+              }
+    queryParameters:
+      scase_token:
+        description: The S-CASE token that is taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      scase_signature: 
+        description: The signature produced using JWT default settings. The S-CASE token is signed using the S-CASE secret taken from the profile of the user in the Control Tower Interface.
+        type: string
+        required: true
+      project_name: 
+        description: The name of the project that we would like to modify.
+        type: string
+        required: true
+      github_name: 
+        description: The github username of the user that we would like to remove from the collaborators.
+        type: string
+      google_email: 
+        description: The google e-mail of the user that we would like to remove from the collaborators.
+        type: string

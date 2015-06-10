@@ -62,7 +62,8 @@ require('./app/routes/routeAddOwnProjOwnSpecific.js')(app, passport);//load the 
 require('./app/routes/routeAddCollabProjOwnSpecific.js')(app, passport);//load the route for adding a collaborator in a project I own
 require('./app/routes/routeChangeProjectsPrivacy.js')(app, passport);//load the route for changing the privacy level of a project I own 
 require('./app/routes/routeChangeProjectsDomainSubdomain.js')(app, passport);//load the route for changing the domains and subdomains of a project I own 
-require('./app/routes/routeGetProjectsDomainSubdomain.js')(app, passport);//load the route for getting the domains and subdomains of a project I own 
+require('./app/routes/routeGetProjectsDomainSubdomain.js')(app, passport);//load the route for getting the domains and subdomains of a project I own
+require('./app/routes/routeQAResults.js') (app);//access the QA 
 //================API routes=============================
 require('./app/api/checkUserValidityAPI.js') (app);//check if a user is Valid (API) route
 require('./app/api/deleteAccAPI.js') (app);//delete account
@@ -79,7 +80,7 @@ require('./app/api/addCollabProjOwnAPI.js') (app);//add a collaborator to a proj
 require('./app/api/createProjOwnAPI.js') (app);//create a project I own
 require('./app/api/changePrivacyProjOwnAPI.js') (app);//change privacy level in a project I own
 require('./app/api/changeDomainSubdomainProjOwnAPI.js') (app);//change domain and subdomain in a project I own
-require('./app/routes/routeQAResults.js') (app);//access the QA
+require('./app/api/checkUserRoleAPI.js') (app);//check the role (Owner or Collaborator) of a user in a project
 // launch ======================================================================
 app.listen(port);
 console.log('The magic happens on port ' + port);
