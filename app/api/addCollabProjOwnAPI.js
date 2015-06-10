@@ -44,7 +44,7 @@ module.exports = function(app){
                 		if(err){
 							var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 							var Jobj=JSON.parse(obj);
-							res.status(401).send(Jobj);
+							res.status(404).send(Jobj);
                 		}
                 		if(decoded){
 							if(decoded.scasetoken==scase_token){//we check if the produced signature is the same with the one provided
@@ -100,7 +100,7 @@ module.exports = function(app){
 												//res.setHeader('Content-Type', 'application/json');
 												var obj = '{'+ '"message": "user '+github_name + ' does not exist in S-Case"}';
 												var Jobj=JSON.parse(obj);
-												res.status(401).send(Jobj);
+												res.status(404).send(Jobj);
 											}
 										});
 									}
@@ -115,20 +115,20 @@ module.exports = function(app){
 		                	else{
 								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
 	                		}
 	                	}
 	                	else{
 								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
                 		}
                 	});
                 }
                 else {
 					var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
-					res.status(401).send(Jobj);
+					res.status(404).send(Jobj);
 				}
             });
 		}
@@ -142,7 +142,7 @@ module.exports = function(app){
                 		if(err){
 								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
                 		}
                 		if(decoded){
 							if(decoded.scasetoken==scase_token){//we check if the produced signature is the same with the one provided
@@ -184,9 +184,9 @@ module.exports = function(app){
 														});
 													}
 													else{//the project does not exist we return a message
-														var obj = '{'+ '"message": "project' + proj_name +' does not exist"}';
+														var obj = '{'+ '"message" : "User with this scase_token does not own project ' + proj_name +' or project does not exist"}';
 														var Jobj=JSON.parse(obj);
-														res.status(500).send(Jobj);
+														res.status(401).send(Jobj);
 													}
 												});
 											}
@@ -194,7 +194,7 @@ module.exports = function(app){
 												//res.setHeader('Content-Type', 'application/json');
 												var obj = '{'+ '"message": "user '+google_email + ' does not exist in S-Case"}';
 												var Jobj=JSON.parse(obj);
-												res.status(401).send(Jobj);
+												res.status(404).send(Jobj);
 											}
 										});
 									}
@@ -202,26 +202,26 @@ module.exports = function(app){
 										//res.setHeader('Content-Type', 'application/json');
 										var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 										var Jobj=JSON.parse(obj);
-										res.status(401).send(Jobj);
+										res.status(404).send(Jobj);
 									}
 								});
 		                	}else{
 								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
 	                		}
 	                	}
 	                	else{
 								var obj = '{"message": "User with this scase_signature does not exist in S-Case"}';
 								var Jobj=JSON.parse(obj);
-								res.status(401).send(Jobj);
+								res.status(404).send(Jobj);
                 		}
                 	});
                 }
                 else {
 					var obj = '{"message": "User with this scase_token does not exist in S-Case"}';
 					var Jobj=JSON.parse(obj);
-					res.status(401).send(Jobj);
+					res.status(404).send(Jobj);
 				}
             });
 		}
