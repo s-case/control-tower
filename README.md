@@ -10,7 +10,7 @@ For the installation of the Control Tower one should install the following (inst
 
 #### Following the installation of the above, the following commands must be performed from the directory of the Control Tower: 
 #### npm install
-It installs all the dependencies to be found in the package.json file. These are the following: 
+#####It installs all the dependencies to be found in the package.json file. These are the following: 
 *	"bcrypt-nodejs": "latest",
 *	"body-parser": "~1.0.0",
 *	"connect-flash": "~0.1.1",
@@ -32,19 +32,20 @@ It installs all the dependencies to be found in the package.json file. These are
 *	"jsonwebtoken" : "*",
 *	"request" : "*",
 *	"requirejs": "*"
-# bower install
-# It installs all the dependencies to be found in the bower.json file. These are the following: 
+
+#### bower install
+##### It installs all the dependencies to be found in the bower.json file. These are the following: 
 *"angular": "1.2.18"
 *	"jquery": "~1.11",
 *	"angular-sanitize": ">=1.2.18",
 *	"angular-mocks": ">=1.2.18"
 *	"ui-select" : "0.11.2"
-# The files in the scripts/ folder are the sql scripts that need to be executed in the MySQL environment. The following tables are created:
+### The files in the scripts/ folder are the sql scripts that need to be executed in the MySQL environment. The following tables are created:
 *	Users table
 *	Projects table
 *	Owners table (foreign key to Users and Projects table)
 *	Collaborators table (foreign key to Users and Projects table)
-# The files in the config/ folder are the configuration files that need also to be set. In specific, there are the following files:
+### The files in the config/ folder are the configuration files that need also to be set. In specific, there are the following files:
 *	config/ArtRepo.js: In which the url of the S-CASE Artefacts Registry is set.
 *	config/auth.js: In which the following details are set: 
 * Github authentication mechanism info (taken from the Gitbub developers applications settings https://github.com/settings/developers in which one must create an application)
