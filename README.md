@@ -1,14 +1,15 @@
 # S-CASE Authentication
 
 ###Installation
+
 For the installation of the Control Tower one should install the following (installation commands for Ubuntu 14.04 are provided in parenthesis): 
 * Node.js (sudo apt-get install nodejs)
 *	npm (sudo apt-get install npm)
 *	bower (sudo npm install -g bower)
 *	MySQL (sudo apt-get install mysql-server)
 
-# Following the installation of the above, the following commands must be performed from the directory of the Control Tower: 
-# npm install
+#### Following the installation of the above, the following commands must be performed from the directory of the Control Tower: 
+#### npm install
 It installs all the dependencies to be found in the package.json file. These are the following: 
 *	"bcrypt-nodejs": "latest",
 *	"body-parser": "~1.0.0",
@@ -31,7 +32,7 @@ It installs all the dependencies to be found in the package.json file. These are
 *	"jsonwebtoken" : "*",
 *	"request" : "*",
 *	"requirejs": "*"
-#	bower install
+# bower install
 # It installs all the dependencies to be found in the bower.json file. These are the following: 
 *"angular": "1.2.18"
 *	"jquery": "~1.11",
