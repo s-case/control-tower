@@ -6,7 +6,7 @@ For the installation of the Control Tower one should install the following (inst
 *	npm (sudo apt-get install npm)
 *	bower (sudo npm install -g bower)
 *	MySQL (sudo apt-get install mysql-server)
-Following the installation of the above, the following commands must be performed from the directory of the Control Tower: 
+#Following the installation of the above, the following commands must be performed from the directory of the Control Tower: 
 #npm install
 It installs all the dependencies to be found in the package.json file. These are the following: 
 *	"bcrypt-nodejs": "latest",
