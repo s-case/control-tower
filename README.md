@@ -6,8 +6,9 @@ For the installation of the Control Tower one should install the following (inst
 *	npm (sudo apt-get install npm)
 *	bower (sudo npm install -g bower)
 *	MySQL (sudo apt-get install mysql-server)
-#Following the installation of the above, the following commands must be performed from the directory of the Control Tower: 
-#npm install
+
+# Following the installation of the above, the following commands must be performed from the directory of the Control Tower: 
+# npm install
 It installs all the dependencies to be found in the package.json file. These are the following: 
 *	"bcrypt-nodejs": "latest",
 *	"body-parser": "~1.0.0",
@@ -31,18 +32,18 @@ It installs all the dependencies to be found in the package.json file. These are
 *	"request" : "*",
 *	"requirejs": "*"
 #	bower install
-It installs all the dependencies to be found in the bower.json file. These are the following: 
+# It installs all the dependencies to be found in the bower.json file. These are the following: 
 *"angular": "1.2.18"
 *	"jquery": "~1.11",
 *	"angular-sanitize": ">=1.2.18",
 *	"angular-mocks": ">=1.2.18"
 *	"ui-select" : "0.11.2"
-The files in the scripts/ folder are the sql scripts that need to be executed in the MySQL environment. The following tables are created:
+# The files in the scripts/ folder are the sql scripts that need to be executed in the MySQL environment. The following tables are created:
 *	Users table
 *	Projects table
 *	Owners table (foreign key to Users and Projects table)
 *	Collaborators table (foreign key to Users and Projects table)
-The files in the config/ folder are the configuration files that need also to be set. In specific, there are the following files:
+# The files in the config/ folder are the configuration files that need also to be set. In specific, there are the following files:
 *	config/ArtRepo.js: In which the url of the S-CASE Artefacts Registry is set.
 *	config/auth.js: In which the following details are set: 
 * Github authentication mechanism info (taken from the Gitbub developers applications settings https://github.com/settings/developers in which one must create an application)
@@ -55,9 +56,9 @@ The files in the config/ folder are the configuration files that need also to be
   * callbackURL
 *	config/database.js: In which the following details regarding the Control Tower MySQL database are set
   *	'connection': {
-    'host': The host of the database,
-    'user': The username of the administrator of the database of the Control Tower (for security reason set as Environmental variable)
-    'password': The password of the administrator (for security reason set as Environmental variable)
+    * 'host': The host of the database,
+    * 'user': The username of the administrator of the database of the Control Tower (for security reason set as Environmental variable)
+    * 'password': The password of the administrator (for security reason set as Environmental variable)
     }
   *	'database': The name of the MySQL database of the Control Tower
   *	'users_table': The name of the table of the users
