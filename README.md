@@ -40,11 +40,13 @@ For the installation of the Control Tower one should install the following (inst
 *	"angular-sanitize": ">=1.2.18",
 *	"angular-mocks": ">=1.2.18"
 *	"ui-select" : "0.11.2"
+
 ### The files in the scripts/ folder are the sql scripts that need to be executed in the MySQL environment. The following tables are created:
 *	Users table
 *	Projects table
 *	Owners table (foreign key to Users and Projects table)
 *	Collaborators table (foreign key to Users and Projects table)
+
 ### The files in the config/ folder are the configuration files that need also to be set. In specific, there are the following files:
 *	config/ArtRepo.js: In which the url of the S-CASE Artefacts Registry is set.
 *	config/auth.js: In which the following details are set: 
@@ -67,11 +69,12 @@ For the installation of the Control Tower one should install the following (inst
   *	'projects_table' : The name of the table of the projects
   *	'owners_table' : The name of the table with the owners
   *	'collaborators_table' : The name of the table with the collaborators
+
 Last but not least, in the /server.js file one can set the port to which the Control Tower receives the various calls. It is set to be the value of the environmental variable “PORT” or to 3000. 
+
 In order for the Control Tower to be executed the following two commands can be executed inside the root folder of the control tower (/) (one or the other)
 *	node server.js, standardized node.js server start command
 *	forever start server.js, the server is started using “forever” which is a simple CLI tool for ensuring that a given node script runs continuously (i.e. forever) (https://www.npmjs.com/package/forever)
-
 
 ###Start with node server.js or node forever.js
 url: http://scouter.ee.auth.gr:3000
