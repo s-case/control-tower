@@ -42,7 +42,9 @@ app.use(session({ secret: process.env.SCASE_SECRET })); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
-
+app.get('/ApiDocumentation', function(req, res) {
+		res.render('S-CASE control tower api.html')
+	});
 // routes ======================================================================
 require('./app/routes/routes.js')(app, passport); // load our routes and pass in our app and fully configured passport
 require('./app/routes/routeAuth.js')(app, passport);//load the routes for the Authentication and authorization
@@ -63,7 +65,7 @@ require('./app/routes/routeAddCollabProjOwnSpecific.js')(app, passport);//load t
 require('./app/routes/routeChangeProjectsPrivacy.js')(app, passport);//load the route for changing the privacy level of a project I own 
 require('./app/routes/routeChangeProjectsDomainSubdomain.js')(app, passport);//load the route for changing the domains and subdomains of a project I own 
 require('./app/routes/routeGetProjectsDomainSubdomain.js')(app, passport);//load the route for getting the domains and subdomains of a project I own
-require('./app/routes/routeQAResults.js') (app);//access the QA 
+require('./app/routes/routeQAResults.js') (app);//access the QA
 //================API routes=============================
 require('./app/api/checkUserValidityAPI.js') (app);//check if a user is Valid (API) route
 require('./app/api/deleteAccAPI.js') (app);//delete account
