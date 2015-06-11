@@ -1,4 +1,4 @@
-# S-CASE Authentication
+# S-CASE Authentication Control Tower
 
 ###Installation
 
