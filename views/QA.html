@@ -136,55 +136,113 @@
 					 			</ul>
 				 			</div>
 			 			</li>
-					  	<li class="list-group-item">Belong to Project: {{usecase.projectId}}</li>
-				  	  	<li class="list-group-item">Format: {{usecase.format}}</li>
-					  	<li class="list-group-item">Link to File: {{usecase.link}}</li>
-				  		<li class="list-group-item">Relation: {{req.relation}}</li>
+					  	<li class="list-group-item">Belong to Project: {{usecasediagram.projectId}}</li>
+				  	  	<li class="list-group-item">Format: {{usecasediagram.format}}</li>
+					  	<li class="list-group-item">Link to File: {{usecasediagram.link}}</li>
+				  		<li class="list-group-item">Relation: {{usecasediagram.relation}}</li>
 					</ul>
 			  	</div>
 			</div> 
         </div>
 
-		<!---display usecases data-->
-        <div ng-show="tab.isSet(4)">
-         	<div class = "usecases row" ng-controller="SearchController as searchCtrl" ng-repeat="usecase in searchCtrl.usecases">
-		
-			</div>
-        </div>
-
         <!---display activitydiagrams data-->
-        <div ng-show="tab.isSet(5)">
-         	<div class = "activitydiagrams row" ng-controller="SearchController as searchCtrl" ng-repeat="acitivitydiagram in searchCtrl.activitydiagrams">
-		
-			</div>
+        <div ng-show="tab.isSet(4)">
+			 <div class="panel panel-info">
+			  	<div class="panel-heading">Activity Diagrams</div>
+			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
+			  		<ul class="list-group" ng-repeat="activitydiagram in searchCtrl.activitydiagrams">
+			  			<!-- separate panel for actors -->
+			  			<li class="list-group-item">
+				  			<div class="panel-heading">Actions</div>
+				  			<div class="panel-body">
+					 			<ul class="list-group">
+					 				<li class="list-group-item" ng-repeat="action in activitydiagram.actions">Action: {{action}}</li>
+					 			</ul>
+				 			</div>
+			 			</li>
+					  	<li class="list-group-item">Belong to Project: {{activitydiagram.projectId}}</li>
+				  	  	<li class="list-group-item">Format: {{activitydiagram.format}}</li>
+					  	<li class="list-group-item">Link to File: {{activitydiagram.link}}</li>
+				  		<li class="list-group-item">Relation: {{activitydiagram.relation}}</li>
+					</ul>
+			  	</div>
+			</div> 
         </div>
 
         <!---display classdiagrams data-->
-        <div ng-show="tab.isSet(6)">
-			<div class = "classdiagrams row" ng-controller="SearchController as searchCtrl" ng-repeat="classdiagram in searchCtrl.classdiagrams">
-				
-			</div>
+        <div ng-show="tab.isSet(5)">
+			<div class="panel panel-info">
+			  	<div class="panel-heading">Analysis Class Diagrams</div>
+			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
+			  		<ul class="list-group" ng-repeat="classdiagram in searchCtrl.classdiagrams">
+			  			<!-- separate panel for classes-->
+			  			<li class="list-group-item">
+				  			<div class="panel-heading">Classes</div>
+				  			<div class="panel-body">
+					 			<ul class="list-group">
+					 				<li class="list-group-item" ng-repeat="class in classdiagram.classes">Class Name: {{class.name}} <li class="list-group-item" ng-repeat="property in class.properties">Property ({{property.type}}): {{property.name}}</li> </li>
+					 			</ul>
+				 			</div>
+			 			</li>
+					  	<li class="list-group-item">Belong to Project: {{classdiagram.projectId}}</li>
+				  	  	<li class="list-group-item">Format: {{classdiagram.format}}</li>
+					  	<li class="list-group-item">Link to File: {{classdiagram.link}}</li>
+				  		<li class="list-group-item">Relation: {{classdiagram.relation}}</li>
+					</ul>
+			  	</div>
+			</div> 
         </div>
 
 		<!---display storyboards data-->
-        <div ng-show="tab.isSet(7)">
-			<div class = "storyboards row" ng-controller="SearchController as searchCtrl" ng-repeat="storyboard in searchCtrl.storyboards ">
+        <div ng-show="tab.isSet(6)">
 			
-			</div>
+			 <div class="panel panel-info">
+			  	<div class="panel-heading">Storyboards</div>
+			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
+			  		<ul class="list-group" ng-repeat="storyboard in searchCtrl.storyboards">
+			  			<!-- separate panel for actions -->
+			  			<li class="list-group-item">
+				  			<div class="panel-heading">Actions</div>
+				  			<div class="panel-body">
+					 			<ul class="list-group">
+					 				<li class="list-group-item" ng-repeat="action in storyboard.actions">Action: {{action}}</li>
+					 			</ul>
+				 			</div>
+			 			</li>
+					  	<li class="list-group-item">Belong to Project: {{storyboard.projectId}}</li>
+				  	  	<li class="list-group-item">Format: {{storyboard.format}}</li>
+					  	<li class="list-group-item">Link to File: {{storyboard.link}}</li>
+				  		<li class="list-group-item">Relation: {{storyboard.relation}}</li>
+					</ul>
+			  	</div>
+			</div> 
         </div>
 
         <!---display sourcecodes data-->
-        <div ng-show="tab.isSet(8)">
-         	<div class = "sourcecodes row" ng-controller="SearchController as searchCtrl" ng-repeat="sourcecode in searchCtrl.sourcecodes">
-		
-			</div>
+        <div ng-show="tab.isSet(7)">
+			<div class="panel panel-info">
+			  	<div class="panel-heading">Storyboards</div>
+			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
+			  		<ul class="list-group" ng-repeat="sourcecode in searchCtrl.sourcecodes">
+					  	<li class="list-group-item">Belong to Project: {{sourcecode.projectId}}</li>
+					  	<li class="list-group-item">Link to File: {{sourcecode.link}}</li>
+					</ul>
+			  	</div>
+			</div> 
         </div>
 
         <!---display services data-->
-        <div ng-show="tab.isSet(9)">
-         	<div class = "services row"  ng-controller="SearchController as searchCtrl" ng-repeat="service in searchCtrl.scaseservices">
-		
-			</div>
+        <div ng-show="tab.isSet(8)">
+			<div class="panel panel-info">
+			  	<div class="panel-heading">Services</div>
+			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
+			  		<ul class="list-group" ng-repeat="service in searchCtrl.scaseservices">
+			  			<li class="list-group-item">Link to Domain Ontology: {{service.domainOntology}}</li>
+					  	<li class="list-group-item">Belong to Project: {{service.projectId}}</li>
+					  	<li class="list-group-item">Link to File: {{service.link}}</li>
+					</ul>
+			  	</div>
+			</div> 
         </div>
 
         

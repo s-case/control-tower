@@ -119,109 +119,175 @@
 	    	var operations =  currentQuery.operations;
 	    	var query;
 	    	if(domainString!="All"&&subdomainString!="All"){
-	    		query = {
-					  "filtered": {
-					    "query": {
-					      "match": {
-					        "_all": operations.replace(/,/g, '')
-					      }
-					    },
-					    "filter": {
-					      "bool": {
-					        "must": {
-					          
-					            
-					              "term": {
-					                "domain": domainString
-					              }
-					            			           
-					          
-					        }
-					      }
-					    }
-					  }
-					}; 
+	    		query = operations.replace(/,/g, '')
+	    		$http({
+		   			url: 'http://109.231.121.125:8080/s-case/assetregistry/artefact/search',
+		   			method: "GET",
+		   			params: {
+		   				query: query,
+		   				domain: domainString,
+		   				subdomain: subdomainString
+		   			}
+	   			})
+		   		.success(function(data){
+			  		SearchPage.searchResults=data;//we get the data to the searchResults
+			  		//we set every different result to the corresponding global variable
+			  		for(var i=0;i<SearchPage.searchResults.length;i++){
+			  			//check if the project is public or if the user owns or collaborates on it
+			  			if(SearchPage.searchResults[i].privacyLevel==='PUBLIC'||isOwnerCollab(SearchPage.searchResults[i].projectName,SearchPage.usersProjects)){
+			  				if(SearchPage.searchResults[i].type==='TEXTUAL'){
+			  					if(requirementsClass=='Functional'){
+			  						if(SearchPage.searchResults[i].requirement=='functional'){
+			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  						}
+			  					}
+			  					if(requirementsClass=='Quality'){
+			  						if(SearchPage.searchResults[i].requirement=='non-functional'){
+			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  						}
+			  					}
+			  					if(requirementsClass=='Both'){
+			  						SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  					}
+			  				}
+			  				if(SearchPage.searchResults[i].type==='activity diagram'){
+		  						SearchPage.activitydiagrams.push(SearchPage.searchResults[i]);
+			  				}
+			  				if(SearchPage.searchResults[i].type==='analysis class diagram'){
+		  						SearchPage.analysisclassdiagrams.push(SearchPage.searchResults[i]);
+			  				}
+			  				if(SearchPage.searchResults[i].type==='storyboard'){
+		  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
+			  				}
+			  				if(SearchPage.searchResults[i].type==='code'){
+		  						SearchPage.sourcecodes.push(SearchPage.searchResults[i]);
+			  				}
+			  				if(SearchPage.searchResults[i].type==='storyboard'){
+		  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
+			  				}
+			  					
+			  			}
+			  		}
+			  		SearchPage.scaseservices=SearchPage.searchResults.scaseservices;
+			  		SearchPage.searchResults=[];//we reset the search results
+			  	})
+			  	.error(function(status){
+			  		console.log(status);
+			  	});
 	    	}
-	    	if(subdomainString=="All"){
-	    		query = {
-				  	"filtered": {
-				    	"query": {
-				      		"match": {
-				        		"_all": operations.replace(/,/g, '')
-				      		}
-				      	},
-				    	"filter": {
-				      		"bool": {
-				        		"must": {
-					              	"term": {
-					                	"domain": domainString
-					              	}
-					            }
-				      		}
-				    	}
-				  	}
-				}; 
+	    	if(subdomainString=="All" && domainString!='All'){
+	    		query = operations.replace(/,/g, '')
+	    		$http({
+		   			url: 'http://109.231.121.125:8080/s-case/assetregistry/artefact/search',
+		   			method: "GET",
+		   			params: {
+		   				query: query,
+		   				domain: domainString
+		   			}
+	   			})
+		   		.success(function(data){
+			  		SearchPage.searchResults=data;//we get the data to the searchResults
+			  		//we set every different result to the corresponding global variable
+			  		for(var i=0;i<SearchPage.searchResults.length;i++){
+			  			//check if the project is public or if the user owns or collaborates on it
+			  			if(SearchPage.searchResults[i].privacyLevel==='PUBLIC'||isOwnerCollab(SearchPage.searchResults[i].projectName,SearchPage.usersProjects)){
+			  				if(SearchPage.searchResults[i].type==='TEXTUAL'){
+			  					if(requirementsClass=='Functional'){
+			  						if(SearchPage.searchResults[i].requirement=='functional'){
+			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  						}
+			  					}
+			  					if(requirementsClass=='Quality'){
+			  						if(SearchPage.searchResults[i].requirement=='non-functional'){
+			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  						}
+			  					}
+			  					if(requirementsClass=='Both'){
+			  						SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  					}
+			  				}
+			  				if(SearchPage.searchResults[i].type==='activity diagram'){
+		  						SearchPage.activitydiagrams.push(SearchPage.searchResults[i]);
+			  				}
+			  				if(SearchPage.searchResults[i].type==='analysis class diagram'){
+		  						SearchPage.analysisclassdiagrams.push(SearchPage.searchResults[i]);
+			  				}
+			  				if(SearchPage.searchResults[i].type==='storyboard'){
+		  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
+			  				}
+			  				if(SearchPage.searchResults[i].type==='code'){
+		  						SearchPage.sourcecodes.push(SearchPage.searchResults[i]);
+			  				}
+			  				if(SearchPage.searchResults[i].type==='storyboard'){
+		  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
+			  				}
+			  					
+			  			}
+			  		}
+			  		SearchPage.scaseservices=SearchPage.searchResults.scaseservices;
+			  		SearchPage.searchResults=[];//we reset the search results
+			  	})
+			  	.error(function(status){
+			  		console.log(status);
+			  	});
 
 	    	}
 	    	if(domainString=="All"){
-	    		query = {
-					      "match": {
-					        "_all": operations.replace(/,/g, '')
-					      }
-					}; 
+	    		query = operations.replace(/,/g, '')
+	    		$http({
+		   			url: 'http://109.231.121.125:8080/s-case/assetregistry/artefact/search',
+		   			method: "GET",
+		   			params: {
+		   				query: query
+		   			}
+	   			})
+		   		.success(function(data){
+			  		SearchPage.searchResults=data;//we get the data to the searchResults
+			  		//we set every different result to the corresponding global variable
+			  		for(var i=0;i<SearchPage.searchResults.length;i++){
+			  			//check if the project is public or if the user owns or collaborates on it
+			  			if(SearchPage.searchResults[i].privacyLevel==='PUBLIC'||isOwnerCollab(SearchPage.searchResults[i].projectName,SearchPage.usersProjects)){
+			  				if(SearchPage.searchResults[i].type==='TEXTUAL'){
+			  					if(requirementsClass=='Functional'){
+			  						if(SearchPage.searchResults[i].requirement=='functional'){
+			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  						}
+			  					}
+			  					if(requirementsClass=='Quality'){
+			  						if(SearchPage.searchResults[i].requirement=='non-functional'){
+			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  						}
+			  					}
+			  					if(requirementsClass=='Both'){
+			  						SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  					}
+			  				}
+			  				if(SearchPage.searchResults[i].type==='activity diagram'){
+		  						SearchPage.activitydiagrams.push(SearchPage.searchResults[i]);
+			  				}
+			  				if(SearchPage.searchResults[i].type==='analysis class diagram'){
+		  						SearchPage.analysisclassdiagrams.push(SearchPage.searchResults[i]);
+			  				}
+			  				if(SearchPage.searchResults[i].type==='storyboard'){
+		  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
+			  				}
+			  				if(SearchPage.searchResults[i].type==='code'){
+		  						SearchPage.sourcecodes.push(SearchPage.searchResults[i]);
+			  				}
+			  				if(SearchPage.searchResults[i].type==='storyboard'){
+		  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
+			  				}
+			  					
+			  			}
+			  		}
+			  		SearchPage.scaseservices=SearchPage.searchResults.scaseservices;
+			  		SearchPage.searchResults=[];//we reset the search results
+			  	})
+			  	.error(function(status){
+			  		console.log(status);
+			  	}); 
 	    	}	
-	    	$http({
-	   			url: 'http://109.231.121.125:8080/s-case/assetregistry/artefact/search',
-	   			method: "GET",
-	   			params: {
-	   				q: query
-	   			}
-	   		})
-	   		.success(function(data){
-		  		SearchPage.searchResults=data;//we get the data to the searchResults
-		  		//we set every different result to the corresponding global variable
-		  		for(var i=0;i<SearchPage.searchResults.length;i++){
-		  			//check if the project is public or if the user owns or collaborates on it
-		  			if(SearchPage.searchResults[i].privacyLevel==='PUBLIC'||isOwnerCollab(SearchPage.searchResults[i].projectName,SearchPage.usersProjects)){
-		  				if(SearchPage.searchResults[i].type==='TEXTUAL'){
-		  					if(requirementsClass=='Functional'){
-		  						if(SearchPage.searchResults[i].requirement=='functional'){
-		  							SearchPage.requirements.push(SearchPage.searchResults[i]);
-		  						}
-		  					}
-		  					if(requirementsClass=='Quality'){
-		  						if(SearchPage.searchResults[i].requirement=='non-functional'){
-		  							SearchPage.requirements.push(SearchPage.searchResults[i]);
-		  						}
-		  					}
-		  					if(requirementsClass=='Both'){
-		  						SearchPage.requirements.push(SearchPage.searchResults[i]);
-		  					}
-		  				}
-		  				if(SearchPage.searchResults[i].type==='activity diagram'){
-	  						SearchPage.activitydiagrams.push(SearchPage.searchResults[i]);
-		  				}
-		  				if(SearchPage.searchResults[i].type==='analysis class diagram'){
-	  						SearchPage.analysisclassdiagrams.push(SearchPage.searchResults[i]);
-		  				}
-		  				if(SearchPage.searchResults[i].type==='storyboard'){
-	  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
-		  				}
-		  				if(SearchPage.searchResults[i].type==='code'){
-	  						SearchPage.sourcecodes.push(SearchPage.searchResults[i]);
-		  				}
-		  				if(SearchPage.searchResults[i].type==='storyboard'){
-	  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
-		  				}
-		  					
-		  			}
-		  		}
-		  		SearchPage.scaseservices=SearchPage.searchResults.scaseservices;
-		  		SearchPage.searchResults=[];//we reset the search results
-		  	})
-		  	.error(function(status){
-		  		console.log(status);
-		  	});
+	    	
 	    };
 	    this.parentFilter = function(item){
 	  		if (item.Parent==="0"){
