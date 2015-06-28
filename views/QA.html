@@ -105,7 +105,7 @@
 				  	<ul class="list-group" ng-repeat="req in searchCtrl.requirements">
 				  	  	<li class="list-group-item">Classification: {{req.requirement}}</li>
 					  	<li class="list-group-item">Text: {{req.text}} </li>
-					  	<li class="list-group-item">Belong to Project: {{req.projectId}}</li>
+					  	<li class="list-group-item">Belong to Project: {{req.belongsTo}}</li>
 					  	<li class="list-group-item">Link to File: {{req.link}}</li>
 					  	<li class="list-group-item">Language: {{req.language}}</li>
 					</ul>
@@ -136,7 +136,7 @@
 					 			</ul>
 				 			</div>
 			 			</li>
-					  	<li class="list-group-item">Belong to Project: {{usecasediagram.projectId}}</li>
+					  	<li class="list-group-item">Belong to Project: {{usecasediagram.belongsTo}}</li>
 				  	  	<li class="list-group-item">Format: {{usecasediagram.format}}</li>
 					  	<li class="list-group-item">Link to File: {{usecasediagram.link}}</li>
 				  		<li class="list-group-item">Relation: {{usecasediagram.relation}}</li>
@@ -160,7 +160,7 @@
 					 			</ul>
 				 			</div>
 			 			</li>
-					  	<li class="list-group-item">Belong to Project: {{activitydiagram.projectId}}</li>
+					  	<li class="list-group-item">Belong to Project: {{activitydiagram.belongsTo}}</li>
 				  	  	<li class="list-group-item">Format: {{activitydiagram.format}}</li>
 					  	<li class="list-group-item">Link to File: {{activitydiagram.link}}</li>
 				  		<li class="list-group-item">Relation: {{activitydiagram.relation}}</li>
@@ -184,7 +184,7 @@
 					 			</ul>
 				 			</div>
 			 			</li>
-					  	<li class="list-group-item">Belong to Project: {{classdiagram.projectId}}</li>
+					  	<li class="list-group-item">Belong to Project: {{classdiagram.belongsTo}}</li>
 				  	  	<li class="list-group-item">Format: {{classdiagram.format}}</li>
 					  	<li class="list-group-item">Link to File: {{classdiagram.link}}</li>
 				  		<li class="list-group-item">Relation: {{classdiagram.relation}}</li>
@@ -209,7 +209,7 @@
 					 			</ul>
 				 			</div>
 			 			</li>
-					  	<li class="list-group-item">Belong to Project: {{storyboard.projectId}}</li>
+					  	<li class="list-group-item">Belong to Project: {{storyboard.belongsTo}}</li>
 				  	  	<li class="list-group-item">Format: {{storyboard.format}}</li>
 					  	<li class="list-group-item">Link to File: {{storyboard.link}}</li>
 				  		<li class="list-group-item">Relation: {{storyboard.relation}}</li>
@@ -224,7 +224,7 @@
 			  	<div class="panel-heading">Storyboards</div>
 			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
 			  		<ul class="list-group" ng-repeat="sourcecode in searchCtrl.sourcecodes">
-					  	<li class="list-group-item">Belong to Project: {{sourcecode.projectId}}</li>
+					  	<li class="list-group-item">Belong to Project: {{sourcecode.belongsTo}}</li>
 					  	<li class="list-group-item">Link to File: {{sourcecode.link}}</li>
 					</ul>
 			  	</div>
@@ -232,14 +232,35 @@
         </div>
 
         <!---display services data-->
-        <div ng-show="tab.isSet(8)">
+        <div ng-show="tab.isSet(8)">	
 			<div class="panel panel-info">
 			  	<div class="panel-heading">Services</div>
 			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
 			  		<ul class="list-group" ng-repeat="service in searchCtrl.scaseservices">
+			  			<li class="list-group-item">Type: {{service.type}}</li>
+			  			<div ng-if="service.type==='service description'">
 			  			<li class="list-group-item">Link to Domain Ontology: {{service.domainOntology}}</li>
-					  	<li class="list-group-item">Belong to Project: {{service.projectId}}</li>
+			  			<li class="list-group-item">Belong to Project: {{service.belongsTo}}</li>
 					  	<li class="list-group-item">Link to File: {{service.link}}</li>
+			  			</div>
+			  			<div ng-if="service.type==='composite service description'">
+			  			<li class="list-group-item">List of 3rd party web services: {{service.list}}</li>
+			  			<li class="list-group-item">Link to Workflow: {{service.workflow}}</li>
+			  			<li class="list-group-item">Belong to Project: {{service.belongsTo}}</li>
+					  	<li class="list-group-item">Link to File: {{service.link}}</li>
+			  			</div>
+			  			<div ng-if="service.type==='service'">
+			  			<li class="list-group-item">Belong to Project: {{service.belongsTo}}</li>
+			  			<li class="list-group-item">Url: {{service.url}}</li>
+			  			<li class="list-group-item">wadl: {{service.wadl}}</li>
+			  			<li class="list-group-item">entry: {{service.entry}}</li>
+			  			</div>
+					  	<div ng-if="service.type==='3rd party service'">
+			  			<li class="list-group-item">Belong to Project: {{service.belongsTo}}</li>
+			  			<li class="list-group-item">Documentation: {{service.documentation}}</li>
+			  			<li class="list-group-item">wadl: {{service.wadl}}</li>
+			  			<li class="list-group-item">entry: {{service.entry}}</li>
+			  			</div>
 					</ul>
 			  	</div>
 			</div> 

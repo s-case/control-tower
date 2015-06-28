@@ -162,13 +162,12 @@
 			  				if(SearchPage.searchResults[i].type==='code'){
 		  						SearchPage.sourcecodes.push(SearchPage.searchResults[i]);
 			  				}
-			  				if(SearchPage.searchResults[i].type==='storyboard'){
-		  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
+			  				if(SearchPage.searchResults[i].type.indexOf('service'){
+		  						SearchPage.services.push(SearchPage.searchResults[i]);
 			  				}
 			  					
 			  			}
 			  		}
-			  		SearchPage.scaseservices=SearchPage.searchResults.scaseservices;
 			  		SearchPage.searchResults=[];//we reset the search results
 			  	})
 			  	.error(function(status){
