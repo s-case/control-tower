@@ -17,5 +17,5 @@ CREATE TABLE `users` (
   UNIQUE KEY `github_id_UNIQUE` (`github_id`),
   UNIQUE KEY `google_token_UNIQUE` (`google_token`),
   UNIQUE KEY `google_id_UNIQUE` (`google_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=latin1;
 
