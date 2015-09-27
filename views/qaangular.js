@@ -124,7 +124,7 @@
 		   			url: 'http://109.231.121.125:8080/s-case/assetregistry/artefact/search',
 		   			method: "GET",
 		   			params: {
-		   				query: query,
+		   				q: query,
 		   				domain: domainString,
 		   				subdomain: subdomainString
 		   			}
@@ -134,19 +134,19 @@
 			  		//we set every different result to the corresponding global variable
 			  		for(var i=0;i<SearchPage.searchResults.length;i++){
 			  			//check if the project is public or if the user owns or collaborates on it
-			  			if(SearchPage.searchResults[i].privacyLevel==='PUBLIC'||isOwnerCollab(SearchPage.searchResults[i].projectName,SearchPage.usersProjects)){
-			  				if(SearchPage.searchResults[i].type==='TEXTUAL'){
+			  			if(SearchPage.searchResults[i].artefact.privacyLevel==='PUBLIC'||SearchPage.searchResults[i].artefact.privacyLevel==null||isOwnerCollab(SearchPage.searchResults[i].artefact.projectName,SearchPage.usersProjects)){
+			  				if(SearchPage.searchResults[i].artefact.type==='TEXTUAL'){
 			  					if(requirementsClass=='Functional'){
-			  						if(SearchPage.searchResults[i].requirement=='functional'){
+			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='functional'){
 			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
 			  						}
 			  					}
-			  					if(requirementsClass=='Quality'){
-			  						if(SearchPage.searchResults[i].requirement=='non-functional'){
+			  					else if(requirementsClass=='Quality'){
+			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='non-functional'){
 			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
 			  						}
 			  					}
-			  					if(requirementsClass=='Both'){
+			  					else if(requirementsClass=='Both'){
 			  						SearchPage.requirements.push(SearchPage.searchResults[i]);
 			  					}
 			  				}
@@ -180,7 +180,7 @@
 		   			url: 'http://109.231.121.125:8080/s-case/assetregistry/artefact/search',
 		   			method: "GET",
 		   			params: {
-		   				query: query,
+		   				q: query,
 		   				domain: domainString
 		   			}
 	   			})
@@ -189,22 +189,22 @@
 			  		//we set every different result to the corresponding global variable
 			  		for(var i=0;i<SearchPage.searchResults.length;i++){
 			  			//check if the project is public or if the user owns or collaborates on it
-			  			if(SearchPage.searchResults[i].privacyLevel==='PUBLIC'||isOwnerCollab(SearchPage.searchResults[i].projectName,SearchPage.usersProjects)){
-			  				if(SearchPage.searchResults[i].type==='TEXTUAL'){
+			  			if(SearchPage.searchResults[i].artefact.privacyLevel==='PUBLIC'||isOwnerCollab(SearchPage.searchResults[i].artefact.projectName,SearchPage.usersProjects)){
+							if(SearchPage.searchResults[i].artefact.type==='TEXTUAL'){
 			  					if(requirementsClass=='Functional'){
-			  						if(SearchPage.searchResults[i].requirement=='functional'){
+			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='functional'){
 			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
 			  						}
 			  					}
-			  					if(requirementsClass=='Quality'){
-			  						if(SearchPage.searchResults[i].requirement=='non-functional'){
+			  					else if(requirementsClass=='Quality'){
+			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='non-functional'){
 			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
 			  						}
 			  					}
-			  					if(requirementsClass=='Both'){
+			  					else if(requirementsClass=='Both'){
 			  						SearchPage.requirements.push(SearchPage.searchResults[i]);
 			  					}
-			  				}
+			  				}			  				
 			  				if(SearchPage.searchResults[i].type==='activity diagram'){
 		  						SearchPage.activitydiagrams.push(SearchPage.searchResults[i]);
 			  				}
@@ -237,7 +237,7 @@
 		   			url: 'http://109.231.121.125:8080/s-case/assetregistry/artefact/search',
 		   			method: "GET",
 		   			params: {
-		   				query: query
+		   				q: query
 		   			}
 	   			})
 		   		.success(function(data){
@@ -245,19 +245,19 @@
 			  		//we set every different result to the corresponding global variable
 			  		for(var i=0;i<SearchPage.searchResults.length;i++){
 			  			//check if the project is public or if the user owns or collaborates on it
-			  			if(SearchPage.searchResults[i].privacyLevel==='PUBLIC'||isOwnerCollab(SearchPage.searchResults[i].projectName,SearchPage.usersProjects)){
-			  				if(SearchPage.searchResults[i].type==='TEXTUAL'){
+			  			if(SearchPage.searchResults[i].artefact.privacyLevel==='PUBLIC'||isOwnerCollab(SearchPage.searchResults[i].artefact.projectName,SearchPage.usersProjects)){
+			  				if(SearchPage.searchResults[i].artefact.type==='TEXTUAL'){
 			  					if(requirementsClass=='Functional'){
-			  						if(SearchPage.searchResults[i].requirement=='functional'){
+			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='functional'){
 			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
 			  						}
 			  					}
-			  					if(requirementsClass=='Quality'){
-			  						if(SearchPage.searchResults[i].requirement=='non-functional'){
+			  					else if(requirementsClass=='Quality'){
+			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='non-functional'){
 			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
 			  						}
 			  					}
-			  					if(requirementsClass=='Both'){
+			  					else if(requirementsClass=='Both'){
 			  						SearchPage.requirements.push(SearchPage.searchResults[i]);
 			  					}
 			  				}
@@ -288,6 +288,76 @@
 	    	}	
 	    	
 	    };
+
+	    this.TransformFreeText = function(){
+	    	var currentQuery = SearchPage.searchQuery;
+	    	var quest = currentQuery.question;
+	    	$http.post('http://109.231.121.226:8010/nlpserver/question', {question: quest}).
+		   		then(function(response)){
+		   			data=response.data;
+		   			query_terms=data.query_terms;
+		   			for(var j=0;j<query_terms.length;j++){
+		   				query=query_terms[i]+' ';
+		   			}
+		   			$http({
+			   			url: 'http://109.231.121.125:8080/s-case/assetregistry/artefact/search',
+			   			method: "GET",
+			   			params: {
+			   				q: query
+			   			}
+		   			})
+			   		.success(function(data){
+				  		SearchPage.searchResults=data;//we get the data to the searchResults
+				  		//we set every different result to the corresponding global variable
+				  		for(var i=0;i<SearchPage.searchResults.length;i++){
+				  			//check if the project is public or if the user owns or collaborates on it
+				  			if(SearchPage.searchResults[i].artefact.privacyLevel==='PUBLIC'||isOwnerCollab(SearchPage.searchResults[i].artefact.projectName,SearchPage.usersProjects)){
+				  				if(SearchPage.searchResults[i].artefact.type==='TEXTUAL'){
+				  					if(requirementsClass=='Functional'){
+				  						if(SearchPage.searchResults[i].artefact.payload[0].name=='functional'){
+				  							SearchPage.requirements.push(SearchPage.searchResults[i]);
+				  						}
+				  					}
+				  					else if(requirementsClass=='Quality'){
+				  						if(SearchPage.searchResults[i].artefact.payload[0].name=='non-functional'){
+				  							SearchPage.requirements.push(SearchPage.searchResults[i]);
+				  						}
+				  					}
+				  					else if(requirementsClass=='Both'){
+				  						SearchPage.requirements.push(SearchPage.searchResults[i]);
+				  					}
+				  				}
+				  				if(SearchPage.searchResults[i].type==='activity diagram'){
+			  						SearchPage.activitydiagrams.push(SearchPage.searchResults[i]);
+				  				}
+				  				if(SearchPage.searchResults[i].type==='analysis class diagram'){
+			  						SearchPage.analysisclassdiagrams.push(SearchPage.searchResults[i]);
+				  				}
+				  				if(SearchPage.searchResults[i].type==='storyboard'){
+			  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
+				  				}
+				  				if(SearchPage.searchResults[i].type==='code'){
+			  						SearchPage.sourcecodes.push(SearchPage.searchResults[i]);
+				  				}
+				  				if(SearchPage.searchResults[i].type==='storyboard'){
+			  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
+				  				}
+				  					
+				  			}
+				  		}
+				  		SearchPage.scaseservices=SearchPage.searchResults.scaseservices;
+				  		SearchPage.searchResults=[];//we reset the search results
+				  	})
+				  	.error(function(status){
+				  		console.log(status);
+				  	}); 
+
+		   		}, function(response){
+		   			console.log(response)
+		   		})
+
+
+	    }
 	    this.parentFilter = function(item){
 	  		if (item.Parent==="0"){
 	  			console.log(item)

@@ -43,18 +43,28 @@
 			        <form name="queryForm" ng-controller="SearchModeTabController as searchModeTab"><!--controller for the simple or advanced search tabs-->
 				        <ul class="nav nav-tabs"><!--the tabs of search modes-->
 				        	<li ng-class="{active: searchModeTab.isSet(1)}">
-					            <a href ng-click="searchModeTab.setTab(1)">Simple Search</a>
+					            <a href ng-click="searchModeTab.setTab(1)">Free Text Search</a>
 				            </li>
 				          	<li ng-class="{active: searchModeTab.isSet(2)}">
 					            <a href ng-click="searchModeTab.setTab(2)">Advanced Search</a>
 				            </li>
 			            </ul>
 			            <br>			            
-			            <!-- The query text box that contains the operations the user is interested in (shown in both advanced and simple search-->
-						<div class="input-group">
-							<span class="input-group-addon">
-							<textarea ng-model="searchCtrl.searchQuery.operations" class="form-control" placeholder="Operations Query (separated by comma)" title="Operations"></textarea>
-							</span>
+			            <div ng-show="searchModeTab.isSet(1)">
+				            <!-- The query text box that contains the operations the user is interested in (shown in both advanced and simple search-->
+							<div class="input-group">
+								<span class="input-group-addon">
+								<textarea ng-model="searchCtrl.searchQuery.question" class="form-control" placeholder="Enter a question e.g Which services are used to create a tag cloud?" title="Operations"></textarea>
+								</span>
+							</div>
+						</div>
+			            <div ng-show="searchModeTab.isSet(2)">
+				            <!-- The query text box that contains the operations the user is interested in (shown in both advanced and simple search-->
+							<div class="input-group">
+								<span class="input-group-addon">
+								<textarea ng-model="searchCtrl.searchQuery.operations" class="form-control" placeholder="Enter operations, keywords separated by comma e.g authentication, social media, REST" title="Operations"></textarea>
+								</span>
+							</div>
 						</div>
 						<!-- advanced search tab options -->
 			            <div ng-show="searchModeTab.isSet(2)">
@@ -90,7 +100,7 @@
 			            <br>
 			            <div ng-show="searchModeTab.isSet(1)">
 							<fieldset class="form-group">
-					        	<input type="submit" class="btn btn-primary pull-right" ng-click="searchCtrl.doSearch()" value="Submit Query" />
+					        	<input type="submit" class="btn btn-primary pull-right" ng-click="searchCtrl.TransformFreeText()" value="Submit Query" />
 					      	</fieldset>
 				      	</div>
 					</form>	
@@ -105,23 +115,22 @@
 		  		<div class="panel-heading">Requirements</div>
 			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
 				  	<ul class="list-group" ng-repeat="req in searchCtrl.requirements">
-				  	  	<li class="list-group-item">Classification: {{req.requirement}}</li>
-					  	<li class="list-group-item">Text: {{req.text}} </li>
-					  	<li class="list-group-item">Belong to Project: {{req.belongsTo}}</li>
+				  	  	<li class="list-group-item">Classification: {{req.artefact.type}}</li>
+					  	<li class="list-group-item">Text: {{req.artefact.description}} </li>
+					  	<li class="list-group-item">Belong to Project: {{req.artefact.projectName}}</li>
 					  	<li class="list-group-item">Link to File: {{req.link}}</li>
 					  	<li class="list-group-item">Language: {{req.language}}</li>
-						<li class="list-group-item">uri:{{req.uri}}</li> 
-						<li class="list-group-item">groupid: {{req.groupId}}</li> 
-						<li class="list-group-item">name: {{req.name}}</li> 
-						<li class="list-group-item">version: {{req.version}}</li> 
-						<li class="list-group-item">description: {{req.description}}</li> 
-						<li class="list-group-item">keywords: {{req.tags}} </li> 
-						<li class="list-group-item">createdAt: {{req.createdAt}}</li> 
-						<li class="list-group-item">updatedAt: {{req.updatedAt}}</li> 
-						<li class="list-group-item">createdBy: {{req.createdBy}}</li> 
-						<li class="list-group-item">updatedBy: {{req.updatedBy}}</li>
+						<li class="list-group-item">uri:{{req.artefact.uri}}</li> 
+						<li class="list-group-item">groupid: {{req.artefact.groupId}}</li> 
+						<li class="list-group-item">name: {{req.artefact.name}}</li> 
+						<li class="list-group-item">version: {{req.artefact.version}}</li> 
+						<li class="list-group-item">keywords: {{req.artefact.tags}} </li> 
+						<li class="list-group-item">createdAt: {{req.artefact.createdAt}}</li> 
+						<li class="list-group-item">updatedAt: {{req.artefact.updatedAt}}</li> 
+						<li class="list-group-item">createdBy: {{req.artefact.createdBy}}</li> 
+						<li class="list-group-item">updatedBy: {{req.artefact.updatedBy}}</li>
 					</ul>
-					<!---Hardcoded-->
+					<!---Hardcoded
 					<ul class="list-group">
 				  	  	<li class="list-group-item">Classification: Functional</li>
 					  	<li class="list-group-item">Text: The user must be able to login with his/her credentials of a social media account like Google, Github </li>
@@ -155,7 +164,7 @@
 						<li class="list-group-item">createdBy: Themis</li> 
 
 					</ul>
-					<!--Hardcoded end-->
+					Hardcoded end-->
 			  	</div>
 		  	</div>
       	</div>
