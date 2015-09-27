@@ -293,7 +293,7 @@
 	    	var currentQuery = SearchPage.searchQuery;
 	    	var quest = currentQuery.question;
 	    	$http.post('http://109.231.121.226:8010/nlpserver/question', {question: quest}).
-		   		then(function(response)){
+		   		then(function(response){
 		   			data=response.data;
 		   			query_terms=data.query_terms;
 		   			for(var j=0;j<query_terms.length;j++){
