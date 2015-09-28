@@ -19,7 +19,7 @@
     "examples"
   ],
   "dependencies": {
-    "angular": ">=1.2.18"
+    "angular": ">=1.4.6"
   },
   "devDependencies": {
     "jquery": "~1.11",

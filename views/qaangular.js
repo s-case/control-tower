@@ -236,7 +236,10 @@
 	    		$http({
 		   			url: 'http://109.231.121.125:8080/s-case/assetregistry/artefact/search',
 		   			method: "GET",
-		   			params: {
+					headers: {
+						'Content-Type':'application/x-www-form-urlencoded'						
+					},
+					params: {
 		   				q: query
 		   			}
 	   			})
