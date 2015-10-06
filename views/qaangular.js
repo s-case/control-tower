@@ -72,7 +72,7 @@
     
   	//controloller to perform the search to the S-CASE artefacts repo
   	app.controller('SearchController',['$http',function($http){
-
+  		var requirements=[]
   		var SearchPage  = this;//we set this to a variable in order to use it in http
 	  	SearchPage.domains=[];//we are going to save the domains here
 	  	SearchPage.subdomains=[];//we are going to save the subdomains here
@@ -118,10 +118,11 @@
 	    	var requirementsClass = currentQuery.requirementsClass.name;
 	    	var operations =  currentQuery.operations;
 	    	var query;
+	    	SearchPage.requirements=[]
 	    	if(domainString!="All"&&subdomainString!="All"){
 	    		query = operations.replace(/,/g, '')
 	    		$http({
-		   			url: 'http://109.231.121.125:8080/s-case/assetregistry/artefact/search',
+		   			url: '/QAsearch',
 		   			method: "GET",
 		   			params: {
 		   				q: query,
@@ -134,7 +135,7 @@
 			  		//we set every different result to the corresponding global variable
 			  		for(var i=0;i<SearchPage.searchResults.length;i++){
 			  			//check if the project is public or if the user owns or collaborates on it
-			  			if(SearchPage.searchResults[i].artefact.privacyLevel==='PUBLIC'||SearchPage.searchResults[i].artefact.privacyLevel==null||isOwnerCollab(SearchPage.searchResults[i].artefact.projectName,SearchPage.usersProjects)){
+			  			if(SearchPage.searchResults[i].artefact.privacyLevel==='PUBLIC'||SearchPage.searchResults[i].artefact.privacyLevel==null){//||isOwnerCollab(SearchPage.searchResults[i].artefact.projectName,SearchPage.usersProjects)){
 			  				if(SearchPage.searchResults[i].artefact.type==='TEXTUAL'){
 			  					if(requirementsClass=='Functional'){
 			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='functional'){
@@ -177,7 +178,7 @@
 	    	if(subdomainString=="All" && domainString!='All'){
 	    		query = operations.replace(/,/g, '')
 	    		$http({
-		   			url: 'http://109.231.121.125:8080/s-case/assetregistry/artefact/search',
+		   			url: '/QAsearch',
 		   			method: "GET",
 		   			params: {
 		   				q: query,
@@ -234,7 +235,7 @@
 	    	if(domainString=="All"){
 	    		query = operations.replace(/,/g, '')
 	    		$http({
-		   			url: 'http://109.231.121.125:8080/s-case/assetregistry/artefact/search',
+		   			url: '/QAsearch',
 		   			method: "GET",
 					headers: {
 						'Content-Type':'application/x-www-form-urlencoded'						
@@ -244,11 +245,14 @@
 		   			}
 	   			})
 		   		.success(function(data){
-			  		SearchPage.searchResults=data;//we get the data to the searchResults
+		   			//console.log(data.body)
+			  		SearchPage.searchResults=JSON.parse(data.body);//we get the data to the searchResults
 			  		//we set every different result to the corresponding global variable
+			  		console.log(SearchPage.searchResults)
 			  		for(var i=0;i<SearchPage.searchResults.length;i++){
 			  			//check if the project is public or if the user owns or collaborates on it
-			  			if(SearchPage.searchResults[i].artefact.privacyLevel==='PUBLIC'||isOwnerCollab(SearchPage.searchResults[i].artefact.projectName,SearchPage.usersProjects)){
+			  			//console.log(SearchPage.searchResults[i]);
+			  			if(SearchPage.searchResults[i].artefact.privacyLevel==='PUBLIC'||SearchPage.searchResults[i].artefact.privacyLevel==null){//||isOwnerCollab(SearchPage.searchResults[i].artefact.projectName,SearchPage.usersProjects)){
 			  				if(SearchPage.searchResults[i].artefact.type==='TEXTUAL'){
 			  					if(requirementsClass=='Functional'){
 			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='functional'){
@@ -284,6 +288,7 @@
 			  		}
 			  		SearchPage.scaseservices=SearchPage.searchResults.scaseservices;
 			  		SearchPage.searchResults=[];//we reset the search results
+			  		console.log(SearchPage.requirements[0]);
 			  	})
 			  	.error(function(status){
 			  		console.log(status);

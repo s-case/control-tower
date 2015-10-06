@@ -115,7 +115,7 @@
 		  		<div class="panel-heading">Requirements</div>
 			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
 				  	<ul class="list-group" ng-repeat="req in searchCtrl.requirements">
-				  	  	<li class="list-group-item">Classification: {{req.artefact.type}}</li>
+				  	  	<li class="list-group-item">Classification: {{req.artefact.payload[0].name}}</li>
 					  	<li class="list-group-item">Text: {{req.artefact.description}} </li>
 					  	<li class="list-group-item">Belong to Project: {{req.artefact.projectName}}</li>
 					  	<li class="list-group-item">Link to File: {{req.link}}</li>
