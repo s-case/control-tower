@@ -6,7 +6,7 @@
 	    domain: value picked out of a pre-specified list of domains
 	    sub-domains: ["sub1", "sub2", ...]
 	  */
-  	var requirements = []; //requirements of S-CASE artefacts repo
+  	//var requirements = []; //requirements of S-CASE artefacts repo
 	  /*Requirement details
 	    type: "textual"
 	  belongsTo: projectId
@@ -140,6 +140,7 @@
 			  					if(requirementsClass=='Functional'){
 			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='functional'){
 			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  							console.log(SearchPage.searchResults[i])
 			  						}
 			  					}
 			  					else if(requirementsClass=='Quality'){
@@ -248,15 +249,16 @@
 		   			//console.log(data.body)
 			  		SearchPage.searchResults=JSON.parse(data.body);//we get the data to the searchResults
 			  		//we set every different result to the corresponding global variable
-			  		console.log(SearchPage.searchResults)
+			  		//console.log(SearchPage.searchResults)
 			  		for(var i=0;i<SearchPage.searchResults.length;i++){
 			  			//check if the project is public or if the user owns or collaborates on it
-			  			//console.log(SearchPage.searchResults[i]);
+			  			//console.log(SearchPage.searchResults[i].artefact);
 			  			if(SearchPage.searchResults[i].artefact.privacyLevel==='PUBLIC'||SearchPage.searchResults[i].artefact.privacyLevel==null){//||isOwnerCollab(SearchPage.searchResults[i].artefact.projectName,SearchPage.usersProjects)){
 			  				if(SearchPage.searchResults[i].artefact.type==='TEXTUAL'){
 			  					if(requirementsClass=='Functional'){
 			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='functional'){
 			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  							console.log(SearchPag.searchResults[i]);
 			  						}
 			  					}
 			  					else if(requirementsClass=='Quality'){
@@ -266,6 +268,7 @@
 			  					}
 			  					else if(requirementsClass=='Both'){
 			  						SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  						console.log(SearchPage.searchResults[i]);
 			  					}
 			  				}
 			  				if(SearchPage.searchResults[i].type==='activity diagram'){
@@ -288,7 +291,7 @@
 			  		}
 			  		SearchPage.scaseservices=SearchPage.searchResults.scaseservices;
 			  		SearchPage.searchResults=[];//we reset the search results
-			  		console.log(SearchPage.requirements[0]);
+			  		console.log(SearchPage.requirements);
 			  	})
 			  	.error(function(status){
 			  		console.log(status);
