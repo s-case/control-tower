@@ -22,6 +22,9 @@
     "express-jwt" : "*",
     "jsonwebtoken" : "*",
     "request" : "*",
-    "requirejs": "*"
+    "requirejs": "*",
+    "needle": "*",
+  "querystring" : "*",
+	"http":"*"
   }
 }

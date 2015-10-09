@@ -6,73 +6,14 @@
 	    domain: value picked out of a pre-specified list of domains
 	    sub-domains: ["sub1", "sub2", ...]
 	  */
-  	//var requirements = []; //requirements of S-CASE artefacts repo
-	  /*Requirement details
-	    type: "textual"
-	  belongsTo: projectId
-	  link: link to file (file may contain multiple reqs)
-	  language : ISO-639-3 language code (always eng) 
-	  text: "The user must be able to ..."
-	  requirement: "functional" or "non-functional"
-	  */
-  	var usecasediagrams = [];//usecase diagrams of S-CASE artefacts repo
-	  /* Use case diagrams details
-	  type: "use case"
-	  format: "image" or "xmi"
-	  link: link to file
-	  relation: relation to xmi if image and viceversa
-	  belongsTo: projectId
-	  actors: ["actor1", "actor2", ...]
-	  use cases: ["use case 1", "use case 2", ...]
-	  */
-  	var activitydiagrams = [];//activity diagrams of S-CASE artefacts repo
-	  /*Activity diagrams details
-	  type: "activity diagram"
-	  format: "image" or "xmi"
-	  link: link to file
-	  relation: relation to xmi if image and viceversa
-	  belongsTo: projectId
-	  actions: ["action1", "action2", ...]
-	  */
-  	var classdiagrams = [];//analysis class diagramms of S-CASE artefacts repo
-	  /* Analysis Class diagrams details
-	  type: "analysis class diagram"
-	  format: "image" or "xmi"
-	  link: link to file
-	  relation: relation to xmi if image and viceversa
-	  belongsTo: projectId
-	  classes: [{name: "class1", properties: [{name: "prop1", type: "string"}], relatedTo: ["class2", "class3"]}]
-	  */
-  	var storyboards = [];//storyboards of S-CASE artefacts repo
-	  /* Storyboards details
-	  type: "storyboard"
-	  format: "image" or "xmi"
-	  link: link to file
-	  relation: relation to xmi if image and viceversa
-	  belongsTo: projectId
-	  actions: ["action1", "action2", ...]
-	  */
-	var sourcecodes = [];//sourcecodes of S-CASE artefacts repo
-	  /* Source code details
-	  type: "code"
-	  belongsTo: projectId
-	  link: link to zip
-	  */
-	var scaseservices = [];// scase services of S-CASE artefacts repo
-	  /* S-CASE services details
-	  type: "service description"
-	  belongsTo: projectId
-	  link: link to file
-	  domainOntology: link to domain ontology residing in the ontology repo
-	  */
+  	
     //==we use Google verticals for domains and subdomains
     //https://developers.google.com/adwords/api/docs/appendix/verticals
     //Domains with no parent are the domains in our case (var parentDomains below)
     //Domains with parents the domains with no parent are the subdomains in our case (var subdomains below)
     
   	//controloller to perform the search to the S-CASE artefacts repo
-  	app.controller('SearchController',['$http',function($http){
-  		var requirements=[]
+  	app.controller('SearchController',['$http','$rootScope',function($http,$rootScope){
   		var SearchPage  = this;//we set this to a variable in order to use it in http
 	  	SearchPage.domains=[];//we are going to save the domains here
 	  	SearchPage.subdomains=[];//we are going to save the subdomains here
@@ -118,7 +59,12 @@
 	    	var requirementsClass = currentQuery.requirementsClass.name;
 	    	var operations =  currentQuery.operations;
 	    	var query;
-	    	SearchPage.requirements=[]
+	    	$rootScope.requirements=[]
+	    	$rootScope.activitydiagrams=[]
+	    	$rootScope.analysisclassdiagrams=[]
+	    	$rootScope.storyboards=[]
+	    	$rootScope.sourcecodes=[]
+	    	$rootScope.scaseservices=[]
 	    	if(domainString!="All"&&subdomainString!="All"){
 	    		query = operations.replace(/,/g, '')
 	    		$http({
@@ -131,53 +77,71 @@
 		   			}
 	   			})
 		   		.success(function(data){
-			  		SearchPage.searchResults=data;//we get the data to the searchResults
+		   			//console.log(data.body)
+		   			reqs=[]
+		   			acts=[]
+		   			anas=[]
+		   			stos=[]
+		   			sous=[]
+		   			sers=[]
+		   			if (data.body){
+			  		SearchPage.searchResults=JSON.parse(data.body);//we get the data to the searchResults
 			  		//we set every different result to the corresponding global variable
+			  		//console.log(SearchPage.searchResults)
 			  		for(var i=0;i<SearchPage.searchResults.length;i++){
 			  			//check if the project is public or if the user owns or collaborates on it
+			  			//console.log(SearchPage.searchResults[i].artefact);
 			  			if(SearchPage.searchResults[i].artefact.privacyLevel==='PUBLIC'||SearchPage.searchResults[i].artefact.privacyLevel==null){//||isOwnerCollab(SearchPage.searchResults[i].artefact.projectName,SearchPage.usersProjects)){
 			  				if(SearchPage.searchResults[i].artefact.type==='TEXTUAL'){
 			  					if(requirementsClass=='Functional'){
 			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='functional'){
-			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
-			  							console.log(SearchPage.searchResults[i])
+			  							reqs.push(SearchPage.searchResults[i]);
 			  						}
 			  					}
 			  					else if(requirementsClass=='Quality'){
 			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='non-functional'){
-			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  							reqs.push(SearchPage.searchResults[i]);
 			  						}
 			  					}
 			  					else if(requirementsClass=='Both'){
-			  						SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  						reqs.push(SearchPage.searchResults[i]);
 			  					}
 			  				}
 			  				if(SearchPage.searchResults[i].type==='activity diagram'){
-		  						SearchPage.activitydiagrams.push(SearchPage.searchResults[i]);
+		  						acts.push(SearchPage.searchResults[i]);
 			  				}
 			  				if(SearchPage.searchResults[i].type==='analysis class diagram'){
-		  						SearchPage.analysisclassdiagrams.push(SearchPage.searchResults[i]);
+		  						anas.push(SearchPage.searchResults[i]);
 			  				}
 			  				if(SearchPage.searchResults[i].type==='storyboard'){
-		  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
+		  						stospush(SearchPage.searchResults[i]);
 			  				}
 			  				if(SearchPage.searchResults[i].type==='code'){
-		  						SearchPage.sourcecodes.push(SearchPage.searchResults[i]);
+		  						sous.push(SearchPage.searchResults[i]);
 			  				}
-			  				if(SearchPage.searchResults[i].type.indexOf('service')){
-		  						SearchPage.services.push(SearchPage.searchResults[i]);
+			  				if(SearchPage.searchResults[i].type==='service'){
+		  						sers.push(SearchPage.searchResults[i]);
 			  				}
 			  					
 			  			}
 			  		}
+			  	}
 			  		SearchPage.searchResults=[];//we reset the search results
+			  		$rootScope.requirements=reqs
+			  		$rootScope.analysisclassdiagrams=anas;
+			  		$rootScope.activitydiagrams=acts;
+			  		$rootScope.storyboards=stos;
+			  		$rootScope.sourcecodes=sous;
+			  		$rootScope.scaseservices=sers;
+
 			  	})
 			  	.error(function(status){
 			  		console.log(status);
 			  	});
 	    	}
 	    	if(subdomainString=="All" && domainString!='All'){
-	    		query = operations.replace(/,/g, '')
+	    		query = operations.replace(/,/g, '');
+	    		//console.log(domainString)
 	    		$http({
 		   			url: '/QAsearch',
 		   			method: "GET",
@@ -187,47 +151,65 @@
 		   			}
 	   			})
 		   		.success(function(data){
-			  		SearchPage.searchResults=data;//we get the data to the searchResults
+		   			//console.log(data.body)
+		   			reqs=[]
+		   			acts=[]
+		   			anas=[]
+		   			stos=[]
+		   			sous=[]
+		   			sers=[]
+		   			if (data.body){
+			  		SearchPage.searchResults=JSON.parse(data.body);//we get the data to the searchResults
 			  		//we set every different result to the corresponding global variable
+			  		//console.log(SearchPage.searchResults)
 			  		for(var i=0;i<SearchPage.searchResults.length;i++){
 			  			//check if the project is public or if the user owns or collaborates on it
-			  			if(SearchPage.searchResults[i].artefact.privacyLevel==='PUBLIC'||isOwnerCollab(SearchPage.searchResults[i].artefact.projectName,SearchPage.usersProjects)){
-							if(SearchPage.searchResults[i].artefact.type==='TEXTUAL'){
+			  			//console.log(SearchPage.searchResults[i].artefact);
+			  			if(SearchPage.searchResults[i].artefact.privacyLevel==='PUBLIC'||SearchPage.searchResults[i].artefact.privacyLevel==null){//||isOwnerCollab(SearchPage.searchResults[i].artefact.projectName,SearchPage.usersProjects)){
+			  				if(SearchPage.searchResults[i].artefact.type==='TEXTUAL'){
 			  					if(requirementsClass=='Functional'){
 			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='functional'){
-			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  							reqs.push(SearchPage.searchResults[i]);
 			  						}
 			  					}
 			  					else if(requirementsClass=='Quality'){
 			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='non-functional'){
-			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  							reqs.push(SearchPage.searchResults[i]);
 			  						}
 			  					}
 			  					else if(requirementsClass=='Both'){
-			  						SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  						reqs.push(SearchPage.searchResults[i]);
 			  					}
-			  				}			  				
+			  				}
 			  				if(SearchPage.searchResults[i].type==='activity diagram'){
-		  						SearchPage.activitydiagrams.push(SearchPage.searchResults[i]);
+		  						acts.push(SearchPage.searchResults[i]);
 			  				}
 			  				if(SearchPage.searchResults[i].type==='analysis class diagram'){
-		  						SearchPage.analysisclassdiagrams.push(SearchPage.searchResults[i]);
+		  						anas.push(SearchPage.searchResults[i]);
 			  				}
 			  				if(SearchPage.searchResults[i].type==='storyboard'){
-		  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
+		  						stospush(SearchPage.searchResults[i]);
 			  				}
 			  				if(SearchPage.searchResults[i].type==='code'){
-		  						SearchPage.sourcecodes.push(SearchPage.searchResults[i]);
+		  						sous.push(SearchPage.searchResults[i]);
 			  				}
-			  				if(SearchPage.searchResults[i].type==='storyboard'){
-		  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
+			  				if(SearchPage.searchResults[i].type==='service'){
+		  						sers.push(SearchPage.searchResults[i]);
 			  				}
 			  					
 			  			}
 			  		}
-			  		SearchPage.scaseservices=SearchPage.searchResults.scaseservices;
+			  	}
 			  		SearchPage.searchResults=[];//we reset the search results
+			  		$rootScope.requirements=reqs
+			  		$rootScope.analysisclassdiagrams=anas;
+			  		$rootScope.activitydiagrams=acts;
+			  		$rootScope.storyboards=stos;
+			  		$rootScope.sourcecodes=sous;
+			  		$rootScope.scaseservices=sers;
+
 			  	})
+			  	
 			  	.error(function(status){
 			  		console.log(status);
 			  	});
@@ -247,6 +229,13 @@
 	   			})
 		   		.success(function(data){
 		   			//console.log(data.body)
+		   			reqs=[]
+		   			acts=[]
+		   			anas=[]
+		   			stos=[]
+		   			sous=[]
+		   			sers=[]
+		   			if(data.body){
 			  		SearchPage.searchResults=JSON.parse(data.body);//we get the data to the searchResults
 			  		//we set every different result to the corresponding global variable
 			  		//console.log(SearchPage.searchResults)
@@ -257,41 +246,45 @@
 			  				if(SearchPage.searchResults[i].artefact.type==='TEXTUAL'){
 			  					if(requirementsClass=='Functional'){
 			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='functional'){
-			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
-			  							console.log(SearchPag.searchResults[i]);
+			  							reqs.push(SearchPage.searchResults[i]);
 			  						}
 			  					}
 			  					else if(requirementsClass=='Quality'){
 			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='non-functional'){
-			  							SearchPage.requirements.push(SearchPage.searchResults[i]);
+			  							reqs.push(SearchPage.searchResults[i]);
 			  						}
 			  					}
 			  					else if(requirementsClass=='Both'){
-			  						SearchPage.requirements.push(SearchPage.searchResults[i]);
-			  						console.log(SearchPage.searchResults[i]);
+			  						reqs.push(SearchPage.searchResults[i]);
 			  					}
 			  				}
 			  				if(SearchPage.searchResults[i].type==='activity diagram'){
-		  						SearchPage.activitydiagrams.push(SearchPage.searchResults[i]);
+		  						acts.push(SearchPage.searchResults[i]);
 			  				}
 			  				if(SearchPage.searchResults[i].type==='analysis class diagram'){
-		  						SearchPage.analysisclassdiagrams.push(SearchPage.searchResults[i]);
+		  						anas.push(SearchPage.searchResults[i]);
 			  				}
 			  				if(SearchPage.searchResults[i].type==='storyboard'){
-		  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
+		  						stospush(SearchPage.searchResults[i]);
 			  				}
 			  				if(SearchPage.searchResults[i].type==='code'){
-		  						SearchPage.sourcecodes.push(SearchPage.searchResults[i]);
+		  						sous.push(SearchPage.searchResults[i]);
 			  				}
-			  				if(SearchPage.searchResults[i].type==='storyboard'){
-		  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
+			  				if(SearchPage.searchResults[i].type==='service'){
+		  						sers.push(SearchPage.searchResults[i]);
 			  				}
 			  					
 			  			}
 			  		}
-			  		SearchPage.scaseservices=SearchPage.searchResults.scaseservices;
+			  	}
 			  		SearchPage.searchResults=[];//we reset the search results
-			  		console.log(SearchPage.requirements);
+			  		$rootScope.requirements=reqs
+			  		$rootScope.analysisclassdiagrams=anas;
+			  		$rootScope.activitydiagrams=acts;
+			  		$rootScope.storyboards=stos;
+			  		$rootScope.sourcecodes=sous;
+			  		$rootScope.scaseservices=sers;
+
 			  	})
 			  	.error(function(status){
 			  		console.log(status);
@@ -303,7 +296,13 @@
 	    this.TransformFreeText = function(){
 	    	var currentQuery = SearchPage.searchQuery;
 	    	var quest = currentQuery.question;
-	    	$http.post('http://109.231.121.226:8010/nlpserver/question', {question: quest}).
+	    	$rootScope.requirements=[]
+	    	$rootScope.activitydiagrams=[]
+	    	$rootScope.analysisclassdiagrams=[]
+	    	$rootScope.storyboards=[]
+	    	$rootScope.sourcecodes=[]
+	    	$rootScope.scaseservices=[]
+	    	$http.post('/QAfree', {question: quest}).
 		   		then(function(response){
 		   			data=response.data;
 		   			query_terms=data.query_terms;
@@ -311,54 +310,74 @@
 		   				query=query_terms[i]+' ';
 		   			}
 		   			$http({
-			   			url: 'http://109.231.121.125:8080/s-case/assetregistry/artefact/search',
+			   			url: '/QAsearch',
 			   			method: "GET",
+			   			headers: {
+							'Content-Type':'application/x-www-form-urlencoded'						
+						},
 			   			params: {
 			   				q: query
 			   			}
 		   			})
 			   		.success(function(data){
-				  		SearchPage.searchResults=data;//we get the data to the searchResults
-				  		//we set every different result to the corresponding global variable
-				  		for(var i=0;i<SearchPage.searchResults.length;i++){
-				  			//check if the project is public or if the user owns or collaborates on it
-				  			if(SearchPage.searchResults[i].artefact.privacyLevel==='PUBLIC'||isOwnerCollab(SearchPage.searchResults[i].artefact.projectName,SearchPage.usersProjects)){
-				  				if(SearchPage.searchResults[i].artefact.type==='TEXTUAL'){
-				  					if(requirementsClass=='Functional'){
-				  						if(SearchPage.searchResults[i].artefact.payload[0].name=='functional'){
-				  							SearchPage.requirements.push(SearchPage.searchResults[i]);
-				  						}
-				  					}
-				  					else if(requirementsClass=='Quality'){
-				  						if(SearchPage.searchResults[i].artefact.payload[0].name=='non-functional'){
-				  							SearchPage.requirements.push(SearchPage.searchResults[i]);
-				  						}
-				  					}
-				  					else if(requirementsClass=='Both'){
-				  						SearchPage.requirements.push(SearchPage.searchResults[i]);
-				  					}
-				  				}
-				  				if(SearchPage.searchResults[i].type==='activity diagram'){
-			  						SearchPage.activitydiagrams.push(SearchPage.searchResults[i]);
-				  				}
-				  				if(SearchPage.searchResults[i].type==='analysis class diagram'){
-			  						SearchPage.analysisclassdiagrams.push(SearchPage.searchResults[i]);
-				  				}
-				  				if(SearchPage.searchResults[i].type==='storyboard'){
-			  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
-				  				}
-				  				if(SearchPage.searchResults[i].type==='code'){
-			  						SearchPage.sourcecodes.push(SearchPage.searchResults[i]);
-				  				}
-				  				if(SearchPage.searchResults[i].type==='storyboard'){
-			  						SearchPage.storyboards.push(SearchPage.searchResults[i]);
-				  				}
-				  					
-				  			}
-				  		}
-				  		SearchPage.scaseservices=SearchPage.searchResults.scaseservices;
-				  		SearchPage.searchResults=[];//we reset the search results
-				  	})
+		   			//console.log(data.body)
+		   			reqs=[]
+		   			acts=[]
+		   			anas=[]
+		   			stos=[]
+		   			sous=[]
+		   			sers=[]
+		   			if(data.body){
+			  		SearchPage.searchResults=JSON.parse(data.body);//we get the data to the searchResults
+			  		//we set every different result to the corresponding global variable
+			  		//console.log(SearchPage.searchResults)
+			  		for(var i=0;i<SearchPage.searchResults.length;i++){
+			  			//check if the project is public or if the user owns or collaborates on it
+			  			//console.log(SearchPage.searchResults[i].artefact);
+			  			if(SearchPage.searchResults[i].artefact.privacyLevel==='PUBLIC'||SearchPage.searchResults[i].artefact.privacyLevel==null){//||isOwnerCollab(SearchPage.searchResults[i].artefact.projectName,SearchPage.usersProjects)){
+			  				if(SearchPage.searchResults[i].artefact.type==='TEXTUAL'){
+			  					if(requirementsClass=='Functional'){
+			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='functional'){
+			  							reqs.push(SearchPage.searchResults[i]);
+			  						}
+			  					}
+			  					else if(requirementsClass=='Quality'){
+			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='non-functional'){
+			  							reqs.push(SearchPage.searchResults[i]);
+			  						}
+			  					}
+			  					else if(requirementsClass=='Both'){
+			  						reqs.push(SearchPage.searchResults[i]);
+			  					}
+			  				}
+			  				if(SearchPage.searchResults[i].type==='activity diagram'){
+		  						acts.push(SearchPage.searchResults[i]);
+			  				}
+			  				if(SearchPage.searchResults[i].type==='analysis class diagram'){
+		  						anas.push(SearchPage.searchResults[i]);
+			  				}
+			  				if(SearchPage.searchResults[i].type==='storyboard'){
+		  						stospush(SearchPage.searchResults[i]);
+			  				}
+			  				if(SearchPage.searchResults[i].type==='code'){
+		  						sous.push(SearchPage.searchResults[i]);
+			  				}
+			  				if(SearchPage.searchResults[i].type==='service'){
+		  						sers.push(SearchPage.searchResults[i]);
+			  				}
+			  					
+			  			}
+			  		}
+			  	}
+			  		SearchPage.searchResults=[];//we reset the search results
+			  		$rootScope.requirements=reqs
+			  		$rootScope.analysisclassdiagrams=anas;
+			  		$rootScope.activitydiagrams=acts;
+			  		$rootScope.storyboards=stos;
+			  		$rootScope.sourcecodes=sous;
+			  		$rootScope.scaseservices=sers;
+
+			  	})
 				  	.error(function(status){
 				  		console.log(status);
 				  	}); 
