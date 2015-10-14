@@ -31,11 +31,25 @@ module.exports = function(app, passport) {
 			'question': quest
 
 		}
-		needle.post('http://nlp.scasefp7.eu:8010/nlpserver/question', {'question':quest}, options, function(err, respon){
-			//console.log(err);
-			console.log(respon.body);
-			res.send(respon.body);
+		request({
+			url: 'http://nlp.scasefp7.eu:8010/nlpserver/question',
+			method: 'POST',
+			json: post_data,
+			headers: headers,
+			//body: JSON.stringify(post_data)
+
+		}, function(error, respon, body){
+			if (respon.statusCode==200 && !error){
+				console.log(body.query_terms);
+				res.send(body.query_terms);
+			}
+			else{
+				res.send('')
+			}
+			//console.log(body);
 		});
+		
+
 	});
 	app.get('/QAsearch', isLoggedIn, function(req,res){
 		//console.log(req.query)

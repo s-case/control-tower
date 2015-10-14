@@ -40,6 +40,7 @@
 	    
 	    //function to perform the search to S-CASE artefacts repo
 	    this.doSearch = function(){
+	    	alert('I am fetching results...')
 	    	//it will contain the current query because inside http "this" refers to http and not to the controller
 	    	var currentQuery = SearchPage.searchQuery;
 	    	var domainString="";
@@ -125,7 +126,8 @@
 			  					
 			  			}
 			  		}
-			  	}
+			  	}	
+			  		alert('...I got the results! Browse the tabs!')
 			  		SearchPage.searchResults=[];//we reset the search results
 			  		$rootScope.requirements=reqs
 			  		$rootScope.analysisclassdiagrams=anas;
@@ -200,6 +202,7 @@
 			  			}
 			  		}
 			  	}
+			  		alert('...I got results! Browse the tabs!')
 			  		SearchPage.searchResults=[];//we reset the search results
 			  		$rootScope.requirements=reqs
 			  		$rootScope.analysisclassdiagrams=anas;
@@ -276,7 +279,8 @@
 			  					
 			  			}
 			  		}
-			  	}
+			  	}	
+			  		alert('...I got results! Browse the tabs!')
 			  		SearchPage.searchResults=[];//we reset the search results
 			  		$rootScope.requirements=reqs
 			  		$rootScope.analysisclassdiagrams=anas;
@@ -294,6 +298,7 @@
 	    };
 
 	    this.TransformFreeText = function(){
+	    	alert('I am fetching results...')
 	    	var currentQuery = SearchPage.searchQuery;
 	    	var quest = currentQuery.question;
 	    	$rootScope.requirements=[]
@@ -304,11 +309,54 @@
 	    	$rootScope.scaseservices=[]
 	    	$http.post('/QAfree', {question: quest}).
 		   		then(function(response){
-		   			data=response.data;
-		   			query_terms=data.query_terms;
+		   			query_terms=response;
+		   			console.log(query_terms);
+		   			query='';
+		   			functional_flag=0
+		   			quality_flag=0
 		   			for(var j=0;j<query_terms.length;j++){
-		   				query=query_terms[i]+' ';
+		   				query=query+query_terms[i]+' ';
 		   			}
+		   			query=query.toLowerCase();
+		   			/*for(var j=0;j<query_terms.length;j++){
+		   				if (query_terms[i].indexOf('requirement')>-1){
+		   					if (((i-1>-1) && (query_terms[i-1]=='functional'))|| ((i+1<query_terms.length) && (query_terms[i+1]=='functional')) ){
+		
+			   						functional_flag=1;
+			   						query=query.replace('requirements','');
+			   						query=query.replace('requirement','');
+			   						query=query.replace('functional','');
+
+		   					}
+		   					if (((i-1>-1) && (query_terms[i-1]=='quality'))|| ((i+1<query_terms.length) && (query_terms[i+1]=='quality')) ){
+		
+			   						quality_flag=1
+			   						query=query.replace('requirements','');
+			   						query=query.replace('requirement','');
+			   						query=query.replace('quality','');
+
+		   					}
+		   					if (((i-1>-1) && (query_terms[i-1]=='non-functional'))|| ((i+1<query_terms.length) && (query_terms[i+1]=='non-functional')) ){
+		
+			   						quality_flag=1
+			   						query=query.replace('requirements','');
+			   						query=query.replace('requirement','');
+			   						query=query.replace('non-functional','');
+
+		   					}
+		   					if (((i-1>-1) && (query_terms[i-1]=='non functional'))|| ((i+1<query_terms.length) && (query_terms[i+1]=='non functional')) ){
+		
+			   						quality_flag=1
+			   						query=query.replace('requirements','');
+			   						query=query.replace('requirement','');
+			   						query=query.replace('non functional','');
+
+		   					}
+		   				}
+		   			}
+		   			console.log(query)
+		   			console.log(quality_flag)
+		   			console.log(functional_flag)*/
 		   			$http({
 			   			url: '/QAsearch',
 			   			method: "GET",
@@ -320,7 +368,8 @@
 			   			}
 		   			})
 			   		.success(function(data){
-		   			//console.log(data.body)
+		   			//console.log(data.body);
+		   			console.log('i am in');
 		   			reqs=[]
 		   			acts=[]
 		   			anas=[]
@@ -336,17 +385,17 @@
 			  			//console.log(SearchPage.searchResults[i].artefact);
 			  			if(SearchPage.searchResults[i].artefact.privacyLevel==='PUBLIC'||SearchPage.searchResults[i].artefact.privacyLevel==null){//||isOwnerCollab(SearchPage.searchResults[i].artefact.projectName,SearchPage.usersProjects)){
 			  				if(SearchPage.searchResults[i].artefact.type==='TEXTUAL'){
-			  					if(requirementsClass=='Functional'){
+			  					if(functional_flag==1 && quality_flag==0){
 			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='functional'){
 			  							reqs.push(SearchPage.searchResults[i]);
 			  						}
 			  					}
-			  					else if(requirementsClass=='Quality'){
+			  					else if(quality_flag==1 && functional_flag==0){
 			  						if(SearchPage.searchResults[i].artefact.payload[0].name=='non-functional'){
 			  							reqs.push(SearchPage.searchResults[i]);
 			  						}
 			  					}
-			  					else if(requirementsClass=='Both'){
+			  					else {
 			  						reqs.push(SearchPage.searchResults[i]);
 			  					}
 			  				}
@@ -376,6 +425,7 @@
 			  		$rootScope.storyboards=stos;
 			  		$rootScope.sourcecodes=sous;
 			  		$rootScope.scaseservices=sers;
+			  		alert('...I got results! Browse the tabs!')
 
 			  	})
 				  	.error(function(status){
