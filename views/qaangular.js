@@ -40,7 +40,7 @@
 	    
 	    //function to perform the search to S-CASE artefacts repo
 	    this.doSearch = function(){
-	    	alert('I am fetching results...')
+	    	alert('I am fetching results...Please close the window to get results!')
 	    	//it will contain the current query because inside http "this" refers to http and not to the controller
 	    	var currentQuery = SearchPage.searchQuery;
 	    	var domainString="";
@@ -298,7 +298,7 @@
 	    };
 
 	    this.TransformFreeText = function(){
-	    	alert('I am fetching results...')
+	    	alert('I am fetching results...please close the window to get results!')
 	    	var currentQuery = SearchPage.searchQuery;
 	    	var quest = currentQuery.question;
 	    	$rootScope.requirements=[]
@@ -310,7 +310,7 @@
 	    	$http.post('/QAfree', {question: quest}).
 		   		then(function(response){
 		   			query_terms=response;
-		   			console.log(query_terms);
+		   			//console.log(query_terms);
 		   			query='';
 		   			functional_flag=0
 		   			quality_flag=0
