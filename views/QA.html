@@ -40,6 +40,9 @@
 			<div class="panel panel-info">
 		  		<div class="panel-heading"><h2 class="panel-title">Search</h2></div>
 			  	<div class="panel-body" ng-controller="SearchController as searchCtrl"><!--Controller for the search options-->
+
+			  		<div class="alert alert-info" role="alert" ng-show="loadMessage && !resMessage"> Submitted your query </div>
+			  		<div class="alert alert-success" role="alert" ng-show="resMessage"> Got the results </div>
 			        <form name="queryForm" ng-controller="SearchModeTabController as searchModeTab"><!--controller for the simple or advanced search tabs-->
 				        <ul class="nav nav-tabs"><!--the tabs of search modes-->
 				        	<li ng-class="{active: searchModeTab.isSet(1)}">

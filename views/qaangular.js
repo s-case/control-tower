@@ -11,7 +11,8 @@
     //https://developers.google.com/adwords/api/docs/appendix/verticals
     //Domains with no parent are the domains in our case (var parentDomains below)
     //Domains with parents the domains with no parent are the subdomains in our case (var subdomains below)
-    
+    loadMessage=false;
+	resMessage=false;
   	//controloller to perform the search to the S-CASE artefacts repo
   	app.controller('SearchController',['$http','$rootScope',function($http,$rootScope){
   		var SearchPage  = this;//we set this to a variable in order to use it in http
@@ -40,7 +41,9 @@
 	    
 	    //function to perform the search to S-CASE artefacts repo
 	    this.doSearch = function(){
-	    	alert('I am fetching results...Please close the window to get results!')
+	    	//alert('I am fetching results...Please close the window to get results!')
+	    	$rootScope.loadMessage=true;
+	    	console.log($rootScope.loadMessage)
 	    	//it will contain the current query because inside http "this" refers to http and not to the controller
 	    	var currentQuery = SearchPage.searchQuery;
 	    	var domainString="";
@@ -126,6 +129,7 @@
 			  					
 			  			}
 			  		}
+			  		$rootScope.resMessage=true;
 			  	}	
 			  		alert('...I got the results! Browse the tabs!')
 			  		SearchPage.searchResults=[];//we reset the search results
@@ -201,8 +205,9 @@
 			  					
 			  			}
 			  		}
+			  		$rootScope.resMessage=true;
 			  	}
-			  		alert('...I got results! Browse the tabs!')
+			  		//alert('...I got results! Browse the tabs!')
 			  		SearchPage.searchResults=[];//we reset the search results
 			  		$rootScope.requirements=reqs
 			  		$rootScope.analysisclassdiagrams=anas;
@@ -279,8 +284,9 @@
 			  					
 			  			}
 			  		}
+			  		$rootScope.resMessage=true;
 			  	}	
-			  		alert('...I got results! Browse the tabs!')
+			  		//alert('...I got results! Browse the tabs!')
 			  		SearchPage.searchResults=[];//we reset the search results
 			  		$rootScope.requirements=reqs
 			  		$rootScope.analysisclassdiagrams=anas;
@@ -298,7 +304,9 @@
 	    };
 
 	    this.TransformFreeText = function(){
-	    	alert('I am fetching results...please close the window to get results!')
+	    	//alert('I am fetching results...please close the window to get results!')
+	    	$rootScope.loadMessage=true;
+	    	//console.log($rootScope.loadMessage)
 	    	var currentQuery = SearchPage.searchQuery;
 	    	var quest = currentQuery.question;
 	    	$rootScope.requirements=[]
@@ -369,7 +377,7 @@
 		   			})
 			   		.success(function(data){
 		   			//console.log(data.body);
-		   			console.log('i am in');
+		   			//console.log('i am in');
 		   			reqs=[]
 		   			acts=[]
 		   			anas=[]
@@ -417,6 +425,7 @@
 			  					
 			  			}
 			  		}
+			  		$rootScope.resMessage=true;
 			  	}
 			  		SearchPage.searchResults=[];//we reset the search results
 			  		$rootScope.requirements=reqs
@@ -425,7 +434,8 @@
 			  		$rootScope.storyboards=stos;
 			  		$rootScope.sourcecodes=sous;
 			  		$rootScope.scaseservices=sers;
-			  		alert('...I got results! Browse the tabs!')
+			  		//alert('...I got results! Browse the tabs!')
+			  		
 
 			  	})
 				  	.error(function(status){
@@ -438,6 +448,7 @@
 
 
 	    }
+	    
 	    this.parentFilter = function(item){
 	  		if (item.Parent==="0"){
 	  			console.log(item)
@@ -464,6 +475,7 @@
 	  	this.setDomain=function(domainSet){
 	  		SearchPage.searchQuery.domainQuery = domainSet;
 	  	}
+
 
 	  	this.checkIfsubdomainActiveFilter = function(item){
 	  		if(SearchPage.searchQuery.domainQuery!=undefined&&SearchPage.searchQuery.domainQuery!='undefined'){
@@ -511,17 +523,22 @@
   	});
   	
 	//controller to set the default tab value and to check if it is active
-  	app.controller('TabController',function(){
+  	app.controller('TabController',['$rootScope',function($rootScope){
 	    this.tab=1;//default tab to be active
+
 	    //set the tab active on click
 	    this.setTab = function(setTab){
 	      this.tab=setTab;
+	      if (setTab==1){
+	      	$rootScope.resMessage=false;
+    		$rootScope.loadMessage=false;
+	      }
 	    };
 	    //returns true/false checking if the tab is active
 	    this.isSet = function(checkTab){
 	      return this.tab===checkTab;
 	    };
-  	});
+  	}]);
 
   	//controller to set the default tab value and to check if it is active
   	app.controller('SearchModeTabController',function(){
