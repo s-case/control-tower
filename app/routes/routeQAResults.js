@@ -40,10 +40,11 @@ module.exports = function(app, passport) {
 
 		}, function(error, respon, body){
 			if (respon.statusCode==200 && !error){
-				//console.log(body.query_terms);
+				console.log(body.query_terms);
 				res.send(body.query_terms);
 			}
 			else{
+				console.log(respon.statusCode)
 				res.send('')
 			}
 			//console.log(body);

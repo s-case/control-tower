@@ -317,13 +317,14 @@
 	    	$rootScope.scaseservices=[]
 	    	$http.post('/QAfree', {question: quest}).
 		   		then(function(response){
-		   			query_terms=response;
-		   			//console.log(query_terms);
-		   			query='';
+		   			var query_terms=response.data;
+		   			console.log('i am in')
+		   			console.log(query_terms);
+		   			var query='';
 		   			functional_flag=0
 		   			quality_flag=0
 		   			for(var j=0;j<query_terms.length;j++){
-		   				query=query+query_terms[i]+' ';
+		   				query=query+query_terms[j]+' ';
 		   			}
 		   			query=query.toLowerCase();
 		   			/*for(var j=0;j<query_terms.length;j++){
@@ -365,6 +366,7 @@
 		   			console.log(query)
 		   			console.log(quality_flag)
 		   			console.log(functional_flag)*/
+		   			console.log(query)
 		   			$http({
 			   			url: '/QAsearch',
 			   			method: "GET",
