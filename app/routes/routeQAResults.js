@@ -58,19 +58,19 @@ module.exports = function(app, passport) {
 		domain=req.query.domain;
 		subdomain=req.query.subdomain;
 		if (domain!=undefined && subdomain!=undefined){
-			request.get('http://109.231.121.125:8080/s-case/assetregistry/artefact/search?q='+q+'&subdomain='+subdomain+'&domain='+domain,{timeout:15000},function(err,respon){
+			request.get('http://109.231.121.125:8080/s-case/assetregistry/artefact/search?query='+q+'&subdomain='+subdomain+'&domain='+domain,{timeout:15000},function(err,respon){
 				//console.log('skata');
 				res.send(respon);
 			});
 		}
 		else if (subdomain!=undefined){
-			request.get('http://109.231.121.125:8080/s-case/assetregistry/artefact/search?q='+q+'&domain='+domain,{timeout:15000},function(err,respon){
+			request.get('http://109.231.121.125:8080/s-case/assetregistry/artefact/search?query='+q+'&domain='+domain,{timeout:15000},function(err,respon){
 				//console.log('skata2');
 				res.send(respon);
 			});
 		}
 		else{
-			request.get('http://109.231.121.125:8080/s-case/assetregistry/artefact/search?q='+q,{timeout:15000},function(err,respon){
+			request.get('http://109.231.121.125:8080/s-case/assetregistry/artefact/search?query='+q,{timeout:15000},function(err,respon){
 				//console.log('skata3');
 				res.send(respon);
 			});

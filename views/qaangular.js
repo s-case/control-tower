@@ -232,7 +232,7 @@
 						'Content-Type':'application/x-www-form-urlencoded'						
 					},
 					params: {
-		   				query: query
+		   				q: query
 		   			}
 	   			})
 		   		.success(function(data){
@@ -374,7 +374,7 @@
 							'Content-Type':'application/x-www-form-urlencoded'						
 						},
 			   			params: {
-			   				query: query
+			   				q: query
 			   			}
 		   			})
 			   		.success(function(data){
