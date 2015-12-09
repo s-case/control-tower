@@ -69,6 +69,7 @@
 	    	$rootScope.storyboards=[]
 	    	$rootScope.sourcecodes=[]
 	    	$rootScope.scaseservices=[]
+			$rootScope.osrfsnippets=[];
 	    	if(domainString!="All"&&subdomainString!="All"){
 	    		query = operations.replace(/,/g, '')
 	    		$http({
@@ -81,6 +82,12 @@
 		   			}
 	   			})
 		   		.success(function(data){
+		   			// Now I will explain the two following lines of code since they are a little misleading..
+		   			// The query used to return a single object named "data" containing the QA results
+		   			// Now the data contains two objects "QA" and "OSRF" containing the QA and OSRF results respectively.
+		   			// So, I set the variable "osrfdata" to have the OSRF results and the variable "data" to have the QA results.
+		   			var osrfdata = data.OSRF;
+		   			var data = data.QA;
 		   			//console.log(data.body)
 		   			reqs=[]
 		   			acts=[]
@@ -88,6 +95,7 @@
 		   			stos=[]
 		   			sous=[]
 		   			sers=[]
+		   			snippets = []
 		   			if (data.body){
 			  		SearchPage.searchResults=JSON.parse(data.body);//we get the data to the searchResults
 			  		//we set every different result to the corresponding global variable
@@ -131,7 +139,16 @@
 			  		}
 			  		$rootScope.resMessage=true;
 			  	}	
-			  		alert('...I got the results! Browse the tabs!')
+			  	if (osrfdata.body){
+			  		var OSRFSearchResults=JSON.parse(osrfdata.body);//we get the data to the searchResults
+			  		OSRFSearchResults = OSRFSearchResults.result;
+			  		for(var i=0;i<OSRFSearchResults.length;i++){
+			  			snippets.push(OSRFSearchResults[i]);
+			  		}
+			  	}
+
+
+			  		// alert('...I got the results! Browse the tabs!')
 			  		SearchPage.searchResults=[];//we reset the search results
 			  		$rootScope.requirements=reqs
 			  		$rootScope.analysisclassdiagrams=anas;
@@ -139,6 +156,7 @@
 			  		$rootScope.storyboards=stos;
 			  		$rootScope.sourcecodes=sous;
 			  		$rootScope.scaseservices=sers;
+			  		$rootScope.osrfsnippets=snippets;
 
 			  	})
 			  	.error(function(status){
@@ -157,6 +175,12 @@
 		   			}
 	   			})
 		   		.success(function(data){
+		   			// Now I will explain the two following lines of code since they are a little misleading..
+		   			// The query used to return a single object named "data" containing the QA results
+		   			// Now the data contains two objects "QA" and "OSRF" containing the QA and OSRF results respectively.
+		   			// So, I set the variable "osrfdata" to have the OSRF results and the variable "data" to have the QA results.
+		   			var osrfdata = data.OSRF;
+		   			var data = data.QA;
 		   			//console.log(data.body)
 		   			reqs=[]
 		   			acts=[]
@@ -164,6 +188,7 @@
 		   			stos=[]
 		   			sous=[]
 		   			sers=[]
+		   			snippets = []
 		   			if (data.body){
 			  		SearchPage.searchResults=JSON.parse(data.body);//we get the data to the searchResults
 			  		//we set every different result to the corresponding global variable
@@ -207,6 +232,15 @@
 			  		}
 			  		$rootScope.resMessage=true;
 			  	}
+
+			  	if (osrfdata.body){
+			  		var OSRFSearchResults=JSON.parse(osrfdata.body);//we get the data to the searchResults
+			  		OSRFSearchResults = OSRFSearchResults.result;
+			  		for(var i=0;i<OSRFSearchResults.length;i++){
+			  			snippets.push(OSRFSearchResults[i]);
+			  		}
+			  	}
+
 			  		//alert('...I got results! Browse the tabs!')
 			  		SearchPage.searchResults=[];//we reset the search results
 			  		$rootScope.requirements=reqs
@@ -215,6 +249,7 @@
 			  		$rootScope.storyboards=stos;
 			  		$rootScope.sourcecodes=sous;
 			  		$rootScope.scaseservices=sers;
+			  		$rootScope.osrfsnippets=snippets;
 
 			  	})
 			  	
@@ -236,13 +271,21 @@
 		   			}
 	   			})
 		   		.success(function(data){
-		   			//console.log(data.body)
+		   			//console.log(data);
+		   			// Now I will explain the two following lines of code since they are a little misleading..
+		   			// The query used to return a single object named "data" containing the QA results
+		   			// Now the data contains two objects "QA" and "OSRF" containing the QA and OSRF results respectively.
+		   			// So, I set the variable "osrfdata" to have the OSRF results and the variable "data" to have the QA results.
+		   			var osrfdata = data.OSRF;
+		   			var data = data.QA;
+		   			//
 		   			reqs=[]
 		   			acts=[]
 		   			anas=[]
 		   			stos=[]
 		   			sous=[]
 		   			sers=[]
+		   			snippets = []
 		   			if(data.body){
 			  		SearchPage.searchResults=JSON.parse(data.body);//we get the data to the searchResults
 			  		//we set every different result to the corresponding global variable
@@ -285,7 +328,15 @@
 			  			}
 			  		}
 			  		$rootScope.resMessage=true;
-			  	}	
+			  	}
+			  	if (osrfdata.body){
+			  		var OSRFSearchResults=JSON.parse(osrfdata.body);//we get the data to the searchResults
+			  		OSRFSearchResults = OSRFSearchResults.result;
+			  		for(var i=0;i<OSRFSearchResults.length;i++){
+			  			snippets.push(OSRFSearchResults[i]);
+			  		}
+			  	}
+			  		
 			  		//alert('...I got results! Browse the tabs!')
 			  		SearchPage.searchResults=[];//we reset the search results
 			  		$rootScope.requirements=reqs
@@ -294,6 +345,7 @@
 			  		$rootScope.storyboards=stos;
 			  		$rootScope.sourcecodes=sous;
 			  		$rootScope.scaseservices=sers;
+			  		$rootScope.osrfsnippets=snippets;
 
 			  	})
 			  	.error(function(status){
@@ -315,6 +367,7 @@
 	    	$rootScope.storyboards=[]
 	    	$rootScope.sourcecodes=[]
 	    	$rootScope.scaseservices=[]
+	    	$rootScope.osrfsnippets=[]
 	    	$http.post('/QAfree', {question: quest}).
 		   		then(function(response){
 		   			var query_terms=response.data;
@@ -378,6 +431,13 @@
 			   			}
 		   			})
 			   		.success(function(data){
+		   			//console.log(data);
+		   			// Now I will explain the two following lines of code since they are a little misleading..
+		   			// The query used to return a single object named "data" containing the QA results
+		   			// Now the data contains two objects "QA" and "OSRF" containing the QA and OSRF results respectively.
+		   			// So, I set the variable "osrfdata" to have the OSRF results and the variable "data" to have the QA results.
+		   			var osrfdata = data.OSRF;
+		   			var data = data.QA;
 		   			//console.log(data.body);
 		   			//console.log('i am in');
 		   			reqs=[]
@@ -386,6 +446,7 @@
 		   			stos=[]
 		   			sous=[]
 		   			sers=[]
+		   			snippets=[]
 		   			if(data.body){
 			  		SearchPage.searchResults=JSON.parse(data.body);//we get the data to the searchResults
 			  		//we set every different result to the corresponding global variable
@@ -429,6 +490,15 @@
 			  		}
 			  		$rootScope.resMessage=true;
 			  	}
+
+			  	if (osrfdata.body){
+			  		var OSRFSearchResults=JSON.parse(osrfdata.body);//we get the data to the searchResults
+			  		OSRFSearchResults = OSRFSearchResults.result;
+			  		for(var i=0;i<OSRFSearchResults.length;i++){
+			  			snippets.push(OSRFSearchResults[i]);
+			  		}
+			  	}
+
 			  		SearchPage.searchResults=[];//we reset the search results
 			  		$rootScope.requirements=reqs
 			  		$rootScope.analysisclassdiagrams=anas;
@@ -436,6 +506,7 @@
 			  		$rootScope.storyboards=stos;
 			  		$rootScope.sourcecodes=sous;
 			  		$rootScope.scaseservices=sers;
+			  		$rootScope.osrfsnippets=snippets;
 			  		//alert('...I got results! Browse the tabs!')
 			  		
 

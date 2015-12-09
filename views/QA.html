@@ -34,6 +34,9 @@
             <li ng-class="{active: tab.isSet(8)}">
 	            <a href ng-click="tab.setTab(8)">S-CASE services</a>
             </li>
+            <li ng-class="{active: tab.isSet(9)}">
+	            <a href ng-click="tab.setTab(9)">OSRF snippets</a>
+            </li>
         </ul>
         <!-- tab of search -->
         <div ng-show="tab.isSet(1)">
@@ -539,6 +542,26 @@
 					<!--hardcode-->
 			  	</div>
 			</div> 
+			
+		<!-- OSRF Snippets -->
+        <div ng-show="tab.isSet(9)">
+			<div class="panel panel-info">
+		  		<div class="panel-heading">OSRF Snippets</div>
+			  	<div class="panel-body" ng-controller="SearchController">
+				  	<ul class="list-group" ng-repeat="snip in osrfsnippets">
+				  	  	<li class="list-group-item">Class Name: {{snip.className}}</li>
+					  	<li class="list-group-item">Source: {{snip.forge}} </li>
+					  	<li class="list-group-item">Belongs to Project: {{snip.projectName}}</li>
+						<li class="list-group-item">Link: <a ng-href="{{snip.url}}" target="_blank">{{snip.url}}</a></li>
+					  	<li class="list-group-item">Code: {{snip.sourceCode}}</li>
+						<li class="list-group-item">score: {{snip.similarityScore}}</li>
+					</ul>
+			  	</div>
+		  	</div>
+      	</div>
+			
+			
+			
         </div>
 
         
