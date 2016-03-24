@@ -67,7 +67,7 @@
       this.init = function(){
         var currentProjectName = window.projectCurrent;   
         $http({
-          url: 'http://scouter.ee.auth.gr:3000/getDomainSubdomain',
+          url: 'http://109.231.126.133:3000/getDomainSubdomain',
           method: "GET",
           params: {
             project_name: currentProjectName
@@ -90,7 +90,7 @@
         var currentProjectName = window.projectCurrent;
         ProjectPage.DomainSubdomainSelectSuccess=0; //flag to be used for the success or failure of the domain and subdomain set  
         $http({
-          url: 'http://scouter.ee.auth.gr:3000/changeDomainSubdomain',
+          url: 'http://109.231.126.133:3000/changeDomainSubdomain',
           method: "GET",
           params: {
             domain: currentDomain,
