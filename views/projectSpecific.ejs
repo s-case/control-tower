@@ -1,245 +1,257 @@
-<!doctype html>
+<!DOCTYPE html>
 <html ng-app="domainApp">
-<% include header %>
-<% include navbar %>
-<body>
-<!-- we define a variable projectCurrent to contain the projectname -->
-<% var projName = projectname %>
-<script> projectCurrent = "<%=projName%>";</script>
-<div class="container">
-	<div class="row">
-		<div class="col-sm-8 col-sm-offset-2">
-			<div class="well well-lg">
-				<!-- check if the user is an owner of this project-->
-				<% var ownerflag %>
-				<% for (var i in ownersnames) { %>
-						<% if (ownersnames[i].github_name||ownersnames[i].google_email) {
-								 if ((ownersnames[i].github_name==username&&username!=null)||(ownersnames[i].google_email==user.google_email&&user.google_email!=null)) { 
-												ownerflag=true;
-								} 
-							}%>
-				<% } %>
-				<!--if the project is private we set the panel to panel-danger (red)-->
-				<% if (privacylevel=='PRIVATE') { %>
-					<div class="panel panel-danger">
-				<%}%> 
-				<!--if the project is public we set the panel to panel-success (green)-->
-				<% if (privacylevel=='PUBLIC') { %>
-					<div class="panel panel-success">
-				<%}%> 
+    <% include header %>
+    <body id="manage-project">
 
-				<div class="panel-heading">
-					<!--if the project is private we set the title to Private Project [Project Name]-->
-				    <% if (privacylevel=='PRIVATE') { %> 
-				  	<h1 class="panel-title"><i class="fa fa-user-secret">Private Project: <%=projectname%></i></h1>
-					<!--if the project is public we set the title to Public Project [Project Name]-->
-				  	<% } if (privacylevel=='PUBLIC') { %> 
-				    <h1 class="panel-title"><i class="fa fa-cloud">Public Project: <%=projectname%></i></h1>
-				    <% } %>	
-			  	</div>
-				  	<div class="panel-body" ng-controller="domainController as domainCtrl" ng-init="domainCtrl.init()"><!--we initialize the controller to get the already set domain and subdomain-->
-				  		<!--if the user is owner-->
-						<% if (ownerflag) { %>
-							<!-- Privacy button to  change the project to either private or public-->
-							<div class="btn-group">
-							  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-							    Privacy Level: <%= privacylevel %> <span class="caret"></span>
-							  </button>
-							  <ul class="dropdown-menu" role="menu" col-sm-12>
-							  	<!--we create to different urls depending if we would like to set the privacy to private or public-->
-							  	<% var privateProjectUrl="/changePrivacy?privacy_level=PRIVATE&project_name="+projectname%>
-							  	<% var publicProjectUrl="/changePrivacy?privacy_level=PUBLIC&project_name="+projectname%>
-							  	<% if (privacylevel=='PRIVATE') { %> 
-							  	<li><a href=<%=publicProjectUrl%>>PUBLIC</a></li>
-							  	<% } if (privacylevel=='PUBLIC') { %> 
-							    <li><a href=<%=privateProjectUrl%>>PRIVATE</a></li>
-							    <% } %>							    
-							  </ul>
-							</div>
-							<!-- domain select -->
-							<h4>Domain</h4>
-							<!--we present all the domains using ui-select of Angularjs https://github.com/angular-ui/ui-select-->
-							<ui-select ng-model="domainCtrl.projectDetails.domainset" theme="bootstrap" ng-disabled="disabled" style="min-width: 300px;" ng-change="domainCtrl.subdomainJSON(domainCtrl.projectDetails.domainset)"><!--on the change we get the new subdomains according to the domain selected-->
-						    	<ui-select-match placeholder="Select domain for the list or search for a domain...">{{$select.selected.Category}}</ui-select-match>
-							    <ui-select-choices repeat="domain in domainCtrl.domains | filter: $select.search">
-						      	<div ng-bind-html="domain.Category | highlight: $select.search "></div>
-							    </ui-select-choices>
-			  				</ui-select>
-			  				<!--subdomain select-->
-			  				<h4>SubDomain</h4>
-			  				<ui-select ng-model="domainCtrl.projectDetails.subdomainset" theme="bootstrap" ng-disabled="domainCtrl.subdomainsDisabled()" ng-change="domainCtrl.DomainSubdomainSelectSuccess=0" style="min-width: 300px;">
-							    <ui-select-match placeholder="Select subdomain for the list or search for a subdomain...">{{$select.selected.Category}}</ui-select-match>
-							    <!--we create a variable for the current subdomain-->
-							    <% var subDomain = subdomain_set %>
-		            	    	<script> subdomainCurrent = "<%=subDomain%>";</script>
-		            	    	<!-- ============================= -->
-							    <ui-select-choices repeat="subdomain in domainCtrl.subdomains | filter: $select.search" value=window.subdomainCurrent><!--we set the default value to the current subdomain-->
-						      	<div ng-bind-html="subdomain.Category | highlight: $select.search "></div>
-							    </ui-select-choices>
-						  	</ui-select>
-						  	<!--button to submit the domain and subdomain selection-->
-						  	<p></p>
-						  	<div class="btn-group">
-							  	<div>
-				            	    <fieldset class="form-group">
-				        			    <input type="submit" class="btn btn-primary pull-right" ng-click="domainCtrl.setDomainSubdomain(domainCtrl.projectDetails.domainset.Category,domainCtrl.projectDetails.subdomainset.Category)" value="Submit Domain (SubDomains) selection(s)" />
-				      			    </fieldset>
-				      			</div>
-							</div>
-							<!-- Message for successful submission of domains and subdomains -->
-							<div ng-if="domainCtrl.DomainSubdomainSelectSuccess==1" class="alert alert-success" role="alert">Domain and subdomain selection submitted successfully!</div>
-							<!-- Message for unsuccessful submission of domains and subdomains -->
-							<div ng-if="domainCtrl.DomainSubdomainSelectSuccess==2" class="alert alert-danger" role="alert">Domain and subdomain selection failed to be submitted!</div>
-						<% } %>
-							
-			  		</div>
-				</div>
-				
-				
-				<!-- panel which will include the table with the owners-->
-				<div class="panel panel-default">
-					<!-- panel's heading that includes a form to add an owner if you are owner of the project-->
-				  	<div class="panel-heading">
-				  		<h3><span class="fa fa-users"></span>Owners</h3>
-				  		<!-- if the user is an owner a form to add an owner will be displayed -->
-					  	<% if (ownerflag) { %>
-					  		<div class="alert alert-danger" role="alert">if every owner is removed, the project is deleted!</div>
-							<p><form action="/addOwner" method="post"> 
-								<fieldset>
-									<label for="name"></label>
-									<input type="hidden" id="project_name" name="project_name" value=<%= projectname%>>
-									<input type="text" id="name" name="name" size="50" placeholder="Enter the Owner's Github name or Google e-mail Account"/>
-									<button type="submit" class="btn btn-success">Add Owner</button>
-		        				</fieldset>
-		    				</form>
-		    				</p>
-						<% } %>
-					</div>
-				  <!-- Table of Owners-->
-				  <table class="table">
-				  	<!-- heading of the table-->
-				   	<thead>
-			          <tr>
-			            <th style="width:10px">#</th>
-			            <th style="width:130px">Github Username</th>
-			            <th style="width:160px">Google e-mail</th>
-			            <th style="width:160px"></th>
-			          </tr>
-			        </thead>
-			        <tbody>
-						<% for (var i in ownersnames) { %>
-							<tr>
-								<td style="width:10px"><%= i%></td>
-								<td style="width:130px"><%=ownersnames[i].github_name%></td>
-								<td style="width:160px"><%=ownersnames[i].google_email%></td>
-								<!-- find if the current username attempting to display is the active user-->
-								<% var myOwnflag = false;%>
-								<% if (ownersnames[i].github_name||ownersnames[i].google_email) {
-									 if ((ownersnames[i].github_name==username&&username!=null)||(ownersnames[i].google_email==user.google_email&&user.google_email!=null)) { 
-													myOwnflag=true;
-									} 
-								}%>
-								<!-- display the "remove owner" option if only if the user is an owner of the project-->
-								<% if (ownerflag==true) { %>
-									<!-- next to the user's name is going to have a button "Remove Myself" -->
-									<% if (myOwnflag==true) { %>
-										<% var removeOwnerurl="/removeOwner?owner_id="+ ownersnames[i].owner_id+"&project_name="+projectname+"&project_id="+ownersnames[i].project_id%>
-										<td style="width:160px"><a href=<%= removeOwnerurl %> class="btn btn-warning btn-sm"><span class="fa fa-times"></span> Remove Myself</a></td>
-									<% } %>
-									<!-- next to the other users' name is going to have a button "Remove <Username>" -->
-									<% if (myOwnflag==false) { %>
-										<% var removeOwnerurl="/removeOwner?owner_id="+ ownersnames[i].owner_id+"&project_name="+projectname+"&project_id="+ownersnames[i].project_id%>
-
-										<% if (ownersnames[i].google_email!='undefined') { %>
-											<td style="width:160px"><a href=<%= removeOwnerurl %> class="btn btn-warning btn-sm"><span class="fa fa-times"></span> Remove <%= ownersnames[i].google_email%></a></td>
-										<% } %>
-
-										<% if (!ownersnames[i].google_email=='undefined'&&ownersnames[i].github_name) { %>
-											<td style="width:160px"><a href=<%= removeOwnerurl %> class="btn btn-warning btn-sm"><span class="fa fa-times"></span> Remove <%= ownersnames[i].github_name%></a></td>
-										<% } %>
-									<% } %>
-								<% } %>
-							</tr>	
-						<% } %>
-					 </tbody>
-				  </table>
-				</div>
-				<div class="panel panel-default">
-				  	<div class="panel-heading">
-				  		<h3><span class="fa fa-users"></span> Collaborators</h3>
-				  		<!--form to add a collaborator (displayed only if the user is an owner of the project)-->
-					  	<% if (ownerflag) { %>
-							<p>
-								<form action="/addCollaborator" method="post"> 
-								<fieldset>
-									<label for="name"></label>
-									<input type="hidden" id="project_name" name="project_name" value=<%= projectname%>>
-									<input type="text" id="name" name="name" size="60" placeholder="Enter the Collaborator's Github name or Google e-mail Account"/>
-									<button type="submit" class="btn btn-success">Add Collaborator</button>
-		        				</fieldset>
-	    						</form>
-		    				</p>
-						<% } %>
-					</div>
-				  	<!-- Table of Collaborators-->
-				  	<table class="table">
-					   	<thead>
-				          <tr>
-				            <th style="width:10px">#</th>
-				            <th style="width:130px">Github username</th>
-				            <th style="width:160px">Google email</th>
-				            <th style="width:160px"></th>
-				          </tr>
-				        </thead>
-				        <tbody>
-							<% for (var i in collaboratorsnames) { %>
-								<tr>
-									<td style="width:10px"><%= i%></td>
-									<td style="width:130px"><%=collaboratorsnames[i].github_name%></td>
-									<td style="width:160px"><%=collaboratorsnames[i].google_email%></td>
-									<% var myCollabflag = false;%>
-									<% if (collaboratorsnames[i].github_name||collaboratorsnames[i].google_email) {
-									 	if ((collaboratorsnames[i].github_name==username&&username!=null)||(collaboratorsnames[i].google_email==user.google_email&&user.google_email!=null)) { 
-													myCollabflag=true;
-										} 
-									}%>
-									<!-- If i am a collaborator, then display the option to remove myself-->
-									<% if (myCollabflag==true) { %>
-										<% var removeCollaburl="/removeCollab?collab_id="+ collaboratorsnames[i].collab_id+"&project_name="+projectname%>
-										<td style="width:160px"><a href=<%= removeCollaburl %> class="btn btn-warning btn-sm"><span class="fa fa-times"></span> Remove Myself</a></td>
-									<% } %>
-									<!-- if the user is an owner, display the option to remove collaborators-->
-									<% if (ownerflag) { %>
-										<% var removeCollaburl="/removeCollab?collab_id="+ collaboratorsnames[i].collab_id+"&project_name="+projectname%>
-
-										<% if (collaboratorsnames[i].google_email!='undefined') { %>
-											<td style="width:160px"><a href=<%= removeCollaburl %> class="btn btn-warning btn-sm"><span class="fa fa-times"></span> Remove <%= collaboratorsnames[i].google_email%></a></td>
-										<% } %>
-
-										<% if (collaboratorsnames[i].google_email=='undefined'&&collaboratorsnames[i].github_name) { %>
-											<td style="width:160px"><a href=<%= removeCollaburl %> class="btn btn-warning btn-sm"><span class="fa fa-times"></span> Remove <%= collaboratorsnames[i].github_name%></a></td>
-										<% } %>
-										
-									<% } %>
-								</tr>	
-							<% } %>
-					 	</tbody>
-				  	</table>
-				</div>
-				<!-- if the user is an owner display the option to delete the project-->
+	<!-- We define a variable projectCurrent to contain the projectname -->
+	<% var projName = projectname %>
+	<script> projectCurrent = "<%=projName%>";</script>
+        
+	<!-- Begin Header -->
+	<header id="header">
+	    <% include navbar %>
+	</header>
+	<!-- End Header -->
+	<!-- Begin Main Content -->
+	<div class="content" id="main-content">
+	    <div class="container section">
+		<!-- Check if the user is an owner of this project-->
+		<% var ownerflag %>
+		<% for (var i in ownersnames) { %>
+		<% if (ownersnames[i].github_name || ownersnames[i].google_email) {
+		    if ((ownersnames[i].github_name == username && username != null) || (ownersnames[i].google_email == user.google_email && user.google_email != null)) { 
+			ownerflag=true;
+		    } 
+		}%>
+		<% } %>
+		<div class="row">
+		    <div class="col-md-10 col-md-offset-1 section-title">
+			<h1 class="no-margin">
+			    <%= projectname %> 
+			    <!-- If the project is private we set the label to private -->
+			    <% if (privacylevel == 'PRIVATE') { %>
+				<span class="private">private</span>
+			    <% } %> 
+			    <!-- If the project is public we set the label to public -->
+			    <% if (privacylevel == 'PUBLIC') { %>
+				<span class="public">public</span>
+			    <% } %>
+			</h1>
+		    </div>
+                </div>
+		<div class="row">
+		    <div class="col-md-10 col-md-offset-1 section-body clearfix">
+			<div class="panel panel-default">
+            		    <div class="panel-heading">
+            			 <h4>Project's Details</h4>		
+            		    </div>
+			    <!-- We initialize the controller to get the already set domain and subdomain -->
+			    <div class="panel-body ng-scope" ng-controller="domainController as domainCtrl" ng-init="domainCtrl.init()">
+				<!-- If the user is owner-->
 				<% if (ownerflag) { %>
-					<% var deleteurl="/deleteprojects?project_name="+ projectname%>
-					<br><p> <a href=<%= deleteurl %> class="btn btn-danger btn-lg"><span class="fa fa-times"></span> Delete <%= projectname%></a><br></p>
-				<% } %>
-			</div>
-		</div>
-	</div>
-	<div class="text-center">
-		<p>For more info about S-CASE visit: <a href="http://www.scasefp7.eu">http://www.scasefp7.eu</a>.</p>
-		<p> <a href="http://www.scasefp7.eu/news-blog/">S-CASE blog</a>.</p>
-	</div>
+				<!-- Privacy button to  change the project to either private or public-->
+    				<h5>Privacy Level</h5>
+    				<div class="btn-group">
+    				    <button type="button" class="btn btn-default dropdown-toggle no-margin" data-toggle="dropdown" aria-expanded="false"><%= privacylevel %> <span class="caret"></span></button>
+    				    <ul class="dropdown-menu" role="menu">
+    					<!-- We create to different urls depending if we would like to set the privacy to private or public-->
+					<% var privateProjectUrl="/changePrivacy?privacy_level=PRIVATE&project_name=" + projectname %>
+					<% var publicProjectUrl="/changePrivacy?privacy_level=PUBLIC&project_name=" + projectname %>
+					<% if (privacylevel == 'PRIVATE') { %> 
+					<li><a href=<%=publicProjectUrl%>>PUBLIC</a></li>
+					<% } if (privacylevel == 'PUBLIC') { %> 
+					<li><a href=<%=privateProjectUrl%>>PRIVATE</a></li>
+					<% } %>							   		    
+    				    </ul>
+    				</div>
+				<span class="space-20"></span>
+    				
+				<!-- Domain select -->		
+    				<h5>Domain</h5>
+				<!-- We present all the domains using ui-select of Angularjs https://github.com/angular-ui/ui-select -->
+				<ui-select ng-model="domainCtrl.projectDetails.domainset" theme="bootstrap" ng-disabled="disabled" ng-change="domainCtrl.subdomainJSON(domainCtrl.projectDetails.domainset)">
+				    <!-- On the change we get the new subdomains according to the domain selected -->
+				    <ui-select-match placeholder="Select domain for the list or search for a domain...">
+					{{$select.selected.Category}}
+				    </ui-select-match>
+				    <ui-select-choices repeat="domain in domainCtrl.domains | filter: $select.search">
+				        <div ng-bind-html="domain.Category | highlight: $select.search "></div>
+				    </ui-select-choices>
+			  	</ui-select>
+                                
+    				<span class="space-20"></span>
 
-</div>
-<% include javascriptLoad %>
-</body>
+    				<!-- Subdomain select -->		
+    			  	<h5>SubDomain</h5>
+				<ui-select ng-model="domainCtrl.projectDetails.subdomainset" theme="bootstrap" ng-disabled="domainCtrl.subdomainsDisabled()" ng-change="domainCtrl.DomainSubdomainSelectSuccess=0">
+				    <ui-select-match placeholder="Select subdomain for the list or search for a subdomain...">
+					{{$select.selected.Category}}
+				    </ui-select-match>
+				    <!-- We create a variable for the current subdomain -->
+				    <% var subDomain = subdomain_set %>
+		            	    <ui-select-choices repeat="subdomain in domainCtrl.subdomains | filter: $select.search" value=window.subdomainCurrent>
+					<!-- We set the default value to the current subdomain -->
+					<div ng-bind-html="subdomain.Category | highlight: $select.search "></div>
+				    </ui-select-choices>
+				</ui-select>
+                                
+    				<span class="space-20"></span>
+    				
+				<!-- Button to submit the domain and subdomain selection -->		
+                                <div class="btn-group">
+    				    <div>
+    				        <fieldset class="form-group">
+    				            <input type="submit" class="btn btn-danger pull-right" ng-click="domainCtrl.setDomainSubdomain(domainCtrl.projectDetails.domainset.Category,domainCtrl.projectDetails.subdomainset.Category)" value="Submit Changes">
+    				      	</fieldset>
+    				    </div>
+    				</div>
+				<% } %>
+        		    </div>
+			</div>
+
+			<!-- Panel which will include the table with the owners -->
+			<div class="panel panel-default">
+        		    <div class="panel-heading">
+        			<h4>Project's Owners</h4>
+        		    </div>
+        		    <div class="panel-body">
+				<!-- If the user is an owner a form to add an owner will be displayed -->
+				<% if (ownerflag) { %>
+        			<form action="/addOwner" method="post">
+    				    <fieldset>
+    					<label for="name"></label>
+    					<input type="hidden" id="project_name" name="project_name" value=<%= projectname %>>
+    					<input type="text" id="name" name="name" placeholder="Enter the Owner's Github Name or Google e-mail Account" size="54">
+    					<button type="submit" class="btn btn-danger">Add Owner</button>
+    		        	    </fieldset>
+    		    		</form>
+				<% } %>
+    		    				
+    				<span class="space-20"></span>
+    							
+        			<!-- Table of Owners-->
+                		<table class="table">
+            			    <thead>
+            				<tr>
+                			    <th>#</th>
+                			    <th>Github Username</th>
+                			    <th>Google e-mail</th>
+                			    <th></th>
+            				</tr>
+            			    </thead>
+            			    <tbody>
+					<% for (var i in ownersnames) { %>
+            			        <tr>
+            			            <td data-title="#"><%= i %></td>
+            				    <td data-title="Github Username"><%= ownersnames[i].github_name %></td>
+            				    <td data-title="Google e-mail"><%= ownersnames[i].google_email %></td>
+					    <!-- Find if the current username attempting to display is the active user -->
+					    <% var myOwnflag = false; %>
+					    <% if (ownersnames[i].github_name || ownersnames[i].google_email) {
+						if ((ownersnames[i].github_name == username && username != null) || (ownersnames[i].google_email == user.google_email && user.google_email != null)) { 
+						    myOwnflag=true;
+						} 
+					    }%>
+					    <!-- Display the "remove owner" option if only if the user is an owner of the project -->
+					    <% if (ownerflag == true) { %>
+					        <!-- Next to the user's name is going to have a button "Remove Myself" -->
+					        <% if (myOwnflag == true) { %>
+						    <% var removeOwnerurl="/removeOwner?owner_id="+ ownersnames[i].owner_id+"&project_name="+projectname+"&project_id="+ownersnames[i].project_id%>
+						    <td><a href=<%= removeOwnerurl %> class="btn btn-danger btn-sm"><span class="fa fa-times"></span> Remove Myself</a></td>
+					        <% } else { %>
+						    <% var removeOwnerurl="/removeOwner?owner_id="+ ownersnames[i].owner_id+"&project_name="+projectname+"&project_id="+ownersnames[i].project_id%>
+
+						    <% if (ownersnames[i].google_email !== 'undefined' && ownersnames[i].google_email) { %>
+						    <td><a href=<%= removeOwnerurl %> class="btn btn-danger btn-sm"><span class="fa fa-times"></span> Remove <%= ownersnames[i].google_email %></a></td>
+						    <% } %>
+
+						    <% if ((ownersnames[i].google_email == 'undefined' || !ownersnames[i].google_email) && ownersnames[i].github_name) { %>
+						    <td><a href=<%= removeOwnerurl %> class="btn btn-danger btn-sm"><span class="fa fa-times"></span> Remove <%= ownersnames[i].github_name %></a></td>
+						    <% } %>
+					        <% } %>
+					    <% } %>
+            				</tr>
+					<% } %>
+            			   </tbody>
+            		        </table>
+        		    </div>
+        		</div>
+
+			<!-- Panel which will include the table with the collaborators -->
+			<div class="panel panel-default">
+        		    <div class="panel-heading">
+        			<h4>Project's Collaborators</h4>
+        		    </div>
+        		    <div class="panel-body">
+				<!-- Form to add a collaborator (displayed only if the user is an owner of the project) -->
+				<% if (ownerflag) { %>
+        			<form action="/addCollaborator" method="post" class=""> 
+            			    <fieldset>
+            				<label for="name"></label>
+            				<input type="hidden" id="project_name" name="project_name" value="<%= projectname %>">
+            				<input type="text" id="name" name="name" placeholder="Enter the Collaborator's Github Name or Google e-mail Account" size="54">
+					<button type="submit" class="btn btn-danger">Add Collaborator</button>
+                    		    </fieldset>
+        			</form>
+				<% } %>
+        						
+    				<span class="space-20"></span>
+    							
+    				<!-- Table of Collaborators -->
+        			<table class="table">
+            			    <thead>
+            				<tr>
+                			    <th>#</th>
+                			    <th>Github username</th>
+                			    <th>Google email</th>
+                			    <th></th>
+                			</tr>
+            			    </thead>
+            			    <tbody>
+					<% for (var i in collaboratorsnames) { %>
+            				<tr>
+            			            <td data-title="#"><%= i %></td>
+            				    <td data-title="Github Username"><%= collaboratorsnames[i].github_name %></td>
+            				    <td data-title="Google e-mail"><%= collaboratorsnames[i].google_email %></td>
+					    <% var myCollabflag = false; %>
+					    <% if (collaboratorsnames[i].github_name || collaboratorsnames[i].google_email) {
+						if ((collaboratorsnames[i].github_name == username && username != null) || (collaboratorsnames[i].google_email == user.google_email && user.google_email != null)) { 
+						    myCollabflag=true;
+						} 
+					    }%>
+					    <!-- If i am a collaborator, then display the option to remove myself -->
+					    <% if (myCollabflag == true) { %>
+					        <% var removeCollaburl="/removeCollab?collab_id="+ collaboratorsnames[i].collab_id+"&project_name="+projectname%>
+						<td><a href=<%= removeCollaburl %> class="btn btn-danger btn-sm"><span class="fa fa-times"></span> Remove Myself</a></td>
+					    <% } else if (ownerflag) { %> 
+					    <!-- If the user is an owner, display the option to remove collaborators -->
+					        <% var removeCollaburl="/removeCollab?collab_id="+ collaboratorsnames[i].collab_id+"&project_name="+projectname%>
+
+					        <% if (collaboratorsnames[i].google_email != 'undefined' && collaboratorsnames[i].google_email) { %>
+						<td><a href=<%= removeCollaburl %> class="btn btn-danger btn-sm"><span class="fa fa-times"></span> Remove <%= collaboratorsnames[i].google_email %></a></td>
+					        <% } %>
+
+					        <% if (!collaboratorsnames[i].google_email && collaboratorsnames[i].github_name) { %>
+					        <td><a href=<%= removeCollaburl %> class="btn btn-danger btn-sm"><span class="fa fa-times"></span> Remove <%= collaboratorsnames[i].github_name %></a></td>
+					        <% } %>
+					    <% } %>
+            				</tr>
+					<% } %>
+				    </tbody>
+				</table>
+        		    </div>
+        		</div>
+			<!-- If the user is an owner display the option to delete the project -->
+			<% if (ownerflag) { %>
+			    <% var deleteurl="/deleteprojects?project_name="+ projectname %>
+				<a href=<%= deleteurl %> class="btn btn-danger"><span class="fa fa-times"></span> Delete Project</a>
+			<% } %>
+		    </div>
+		</div>
+	    </div>
+	</div>
+        <!-- End Main Content -->
+
+        <% include footer %>
+    </body>
 </html>

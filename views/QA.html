@@ -1,573 +1,899 @@
-<!doctype html>`
-<!-- the html of the QA -->
+<!DOCTYPE html>
+
 <html ng-app="qaApp">
-<% include header %>
-<% include navbar %>
-<!-- SET THE CONTROLLER -->
-<body class="container">
-<!---Tabs creation, selection of active and set of default to the requirements tab-->
-	<!--<section class="tab" ng-controller="TabController as tab">-->
-	<section class="tab" ng-controller="TabController as tab">
-		<!-- the tabs of our Search and our Results-->
-        <ul class="nav nav-pills">
-        	<li ng-class="{active: tab.isSet(1)}">
-	            <a href ng-click="tab.setTab(1)">Search</a>
-            </li>
-          	<li ng-class="{active: tab.isSet(2)}">
-	            <a href ng-click="tab.setTab(2)">Requirements</a>
-            </li>
-	        <li ng-class="{active: tab.isSet(3)}">
-	            <a href ng-click="tab.setTab(3)">Use Case Diagrams</a>
-            </li>
-          	<li ng-class="{active: tab.isSet(4)}">
-	            <a href ng-click="tab.setTab(4)">Activity Diagrams</a>
-            </li>
-            <li ng-class="{active: tab.isSet(5)}">
-	            <a href ng-click="tab.setTab(5)">Analysis Class Diagrams</a>
-            </li>
-            <li ng-class="{active: tab.isSet(6)}">
-	            <a href ng-click="tab.setTab(6)">Storyboards Diagrams</a>
-            </li>
-            <li ng-class="{active: tab.isSet(7)}">
-	            <a href ng-click="tab.setTab(7)">Source Codes</a>
-            </li>
-            <li ng-class="{active: tab.isSet(8)}">
-	            <a href ng-click="tab.setTab(8)">S-CASE services</a>
-            </li>
-            <li ng-class="{active: tab.isSet(9)}">
-	            <a href ng-click="tab.setTab(9)">OSRF snippets</a>
-            </li>
-        </ul>
-        <!-- tab of search -->
-        <div ng-show="tab.isSet(1)">
-			<div class="panel panel-info">
-		  		<div class="panel-heading"><h2 class="panel-title">Search</h2></div>
-			  	<div class="panel-body" ng-controller="SearchController as searchCtrl"><!--Controller for the search options-->
-
-			  		<div class="alert alert-info" role="alert" ng-show="loadMessage && !resMessage"> Submitted your query </div>
-			  		<div class="alert alert-success" role="alert" ng-show="resMessage"> Got the results </div>
-			        <form name="queryForm" ng-controller="SearchModeTabController as searchModeTab"><!--controller for the simple or advanced search tabs-->
-				        <ul class="nav nav-tabs"><!--the tabs of search modes-->
-				        	<li ng-class="{active: searchModeTab.isSet(1)}">
-					            <a href ng-click="searchModeTab.setTab(1)">Free Text Search</a>
-				            </li>
-				          	<li ng-class="{active: searchModeTab.isSet(2)}">
-					            <a href ng-click="searchModeTab.setTab(2)">Structured Search</a>
-				            </li>
-			            </ul>
-			            <br>			            
-			            <div ng-show="searchModeTab.isSet(1)">
-				            <!-- The query text box that contains the operations the user is interested in (shown in both advanced and simple search-->
-							<div class="input-group">
-								<span class="input-group-addon">
-								<textarea ng-model="searchCtrl.searchQuery.question" class="form-control" placeholder="Enter a question e.g Which services are used to create a tag cloud?" title="Operations"></textarea>
-								</span>
-							</div>
-						</div>
-			            <div ng-show="searchModeTab.isSet(2)">
-				            <!-- The query text box that contains the operations the user is interested in (shown in both advanced and simple search-->
-							<div class="input-group">
-								<span class="input-group-addon">
-								<textarea ng-model="searchCtrl.searchQuery.operations" class="form-control" placeholder="Enter operations, keywords separated by comma e.g authentication, social media, REST" title="Operations"></textarea>
-								</span>
-							</div>
-						</div>
-						<!-- advanced search tab options -->
-			            <div ng-show="searchModeTab.isSet(2)">
-			            	<div>
-			            	    <fieldset class="form-group">
-			        			    <input type="submit" class="btn btn-primary pull-right" ng-click="searchCtrl.doSearch()" value="Submit Query" />
-			      			    </fieldset>
-			      			</div>
-							<!--angular UI-Select-->
-	      				 	<h3>Domains of Interest (select only one or All)</h3>
-							<h4> Pick only one (if you do not make a choice, All the domains will be selected)</h4>
-						  	<ui-select ng-model="searchCtrl.searchQuery.domainQuery" theme="bootstrap" ng-disabled="disabled" style="min-width: 300px;" ng-change="searchCtrl.subdomainJSON(searchCtrl.searchQuery.domainQuery)">
-						    	<ui-select-match placeholder="Select domain for the list or search for a domain...">{{$select.selected.Category}}</ui-select-match>
-							    <ui-select-choices repeat="domain in searchCtrl.domains | filter: $select.search">
-						      	<div ng-bind-html="domain.Category | highlight: $select.search "></div>
-							    </ui-select-choices>
-						  	</ui-select>
-
-					    	<h3>Sub-Domains of Interest (Depending on your Domain selection)</h3>
-				    		<h4> Pick only one (if you do not make a choice, All the subdomains will be selected)</h4>
-					    	
-				    		<ui-select ng-model="searchCtrl.searchQuery.subdomainQuery" theme="bootstrap" ng-disabled="!searchCtrl.subdomains.length" style="min-width: 300px;">
-							    <ui-select-match placeholder="Select subdomain for the list or search for a subdomain...">{{$select.selected.Category}}</ui-select-match>
-							    <ui-select-choices repeat="subdomain in searchCtrl.subdomains | filter: $select.search">
-						      	<div ng-bind-html="subdomain.Category | highlight: $select.search "></div>
-							    </ui-select-choices>
-						  	</ui-select>
-
-						  	<h3>Requirements Classification</h3>
-					        <select ng-init="searchCtrl.searchQuery.requirementsClass = searchCtrl.requirementsClasses[2]" ng-model="searchCtrl.searchQuery.requirementsClass" ng-options="reqsClass.name for reqsClass in searchCtrl.requirementsClasses">
-					        </select>
-			            </div>
-			            <br>
-			            <div ng-show="searchModeTab.isSet(1)">
-							<fieldset class="form-group">
-					        	<input type="submit" class="btn btn-primary pull-right" ng-click="searchCtrl.TransformFreeText()" value="Submit Query" />
-					      	</fieldset>
-				      	</div>
-					</form>	
-				</div>
-			</div>
+    <% include header %>
+    <body id="search">
+	<!-- Begin Header -->
+	<header id="header">
+	    <% include navbar %>
+	</header>
+	<!-- End Header -->
+	<!-- Begin Main Content -->
+	<div class="content" id="main-content">
+	    <div class="container section">
+		<div class="row">
+	            <div class="col-md-10 col-md-offset-1 section-title">
+                        <h1 class="no-margin">Search</h1>
+                    </div>
 		</div>
-
-		
-        <!-- Requirements -->
-        <div ng-show="tab.isSet(2)">
-			<div class="panel panel-info">
-		  		<div class="panel-heading">Requirements</div>
-			  	<div class="panel-body" ng-controller="SearchController">
-				  	<ul class="list-group" ng-repeat="req in requirements">
-				  	  	<li class="list-group-item">Classification: {{req.artefact.payload[0].name}}</li>
-					  	<li class="list-group-item">Text: {{req.artefact.description}} </li>
-					  	<li class="list-group-item">Belong to Project: {{req.artefact.projectName}}</li>
-					  	<li class="list-group-item">Link to File: {{req.link}}</li>
-					  	<li class="list-group-item">Language: {{req.language}}</li>
-						<li class="list-group-item">uri:{{req.artefact.uri}}</li> 
-						<li class="list-group-item">groupid: {{req.artefact.groupId}}</li> 
-						<li class="list-group-item">name: {{req.artefact.name}}</li> 
-						<li class="list-group-item">version: {{req.artefact.version}}</li> 
-						<li class="list-group-item">keywords: {{req.artefact.tags}} </li> 
-						<li class="list-group-item">createdAt: {{req.artefact.createdAt}}</li> 
-						<li class="list-group-item">updatedAt: {{req.artefact.updatedAt}}</li> 
-						<li class="list-group-item">createdBy: {{req.artefact.createdBy}}</li> 
-						<li class="list-group-item">updatedBy: {{req.artefact.updatedBy}}</li>
-						<li class="list-group-item">score: {{req.score}}</li>
-					</ul>
-					<!---Hardcoded
-					<ul class="list-group">
-				  	  	<li class="list-group-item">Classification: Functional</li>
-					  	<li class="list-group-item">Text: The user must be able to login with his/her credentials of a social media account like Google, Github </li>
-					  	<li class="list-group-item">Belong to Project: Control Tower S-CASE</li>
-					  	<li class="list-group-item">Link to File: <a href='#'>http://AssetsRegistry/Requirement/35</a></li>
-					  	<li class="list-group-item">Language: English</li>
-						<li class="list-group-item">uri:</li> 
-						<li class="list-group-item">groupid: /AssetsRegistry/ctcode</li> 
-						<li class="list-group-item">name: LoginReqControlTower</li> 
-						<li class="list-group-item">version: 0.1</li> 
-						<li class="list-group-item">description: Login with Google and Github requirement of Control Tower</li> 
-						<li class="list-group-item">keywords: [Control Tower S-CASE, security, authentication, social media, Google, Github] </li> 
-						<li class="list-group-item">createdAt: 2015-06-30</li> 
-						<li class="list-group-item">updatedAt: 2015-06-30</li> 
-						<li class="list-group-item">createdBy: Themis</li> 
-					</ul>
-					<ul class="list-group">
-				  	  	<li class="list-group-item">Classification: Quality</li>
-					  	<li class="list-group-item">Text: The system must encrypt user related data from the social media accounts  </li>
-					  	<li class="list-group-item">Belong to Project: Control Tower S-CASE</li>
-					  	<li class="list-group-item">Link to File: <a href='#'>http://AssetsRegistry/Requirement/58</a></li>
-					  	<li class="list-group-item">Language: English</li>
-						<li class="list-group-item">uri:</li>
-						<li class="list-group-item">groupid: /AssetsRegistry/ctcode</li> 
-						<li class="list-group-item">name: EncryptControlTowerCreds</li> 
-						<li class="list-group-item">version: 0.1</li> 
-						<li class="list-group-item">description: Encrypt users' data of their social media accounts</li> 
-						<li class="list-group-item">keywords: [Control Tower S-CASE, security, authentication, social media, Google, Github] </li> 
-						<li class="list-group-item">createdAt: 2015-06-30</li> 
-						<li class="list-group-item">updatedAt: 2015-06-30</li> 
-						<li class="list-group-item">createdBy: Themis</li> 
-
-					</ul>
-					Hardcoded end-->
-			  	</div>
-		  	</div>
-      	</div>
-		<!-- Use case Diagrams -->
-        <div ng-show="tab.isSet(3)">
-	        <div class="panel panel-info">
-			  	<div class="panel-heading">Use Case Diagrams</div>
-			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
-			  		<ul class="list-group" ng-repeat="usecasediagram in searchCtrl.usecasediagrams">
-			  			<!-- separate panel for actors -->
-			  			<li class="list-group-item">
-				  			<div class="panel-heading">Actors</div>
-				  			<div class="panel-body">
-					 			<ul class="list-group">
-					 				<li class="list-group-item" ng-repeat="actor in usecasediagram.actors">Actor: {{actor}}</li>
-					 			</ul>
-				 			</div>
-			 			</li>
-			 			<!-- separate panel for Use Cases -->
-			 			<li class="list-group-item">
-				  			<div class="panel-heading">Use Case</div>
-				  			<div class="panel-body">
-					 			<ul class="list-group">
-					 				<li class="list-group-item" ng-repeat="usecase in usecasediagrams.usecases">Usecase:{{usecase}}</li>
-					 			</ul>
-				 			</div>
-			 			</li>
-					  	<li class="list-group-item">Belong to Project: {{usecasediagram.artefact.projectName}}</li>
-				  	  	<li class="list-group-item">Format: {{usecasediagram.format}}</li>
-					  	<li class="list-group-item">Link to File: {{usecasediagram.link}}</li>
-				  		<li class="list-group-item">Relation: {{usecasediagram.relation}}</li>
-						<li class="list-group-item">uri:{{usecasediagram.uri}}</li> 
-						<li class="list-group-item">groupid: {{usecasediagram.groupId}}</li> 
-						<li class="list-group-item">name: {{usecasediagram.name}}</li> 
-						<li class="list-group-item">version: {{usecasediagram.version}}</li> 
-						<li class="list-group-item">description: {{usecasediagram.description}}</li> 
-						<li class="list-group-item">keywords: {{usecasediagram.tags}} </li> 
-						<li class="list-group-item">createdAt: {{usecasediagram.createdAt}}</li> 
-						<li class="list-group-item">updatedAt: {{usecasediagram.updatedAt}}</li> 
-						<li class="list-group-item">createdBy: {{usecasediagram.createdBy}}</li> 
-						<li class="list-group-item">updatedBy: {{usecasediagram.updatedBy}}</li>
-						<li class="list-group-item">score: {{req.score}}</li>
-					</ul>
-					<!--hardoded-->
-					<ul class="list-group">
-			  			<!-- separate panel for actors -->
-			  			<li class="list-group-item">
-				  			<div class="panel-heading">Actors</div>
-				  			<div class="panel-body">
-					 			<ul class="list-group">
-					 				<li class="list-group-item">Actor: Unregistered User</li>
-									<li class="list-group-item">Actor: Logged in User</li>
-					 			</ul>
-				 			</div>
-			 			</li>
-			 			<!-- separate panel for Use Cases -->
-			 			<li class="list-group-item">
-				  			<div class="panel-heading">Use Case</div>
-				  			<div class="panel-body">
-					 			<ul class="list-group">
-					 				<li class="list-group-item">Usecase: The user visits the Control Tower. The options to log in with Google and Github are shown. The user clicks on one of this two options and a callback to Google or Github is shown.The user verifies his/her credentials and clicks on the verification of the social media provider.... </li>
-					 			</ul>
-				 			</div>
-			 			</li>
-					  	<li class="list-group-item">Belong to Project: Control Tower S-CASE</li>
-				  	  	<li class="list-group-item">Format: Imaage</li>
-					  	<li class="list-group-item">Link to File: <a href="#">/AssetsRegistry/Usecase/23.jpeg</a></li>
-				  		<li class="list-group-item">Relation: <a href="#">/AssetsRegistry/Usecase/23.xmi</a></li>
-						<li class="list-group-item">uri:</li>
-						<li class="list-group-item">groupid: /AssetsRegistry/ctcode</li> 
-						<li class="list-group-item">name: UsecaseLoginControlTower</li> 
-						<li class="list-group-item">version: 0.1</li> 
-						<li class="list-group-item">description: A use case on how the users logs in the Control Tower</li> 
-						<li class="list-group-item">keywords: [Control Tower S-CASE, security, authentication, social media, Google, Github] </li> 
-						<li class="list-group-item">createdAt: 2015-06-30</li> 
-						<li class="list-group-item">updatedAt: 2015-06-30</li> 
-						<li class="list-group-item">createdBy: Themis</li> 
-					</ul>
-					<!---hardcode--->
-			  	</div>
-			</div> 
+		<div class="row">
+		    <div class="col-md-10 col-md-offset-1 section-body clearfix">
+			<!-- The tabs of search modes -->
+			<ul class="nav nav-tabs">
+                            <li class="active">
+                                <a data-toggle="tab" href="#text-search">Free Text Search</a>
+                            </li>
+                            <li>
+                                <a data-toggle="tab" href="#structured-search">Structured Search</a>
+                            </li>
+                        </ul>
+			<!--Controller for the search options-->
+			<div class="tab-content" ng-controller="SearchController as searchCtrl">
+                            <div id="text-search" class="tab-pane fade in active">
+                                <div class="panel panel-default" id="query">
+        			    <div class="panel-body">
+        			        <form name="queryForm" class="no-margin">
+                                            <div id="text-search">
+                                                <div class="input-group">
+                    				    <span class="input-group-addon">
+                    					<input type="text" ng-model="searchCtrl.searchQuery.question" class="form-control ng-valid ng-dirty ng-valid-parse ng-touched" placeholder="Enter a question e.g Which services are used to create a tag cloud?" title="Operations"></textarea>
+                    				    </span>
+                    				</div>
+                    				<fieldset class="form-group">
+                    				    <input type="submit" class="btn btn-danger margin-top-15 pull-right" ng-click="searchCtrl.TransformFreeText()" value="Submit Query">
+                    				</fieldset>
+                                            </div>
+                                        </form>
+                    		    </div>
+                    		</div>
+			    </div>
+			    <div id="structured-search" class="tab-pane fade">
+                                <div class="panel panel-default" id="query">
+        			    <div class="panel-body">
+        			        <form name="queryForm" class="no-margin">
+                                            <div id="structured-search">
+                                                <div class="input-group">
+                    				    <span class="input-group-addon">
+                    					<input type="text" ng-model="searchCtrl.searchQuery.operations" class="form-control ng-pristine ng-valid ng-touched" placeholder="Enter operations, keywords separated by comma e.g authentication, social media, REST" title="Operations"></textarea>
+                    				    </span>
+                    				</div>
+                    							
+                                                <span class="space-35"></span>
+                                                
+                    	      			<h5><b>Domains of Interest (Select only one or all)</b></h5>
+                    				<p>Pick only one (If you do not make a choice, all the domains will be selected)</p>
+                    				
+						<ui-select ng-model="searchCtrl.searchQuery.domainQuery" theme="bootstrap" ng-disabled="disabled" style="min-width: 300px;" ng-change="searchCtrl.subdomainJSON(searchCtrl.searchQuery.domainQuery)">
+						    <ui-select-match placeholder="Select domain for the list or search for a domain...">
+							{{$select.selected.Category}}
+						    </ui-select-match>
+						    <ui-select-choices repeat="domain in searchCtrl.domains | filter: $select.search">
+						      	<div ng-bind-html="domain.Category | highlight: $select.search "></div>
+						    </ui-select-choices>
+						</ui-select>
+                                                
+                                                <span class="space-35"></span>
+                                                
+                    				<h5><b>Sub-Domains of Interest (Depending on your domain selection)</b></h5>
+                    				<p>Pick only one (If you do not make a choice, all the subdomains will be selected)</p>
+				
+						<ui-select ng-model="searchCtrl.searchQuery.subdomainQuery" theme="bootstrap" ng-disabled="!searchCtrl.subdomains.length">
+						    <ui-select-match placeholder="Select subdomain for the list or search for a subdomain...">
+							{{$select.selected.Category}}
+						    </ui-select-match>
+						    <ui-select-choices repeat="subdomain in searchCtrl.subdomains | filter: $select.search">
+						      	<div ng-bind-html="subdomain.Category | highlight: $select.search "></div>
+						    </ui-select-choices>
+						</ui-select>
+                                                
+                                                <span class="space-35"></span>
+                                                
+                    				<h5><b>Requirements Classification</b></h5>
+						<select ng-init="searchCtrl.searchQuery.requirementsClass = searchCtrl.requirementsClasses[2]" ng-model="searchCtrl.searchQuery.requirementsClass" ng-options="reqsClass.name for reqsClass in searchCtrl.requirementsClasses">
+					        </select>
+                                                
+                                                <span class="space-20"></span>
+                                                
+                			        <fieldset class="form-group">
+                			            <input type="submit" class="btn btn-danger pull-right" ng-click="searchCtrl.doSearch()" value="Submit Query">
+                			      	</fieldset>
+                                            </div>
+                    			</form>	
+        			    </div>
+        			</div>
+        		    </div>
+			    <div class="text-center margin-top-30" ng-show="loadMessage && !resMessage">
+				<img src="assets/images/ajax-loader.gif" /> 
+				<span style="font-weight: 600;"> Loading...</span>
+			    </div>
+			    <div class="panel panel-default" id="results" ng-show="resMessage">
+                    	            <div class="panel-heading">Results</div>
+        			    <div class="panel-body">
+				        <ul class="nav nav-pills nav-stacked col-lg-3 col-md-4">
+	                          	    <li class="active">
+	                          	        <a data-toggle="pill" href="#tab1">Requirements</a>
+	                                    </li>
+	                	            <li>
+	                          	   	<a data-toggle="pill" href="#tab2">Use Case Diagrams</a>
+	                                    </li>
+	                          	    <li>
+	                          	    	<a data-toggle="pill" href="#tab3">Activity Diagrams</a>
+	                                    </li>
+	                                    <li>
+	                          	    	<a data-toggle="pill" href="#tab4">Analysis Class Diagrams</a>
+	                                    </li>
+	                                    <li>
+	                          	    	<a data-toggle="pill" href="#tab5">Storyboards Diagrams</a>
+	                                    </li>
+	                                    <li>
+	                          	    	<a data-toggle="pill" href="#tab6">Source Codes</a>
+	                                    </li>
+	                                    <li>
+	                          	    	<a data-toggle="pill" href="#tab7">S-CASE Services</a>
+	                                    </li>
+	                                    <li>
+	                          	    	<a data-toggle="pill" href="#tab8">OSRF Snippets</a>
+	                                    </li>
+	                                </ul>
+				    	<div class="tab-content col-lg-9 col-md-8 no-margin">
+	                                <div id="tab1" class="tab-pane fade in active">
+	                                    <div class="panel panel-info">
+	                    		  	<div class="panel-heading">Requirements</div>
+	                    			<div class="panel-body" ng-controller="SearchController">
+						    <div class="panel-group" id="accordion-1">
+							<div class="panel panel-default" ng-repeat="req in requirements">
+	                                                    <div class="panel-heading">
+	                                                        <h5 class="panel-title">
+	                                                            <a data-toggle="collapse" href="#collapse1{{$index + 1}}" data-parent="#accordion-1">
+	                                                                {{req.artefact.name}} <span class="caret hidden-xs"></span>
+	                                                            </a>
+	                                                        </h5>
+	                                                    </div>
+							    <div id="collapse1{{$index + 1}}" class="panel-collapse collapse">
+	                                                        <div class="panel-body no-padding">
+	                                			    <table class="table table-striped">
+	                                				<tbody>
+	                                				    <tr>
+	                                    					<td>Classification:</td>
+	                                    					<td>{{req.artefact.payload[0].name}}</td>
+	                                    				    </tr>
+									    <tr>
+	                                    					<td>Text:</td>
+	                                    					<td>{{req.artefact.description}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>Belong to Project:</td>
+	                                    					<td>{{req.artefact.projectName}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>Link to File:</td>
+	                                    					<td>{req.link}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>Language:</td>
+	                                    					<td>{{req.language}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>uri:</td>
+	                                    					<td>{{req.artefact.uri}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>groupid:</td>
+	                                    					<td>{{req.artefact.groupId}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>name:</td>
+	                                    					<td>{{req.artefact.name}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>version:</td>
+	                                    					<td>{{req.artefact.version}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>keywords:</td>
+	                                    					<td>{{req.artefact.tags}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>createdAt:</td>
+	                                    				        <td>{{req.artefact.createdAt}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>updatedAt:</td>
+	                                    					<td>{{req.artefact.updatedAt}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>createdBy:</td>
+	                                    					<td>{{req.artefact.createdBy}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>updatedBy:</td>
+	                                    					<td>{{req.artefact.updatedBy}}</td>
+	                                    				    </tr>
+									    <tr>
+	                                    					<td>score:</td>
+	                                    					<td>{{req.score}}</td>
+	                                    				    </tr>
+	                                				</tbody>
+	                                			    </table>
+	                                                        </div>
+	                                                    </div>
+							</div>
+						    </div>
+						</div>
+	                		    </div>
+	                                </div>
+	                                <div id="tab2" class="tab-pane fade">
+	                                    <div class="panel panel-info">
+	                    		  	<div class="panel-heading">Use Case Diagrams</div>
+	                    			<div class="panel-body" ng-controller="SearchController as searchCtrl">
+						    <div class="panel-group" id="accordion-2">
+							<div class="panel panel-default" ng-repeat="usecasediagram in searchCtrl.usecasediagrams">
+	                                                    <div class="panel-heading">
+	                                                        <h5 class="panel-title">
+	                                                            <a data-toggle="collapse" href="#collapse2{{$index + 1}}" data-parent="#accordion-2">
+	                                                                {{usecasediagram.name}} <span class="caret hidden-xs"></span>
+	                                                            </a>
+	                                                        </h5>
+	                                                    </div>
+							    <div id="collapse2{{$index + 1}}" class="panel-collapse collapse">
+	                                                        <div class="panel-body no-padding">
+	                                			    <table class="table table-striped">
+	                                				<tbody>
+									    <tr>
+	                                    					<td>Actors</td>
+	                                    					<td>
+	                                    					    <ul class="list-group">
+	                                        					 <li class="list-group-item" ng-repeat="actor in usecasediagram.actors">Actor: {{actor}}</li>
+	                                        				    </ul>
+	                                    					</td>
+	                                    				    </tr>
+									    <tr>
+	                                    					<td>Use Cases</td>
+	                                    					<td>
+	                                    					    <ul class="list-group">
+	                                        					 <li class="list-group-item" ng-repeat="usecase in usecasediagrams.usecases">Usecase: {{usecase}}</li>
+	                                        				    </ul>
+	                                    					</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>Belong to Project:</td>
+	                                    					<td>{{usecasediagram.artefact.projectName}}</td>
+	                                    				    </tr>
+	                                				    <tr>
+	                                    					<td>Format:</td>
+	                                    					<td>{{usecasediagram.format}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>Link to File:</td>
+	                                    					<td>{{usecasediagram.link}}</td>
+	                                    				    </tr>
+									    <tr>
+	                                    					<td>Relation:</td>
+	                                    					<td>{{usecasediagram.relation}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>uri:</td>
+	                                    					<td>{{usecasediagram.uri}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>groupid:</td>
+	                                    					<td>{{usecasediagram.groupId}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>name:</td>
+	                                    					<td>{{usecasediagram.name}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>version:</td>
+	                                    					<td>{{usecasediagram.version}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>description:</td>
+	                                    					<td>{{usecasediagram.description}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>keywords:</td>
+	                                    					<td>{{usecasediagram.tags}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>createdAt:</td>
+	                                    				        <td>{{usecasediagram.createdAt}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>updatedAt:</td>
+	                                    					<td>{{usecasediagram.updatedAt}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>createdBy:</td>
+	                                    					<td>{{usecasediagram.createdBy}}</td>
+	                                    				    </tr>
+	                                    				    <tr>
+	                                    					<td>updatedBy:</td>
+	                                    					<td>{{usecasediagram.updatedBy}}</td>
+	                                    				    </tr>
+									    <tr>
+	                                    					<td>score:</td>
+	                                    					<td>{{usecasediagram.score}}</td>
+	                                    				    </tr>
+	                                				</tbody>
+	                                			    </table>
+	                                                        </div>
+	                                                    </div>
+							</div>
+						    </div>
+						</div>
+	                		    </div>
+					</div>
+					<div id="tab3" class="tab-pane fade">
+	                                    <div class="panel panel-info">
+	                    		  	<div class="panel-heading">Activity Diagrams</div>
+	                    			<div class="panel-body" ng-controller="SearchController as searchCtrl">
+						    <div class="panel-group" id="accordion-3">
+                                                        <div class="panel panel-default" ng-repeat="activitydiagram in searchCtrl.activitydiagrams">
+                                                            <div class="panel-heading">
+                                                                <h5 class="panel-title">
+                                                                    <a data-toggle="collapse" href="#collapse3{{$index + 1}}" data-parent="#accordion-3">
+                                                                        {{activitydiagram.name}} <span class="caret hidden-xs"></span>
+                                                                    </a>
+                                                                </h5>
+                                                            </div>
+                                                            <div id="collapse3{{$index + 1}}" class="panel-collapse collapse">
+                                                                <div class="panel-body no-padding">
+                        					    <table class="table table-striped">
+                        						<tbody>
+                        						    <tr>
+                            						        <td>Actions</td>
+                            						        <td>
+                            						            <ul class="list-group">
+                                					 		<li class="list-group-item" ng-repeat="action in activitydiagram.actions">Action: {{action}}</li>
+                                						    </ul>
+                            						        </td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Belong to Project:</td>
+                            						        <td>{{activitydiagram.belongsTo}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Format:</td>
+                            						        <td>{{activitydiagram.format}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Link to File:</td>
+                            						        <td>{{activitydiagram.link}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Relation:</td>
+                            						        <td>{{activitydiagram.relation}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>uri:</td>
+                            						        <td>{{activitydiagram.uri}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>groupid:</td>
+                            						        <td>{{activitydiagram.groupId}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>name:</td>
+                            						        <td>{{activitydiagram.name}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>version:</td>
+                            						        <td>{{activitydiagram.version}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>description:</td>
+                            						        <td>{{activitydiagram.description}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>keywords:</td>
+                            						        <td>{{activitydiagram.tags}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>createdAt:</td>
+                            						        <td>{{activitydiagram.createdAt}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>updatedAt:</td>
+                            						        <td>{{activitydiagram.updatedAt}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>createdBy:</td>
+                            						        <td>{{activitydiagram.createdBy}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>updatedBy:</td>
+                            						        <td>{{activitydiagram.updatedBy}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>score:</td>
+                            						        <td>{{activitydiagram.score}}</td>
+                            						    </tr>
+                        						</tbody>
+                        					    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+						</div>
+	                		    </div>
+					</div>
+					<div id="tab4" class="tab-pane fade">
+		                            <div class="panel panel-info">
+		                    		<div class="panel-heading">Analysis Class Diagrams</div>
+		                    		<div class="panel-body" ng-controller="SearchController as searchCtrl">
+						    <div class="panel-group" id="accordion-4">
+                                                        <div class="panel panel-default" ng-repeat="classdiagram in searchCtrl.classdiagrams">
+                                                            <div class="panel-heading">
+                                                                <h5 class="panel-title">
+                                                                    <a data-toggle="collapse" href="#collapse4{{$index + 1}}" data-parent="#accordion-4">
+                                                                        {{activitydiagram.name}} <span class="caret hidden-xs"></span>
+                                                                    </a>
+                                                                </h5>
+                                                            </div>
+                                                            <div id="collapse4{{$index + 1}}" class="panel-collapse collapse">
+                                                                <div class="panel-body no-padding">
+                        					    <table class="table table-striped">
+                        						<tbody>
+                        						    <tr>
+                            						        <td>Classes</td>
+                            						        <td>
+                            						            <ul class="list-group">
+                                					 		<li class="list-group-item" ng-repeat="class in classdiagram.classes">Class Name: {{class.name}}<ul class="list-group"><li class="list-group-item" ng-repeat="property in class.properties">Property ({{property.type}}): {{property.name}}</li></ul></li>
+                                						    </ul>
+                            						        </td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Belong to Project:</td>
+                            						        <td>{{classdiagram.belongsTo}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Format:</td>
+                            						        <td>{{classdiagram.format}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Link to File:</td>
+                            						        <td>{{classdiagram.link}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Relation:</td>
+                            						        <td>{{classdiagram.relation}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>uri:</td>
+                            						        <td>{{classdiagram.uri}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>groupid:</td>
+                            						        <td>{{classdiagram.groupId}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>name:</td>
+                            						        <td>{{classdiagram.name}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>version:</td>
+                            						        <td>{{classdiagram.version}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>description:</td>
+                            						        <td>{{classdiagram.description}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>keywords:</td>
+                            						        <td>{{classdiagram.tags}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>createdAt:</td>
+                            						        <td>{{classdiagram.createdAt}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>updatedAt:</td>
+                            						        <td>{{classdiagram.updatedAt}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>createdBy:</td>
+                            						        <td>{{classdiagram.createdBy}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>updatedBy:</td>
+                            						        <td>{{classdiagram.updatedBy}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>score:</td>
+                            						        <td>{{classdiagram.score}}</td>
+                            						    </tr>
+                        						</tbody>
+                        					    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+						</div>
+		                	    </div>
+		                        </div>
+		                        <div id="tab5" class="tab-pane fade">
+		                            <div class="panel panel-info">
+		                    		<div class="panel-heading">Storyboards Diagrams</div>
+		                    		<div class="panel-body" ng-controller="SearchController as searchCtrl">
+						    <div class="panel-group" id="accordion-5">
+                                                        <div class="panel panel-default" ng-repeat="storyboard in searchCtrl.storyboards">
+                                                            <div class="panel-heading">
+                                                                <h5 class="panel-title">
+                                                                    <a data-toggle="collapse" href="#collapse5{{$index + 1}}" data-parent="#accordion-5">
+                                                                        {{storyboard.name}} <span class="caret hidden-xs"></span>
+                                                                    </a>
+                                                                </h5>
+                                                            </div>
+                                                            <div id="collapse5{{$index + 1}}" class="panel-collapse collapse">
+                                                                <div class="panel-body no-padding">
+                        					    <table class="table table-striped">
+                        						<tbody>
+                        						    <tr>
+                            						        <td>Actions</td>
+                            						        <td>
+                            						            <ul class="list-group">
+                                					 		<li class="list-group-item" ng-repeat="action in storyboard.actions">Action: {{action}}</li>
+                                						    </ul>
+                            						        </td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Belong to Project:</td>
+                            						        <td>{{storyboard.belongsTo}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Format:</td>
+                            						        <td>{{storyboard.format}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Link to File:</td>
+                            						        <td>{{storyboard.link}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Relation:</td>
+                            						        <td>{{storyboard.relation}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>uri:</td>
+                            						        <td>{{storyboard.uri}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>groupid:</td>
+                            						        <td>{{storyboard.groupId}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>name:</td>
+                            						        <td>{{storyboard.name}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>version:</td>
+                            						        <td>{{storyboard.version}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>description:</td>
+                            						        <td>{{storyboard.description}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>keywords:</td>
+                            						        <td>{{storyboard.tags}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>createdAt:</td>
+                            						        <td>{{storyboard.createdAt}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>updatedAt:</td>
+                            						        <td>{{storyboard.updatedAt}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>createdBy:</td>
+                            						        <td>{{storyboard.createdBy}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>updatedBy:</td>
+                            						        <td>{{storyboard.updatedBy}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>score:</td>
+                            						        <td>{{storyboard.score}}</td>
+                            						    </tr>
+                        						</tbody>
+                        					    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+						</div>
+		                	    </div>
+		                        </div>
+		                        <div id="tab6" class="tab-pane fade">
+		                            <div class="panel panel-info">
+		                    		<div class="panel-heading">Source Codes</div>
+		                    		<div class="panel-body" ng-controller="SearchController as searchCtrl">
+						    <div class="panel-group" id="accordion-6">
+                                                        <div class="panel panel-default" ng-repeat="sourcecode in searchCtrl.sourcecodes">
+                                                            <div class="panel-heading">
+                                                                <h5 class="panel-title">
+                                                                    <a data-toggle="collapse" href="#collapse6{{$index + 1}}" data-parent="#accordion-6">
+                                                                        {{sourcecode.name}} <span class="caret hidden-xs"></span>
+                                                                    </a>
+                                                                </h5>
+                                                            </div>
+                                                            <div id="collapse6{{$index + 1}}" class="panel-collapse collapse">
+                                                                <div class="panel-body no-padding">
+                        					    <table class="table table-striped">
+                        						<tbody>
+                            						    <tr>
+                            						        <td>Belong to Project:</td>
+                            						        <td>{{sourcecode.belongsTo}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Format:</td>
+                            						        <td>{{sourcecode.format}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Link to File:</td>
+                            						        <td>{{sourcecode.link}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Relation:</td>
+                            						        <td>{{sourcecode.relation}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>uri:</td>
+                            						        <td>{{sourcecode.uri}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>groupid:</td>
+                            						        <td>{{sourcecode.groupId}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>name:</td>
+                            						        <td>{{sourcecode.name}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>version:</td>
+                            						        <td>{{sourcecode.version}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>description:</td>
+                            						        <td>{{sourcecode.description}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>keywords:</td>
+                            						        <td>{{sourcecode.tags}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>createdAt:</td>
+                            						        <td>{{sourcecode.createdAt}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>updatedAt:</td>
+                            						        <td>{{sourcecode.updatedAt}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>createdBy:</td>
+                            						        <td>{{sourcecode.createdBy}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>updatedBy:</td>
+                            						        <td>{{sourcecode.updatedBy}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>score:</td>
+                            						        <td>{{sourcecode.score}}</td>
+                            						    </tr>
+                        						</tbody>
+                        					    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+						</div>
+		                	    </div>
+		                        </div>
+		                        <div id="tab7" class="tab-pane fade">
+		                            <div class="panel panel-info">
+		                    	        <div class="panel-heading">Services</div>
+		                    		<div class="panel-body" ng-controller="SearchController as searchCtrl">
+						    <div class="panel-group" id="accordion-7">
+                                                        <div class="panel panel-default" ng-repeat="service in searchCtrl.scaseservices">
+                                                            <div class="panel-heading">
+                                                                <h5 class="panel-title">
+                                                                    <a data-toggle="collapse" href="#collapse7{{$index + 1}}" data-parent="#accordion-7">
+                                                                        {{service.name}} <span class="caret hidden-xs"></span>
+                                                                    </a>
+                                                                </h5>
+                                                            </div>
+                                                            <div id="collapse7{{$index + 1}}" class="panel-collapse collapse">
+                                                                <div class="panel-body no-padding">
+                        					    <table class="table table-striped">
+                        						<tbody>
+                            						    <tr>
+                            						        <td>Type:</td>
+                            						        <td>{{service.type}}</td>
+                            						    </tr>
+									    <div ng-if="service.type==='service description'">
+	                    						    <tr>
+	                    						        <td>Link to Domain Ontology:</td>
+	                    						        <td>{{service.domainOntology}}</td>
+	                    						    </tr>
+									    <tr>
+	                    						        <td>Belong to Project:</td>
+	                    						        <td>{{service.belongsTo}}</td>
+	                    						    </tr>
+	                    						    <tr>
+	                    						        <td>Link to File:</td>
+	                    						        <td>{{service.link}}</td>
+	                    						    </tr>
+									    </div>
+									    <div ng-if="service.type==='composite service description'">
+									    <tr>
+                            						        <td>List of 3rd party web services:</td>
+                            						        <td>{{service.list}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Link to Workflow:</td>
+                            						        <td>{{service.workflow}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Belong to Project:</td>
+                            						        <td>{{service.belongsTo}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>Link to File:</td>
+                            						        <td>{{service.link}}</td>
+                            						    </tr>
+									    </div>
+									    <div ng-if="service.type==='service'">
+                            						    <tr>
+                            						        <td>Belong to Project:</td>
+                            						        <td>{{service.belongsTo}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Url:</td>
+                            						        <td>{{service.url}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>wadl:</td>
+                            						        <td>{{service.wadl}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>entry:</td>
+                            						        <td>{{service.entry}}</td>
+                            						    </tr>
+									    </div>
+									    <div ng-if="service.type==='3rd party service'">
+                            						    <tr>
+                            						        <td>Belong to Project:</td>
+                            						        <td>{{service.belongsTo}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Documentation:</td>
+                            						        <td>{{service.documentation}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>wadl:</td>
+                            						        <td>{{service.wadl}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>entry:</td>
+                            						        <td>{{service.entry}}</td>
+                            						    </tr>
+									    </div>
+                            						    <tr>
+                            						        <td>uri:</td>
+                            						        <td>{{service.uri}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>groupid:</td>
+                            						        <td>{{service.groupId}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>name:</td>
+                            						        <td>{{service.name}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>version:</td>
+                            						        <td>score: {{service.version}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>description:</td>
+                            						        <td>{{service.description}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>keywords:</td>
+                            						        <td>{{service.tags}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>createdAt:</td>
+                            						        <td>{{service.createdAt}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>updatedAt:</td>
+                            						        <td>{{service.updatedAt}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>createdBy:</td>
+                            						        <td>{{service.createdBy}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>updatedBy:</td>
+                            						        <td>{{service.updatedBy}}</td>
+                            						    </tr>
+									    <tr>
+                            						        <td>score:</td>
+                            						        <td>{{service.score}}</td>
+                            						    </tr>
+                        						</tbody>
+                        					    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+						</div>
+		                	    </div>
+		                        </div>
+		                        <div id="tab8" class="tab-pane fade">
+		                            <div class="panel panel-info">
+		                    		<div class="panel-heading">OSRF snippets</div>
+		                    		<div class="panel-body" ng-controller="SearchController">
+						    <div class="panel-group" id="accordion-8">
+                                                        <div class="panel panel-default" ng-repeat="snip in osrfsnippets">
+                                                            <div class="panel-heading">
+                                                                <h5 class="panel-title">
+                                                                    <a data-toggle="collapse" href="#collapse8{{$index + 1}}" data-parent="#accordion-8">
+                                                                        {{snip.className}} <span class="caret hidden-xs"></span>
+                                                                    </a>
+                                                                </h5>
+                                                            </div>
+                                                            <div id="collapse8{{$index + 1}}" class="panel-collapse collapse">
+                                                                <div class="panel-body no-padding">
+                        					    <table class="table table-striped">
+                        						<tbody>
+                            						    <tr>
+                            						        <td>Class Name:</td>
+                            						        <td>{{snip.className}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Source:</td>
+                            						        <td>{{snip.forge}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Belongs to Project:</td>
+                            						        <td>{{snip.projectName}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>Link:</td>
+                            						        <td><a ng-href="{{snip.url}}" target="_blank">{{snip.url}}</a></td>
+                            						    </tr>
+									    <tr>
+                            						        <td>Code:</td>
+                            						        <td>{{snip.sourceCode}}</td>
+                            						    </tr>
+                            						    <tr>
+                            						        <td>score:</td>
+                            						        <td>{{snip.similarityScore}}</td>
+                            						    </tr>
+                        						</tbody>
+                        					    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+						</div>
+		                	    </div>
+		                        </div>
+	                            </div>
+				</div>
+			    </div>
+			</div>
+		    </div>
+		</div>
+	    </div>
         </div>
+        <!-- End Main Content -->
 
-        <!---display activitydiagrams data-->
-        <div ng-show="tab.isSet(4)">
-			 <div class="panel panel-info">
-			  	<div class="panel-heading">Activity Diagrams</div>
-			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
-			  		<ul class="list-group" ng-repeat="activitydiagram in searchCtrl.activitydiagrams">
-			  			<!-- separate panel for actors -->
-			  			<li class="list-group-item">
-				  			<div class="panel-heading">Actions</div>
-				  			<div class="panel-body">
-					 			<ul class="list-group">
-					 				<li class="list-group-item" ng-repeat="action in activitydiagram.actions">Action: {{action}}</li>
-					 			</ul>
-				 			</div>
-			 			</li>
-					  	<li class="list-group-item">Belong to Project: {{activitydiagram.belongsTo}}</li>
-				  	  	<li class="list-group-item">Format: {{activitydiagram.format}}</li>
-					  	<li class="list-group-item">Link to File: {{activitydiagram.link}}</li>
-				  		<li class="list-group-item">Relation: {{activitydiagram.relation}}</li>						
-						<li class="list-group-item">uri:{{activitydiagram.uri}}</li> 
-						<li class="list-group-item">groupid: {{activitydiagram.groupId}}</li> 
-						<li class="list-group-item">name: {{activitydiagram.name}}</li> 
-						<li class="list-group-item">version: {{activitydiagram.version}}</li> 
-						<li class="list-group-item">description: {{activitydiagram.description}}</li> 
-						<li class="list-group-item">keywords: {{activitydiagram.tags}} </li> 
-						<li class="list-group-item">createdAt: {{activitydiagram.createdAt}}</li> 
-						<li class="list-group-item">updatedAt: {{activitydiagram.updatedAt}}</li> 
-						<li class="list-group-item">createdBy: {{activitydiagram.createdBy}}</li> 
-						<li class="list-group-item">updatedBy: {{activitydiagram.updatedBy}}</li>
-						<li class="list-group-item">score: {{req.score}}</li>
-					</ul>
-					<!--hard code--->
-					<ul class="list-group">
-			  			<!-- separate panel for actors -->
-			  			<li class="list-group-item">
-				  			<div class="panel-heading">Actions</div>
-				  			<div class="panel-body">
-					 			<ul class="list-group">
-					 				<li class="list-group-item" >Action: User clicks on the Social Media account</li>
-									<li class="list-group-item" >Action: The system redirects to the Social Media provider callback URL</li>
-					 			</ul>
-				 			</div>
-			 			</li>
-					  	<li class="list-group-item">Belong to Project: Control Tower S-CASE</li>
-				  	  	<li class="list-group-item">Format: xmi</li>
-					  	<li class="list-group-item">Link to File: <a href='#'>/AssetsRegistry/activitydiagram/82.xmi</a></li>
-				  		<li class="list-group-item">Relation: <a href='#'>/AssetsRegistry/activitydiagram/82.jpeg</a></li>
-						<li class="list-group-item">uri:</li>
-						<li class="list-group-item">groupid: /AssetsRegistry/ctcode</li> 
-						<li class="list-group-item">name: ActivityLoginControlTower</li> 
-						<li class="list-group-item">version: 0.1</li> 
-						<li class="list-group-item">description: The activity diagram of the login to Control Tow</li> 
-						<li class="list-group-item">keywords: [Control Tower S-CASE, security, authentication, social media, Google, Github] </li> 
-						<li class="list-group-item">createdAt: 2015-06-30</li> 
-						<li class="list-group-item">updatedAt: 2015-06-30</li> 
-						<li class="list-group-item">createdBy: Themis</li> 
-					</ul>
-					<!--hard code-->
-			  	</div>
-			</div> 
-        </div>
-
-        <!---display classdiagrams data-->
-        <div ng-show="tab.isSet(5)">
-			<div class="panel panel-info">
-			  	<div class="panel-heading">Analysis Class Diagrams</div>
-			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
-			  		<ul class="list-group" ng-repeat="classdiagram in searchCtrl.classdiagrams">
-			  			<!-- separate panel for classes-->
-			  			<li class="list-group-item">
-				  			<div class="panel-heading">Classes</div>
-				  			<div class="panel-body">
-					 			<ul class="list-group">
-					 				<li class="list-group-item" ng-repeat="class in classdiagram.classes">Class Name: {{class.name}} <li class="list-group-item" ng-repeat="property in class.properties">Property ({{property.type}}): {{property.name}}</li> </li>
-					 			</ul>
-				 			</div>
-			 			</li>
-					  	<li class="list-group-item">Belong to Project: {{classdiagram.belongsTo}}</li>
-				  	  	<li class="list-group-item">Format: {{classdiagram.format}}</li>
-					  	<li class="list-group-item">Link to File: {{classdiagram.link}}</li>
-				  		<li class="list-group-item">Relation: {{classdiagram.relation}}</li>
-						<li class="list-group-item">uri:{{classdiagram.uri}}</li> 
-						<li class="list-group-item">groupid: {{classdiagram.groupId}}</li> 
-						<li class="list-group-item">name: {{classdiagram.name}}</li> 
-						<li class="list-group-item">version: {{classdiagram.version}}</li> 
-						<li class="list-group-item">description: {{classdiagram.description}}</li> 
-						<li class="list-group-item">keywords: {{classdiagram.tags}} </li> 
-						<li class="list-group-item">createdAt: {{classdiagram.createdAt}}</li> 
-						<li class="list-group-item">updatedAt: {{classdiagram.updatedAt}}</li> 
-						<li class="list-group-item">createdBy: {{classdiagram.createdBy}}</li> 
-						<li class="list-group-item">updatedBy: {{classdiagram.updatedBy}}</li>
-						<li class="list-group-item">score: {{req.score}}</li>
-					</ul>
-					<!--hardcode-->
-					<ul class="list-group">
-			  			<!-- separate panel for classes-->
-			  			<li class="list-group-item">
-				  			<div class="panel-heading">Classes</div>
-				  			<div class="panel-body">
-					 			<ul class="list-group">
-					 				<li class="list-group-item">Class Name: ControlTowerCredentialsController <li class="list-group-item" >Property (String): GithubUsername</li> <li class="list-group-item" >Property (String): GoogleEmail</li></li>
-					 			</ul>
-				 			</div>
-			 			</li>
-					  	<li class="list-group-item">Belong to Project: Control Tower S-CASE</li>
-				  	  	<li class="list-group-item">Format: xmi</li>
-					  	<li class="list-group-item">Link to File: <a href='#'>/AssetsRegistry/AnalysisClassDiagram/12.xmi</a></li>
-				  		<li class="list-group-item">Relation: <a href='#'>/AssetsRegistry/AnalysisClassDiagram/12.jpeg</a></li>
-						<li class="list-group-item">uri:</li>
-						<li class="list-group-item">groupid: /AssetsRegistry/ctcode</li> 
-						<li class="list-group-item">name: AnalysisClassDiagControlTower</li> 
-						<li class="list-group-item">version: 0.1</li> 
-						<li class="list-group-item">description: The analysis class diagram of the Control Tower authentication mechanism</li> 
-						<li class="list-group-item">keywords: [Control Tower S-CASE, security, authentication, social media, Google, Github] </li> 
-						<li class="list-group-item">createdAt: 2015-06-30</li> 
-						<li class="list-group-item">updatedAt: 2015-06-30</li> 
-						<li class="list-group-item">createdBy: Themis</li> 
-					</ul>
-					<!--hardcode-->
-			  	</div>
-			</div> 
-        </div>
-
-		<!---display storyboards data-->
-        <div ng-show="tab.isSet(6)">
-			
-			 <div class="panel panel-info">
-			  	<div class="panel-heading">Storyboards</div>
-			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
-			  		<ul class="list-group" ng-repeat="storyboard in searchCtrl.storyboards">
-			  			<!-- separate panel for actions -->
-			  			<li class="list-group-item">
-				  			<div class="panel-heading">Actions</div>
-				  			<div class="panel-body">
-					 			<ul class="list-group">
-					 				<li class="list-group-item" ng-repeat="action in storyboard.actions">Action: {{action}}</li>
-					 			</ul>
-				 			</div>
-			 			</li>
-					  	<li class="list-group-item">Belong to Project: {{storyboard.belongsTo}}</li>
-				  	  	<li class="list-group-item">Format: {{storyboard.format}}</li>
-					  	<li class="list-group-item">Link to File: {{storyboard.link}}</li>
-				  		<li class="list-group-item">Relation: {{storyboard.relation}}</li>						
-						<li class="list-group-item">uri:{{storyboard.uri}}</li> 
-						<li class="list-group-item">groupid: {{storyboard.groupId}}</li> 
-						<li class="list-group-item">name: {{storyboard.name}}</li> 
-						<li class="list-group-item">version: {{storyboard.version}}</li> 
-						<li class="list-group-item">description: {{storyboard.description}}</li> 
-						<li class="list-group-item">keywords: {{storyboard.tags}} </li> 
-						<li class="list-group-item">createdAt: {{storyboard.createdAt}}</li> 
-						<li class="list-group-item">updatedAt: {{storyboard.updatedAt}}</li> 
-						<li class="list-group-item">createdBy: {{storyboard.createdBy}}</li> 
-						<li class="list-group-item">updatedBy: {{storyboard.updatedBy}}</li>
-						<li class="list-group-item">score: {{req.score}}</li>
-					</ul>
-					<!--hard code--->
-					<ul class="list-group">
-			  			<!-- separate panel for actors -->
-			  			<li class="list-group-item">
-				  			<div class="panel-heading">Actions</div>
-				  			<div class="panel-body">
-					 			<ul class="list-group">
-					 				<li class="list-group-item" >Action: User clicks on the Social Media account</li>
-									<li class="list-group-item" >Action: The system redirects to the Social Media provider callback URL</li>
-					 			</ul>
-				 			</div>
-			 			</li>
-					  	<li class="list-group-item">Belong to Project: Control Tower S-CASE</li>
-				  	  	<li class="list-group-item">Format: xmi</li>
-					  	<li class="list-group-item">Link to File: <a href='#'>/AssetsRegistry/storyboard/231.xmi</a></li>
-				  		<li class="list-group-item">Relation: <a href='#'>/AssetsRegistry/storyboard/231.jpeg</a></li>
-						<li class="list-group-item">uri:</li>
-						<li class="list-group-item">groupid: /AssetsRegistry/ctcode</li> 
-						<li class="list-group-item">name:StoryboardControlTower</li> 
-						<li class="list-group-item">version: 0.1</li> 
-						<li class="list-group-item">description: The major storyboard of the Control Tower Authentication</li> 
-						<li class="list-group-item">keywords: [Control Tower S-CASE, security, authentication, social media, Google, Github] </li> 
-						<li class="list-group-item">createdAt: 2015-06-30</li> 
-						<li class="list-group-item">updatedAt: 2015-06-30</li> 
-						<li class="list-group-item">createdBy: Themis</li> 
-					</ul>
-					<!--hard code-->
-			  	</div>
-			</div> 
-        </div>
-
-        <!---display sourcecodes data-->
-        <div ng-show="tab.isSet(7)">
-			<div class="panel panel-info">
-			  	<div class="panel-heading">Source Code</div>
-			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
-			  		<ul class="list-group" ng-repeat="sourcecode in searchCtrl.sourcecodes">
-					  	<li class="list-group-item">Belong to Project: {{sourcecode.belongsTo}}</li>
-					  	<li class="list-group-item">Link to File: {{sourcecode.link}}</li>						
-						<li class="list-group-item">uri:{{sourcecode.uri}}</li> 
-						<li class="list-group-item">groupid: {{sourcecode.groupId}}</li> 
-						<li class="list-group-item">name: {{sourcecode.name}}</li> 
-						<li class="list-group-item">version: {{sourcecode.version}}</li> 
-						<li class="list-group-item">description: {{sourcecode.description}}</li> 
-						<li class="list-group-item">keywords: {{sourcecode.tags}} </li> 
-						<li class="list-group-item">createdAt: {{sourcecode.createdAt}}</li> 
-						<li class="list-group-item">updatedAt: {{sourcecode.updatedAt}}</li> 
-						<li class="list-group-item">createdBy: {{sourcecode.createdBy}}</li> 
-						<li class="list-group-item">updatedBy: {{sourcecode.updatedBy}}</li>
-						<li class="list-group-item">score: {{req.score}}</li>
-					</ul>
-					<!--hard code-->
-					<ul class="list-group" >
-					  	<li class="list-group-item">Belong to Project: Control Tower S-CASE</li>
-					  	<li class="list-group-item">Link to File: <a href='#'>/AssetsRegistry/SourceCode/32.zip</a></li>
-						<li class="list-group-item">uri:</li>
-						<li class="list-group-item">groupid: /AssetsRegistry/ctcode</li> 
-						<li class="list-group-item">name: ControlTowerSource</li> 
-						<li class="list-group-item">version: 0.1</li> 
-						<li class="list-group-item">description: The source code of Control Tower of S-CASE</li> 
-						<li class="list-group-item">keywords: [Control Tower S-CASE, security, authentication, social media, Google, Github] </li> 
-						<li class="list-group-item">createdAt: 2015-06-30</li> 
-						<li class="list-group-item">updatedAt: 2015-06-30</li> 
-						<li class="list-group-item">createdBy: Themis</li> 
-					</ul>
-					<!--hardcode-->
-			  	</div>
-			</div> 
-        </div>
-
-        <!---display services data-->
-        <div ng-show="tab.isSet(8)">	
-			<div class="panel panel-info">
-			  	<div class="panel-heading">Services</div>
-			  	<div class="panel-body" ng-controller="SearchController as searchCtrl">
-			  		<ul class="list-group" ng-repeat="service in searchCtrl.scaseservices">
-			  			<li class="list-group-item">Type: {{service.type}}</li>
-			  			<div ng-if="service.type==='service description'">
-			  			<li class="list-group-item">Link to Domain Ontology: {{service.domainOntology}}</li>
-			  			<li class="list-group-item">Belong to Project: {{service.belongsTo}}</li>
-					  	<li class="list-group-item">Link to File: {{service.link}}</li>
-			  			</div>
-			  			<div ng-if="service.type==='composite service description'">
-			  			<li class="list-group-item">List of 3rd party web services: {{service.list}}</li>
-			  			<li class="list-group-item">Link to Workflow: {{service.workflow}}</li>
-			  			<li class="list-group-item">Belong to Project: {{service.belongsTo}}</li>
-					  	<li class="list-group-item">Link to File: {{service.link}}</li>
-			  			</div>
-			  			<div ng-if="service.type==='service'">
-			  			<li class="list-group-item">Belong to Project: {{service.belongsTo}}</li>
-			  			<li class="list-group-item">Url: {{service.url}}</li>
-			  			<li class="list-group-item">wadl: {{service.wadl}}</li>
-			  			<li class="list-group-item">entry: {{service.entry}}</li>
-			  			</div>
-					  	<div ng-if="service.type==='3rd party service'">
-			  			<li class="list-group-item">Belong to Project: {{service.belongsTo}}</li>
-			  			<li class="list-group-item">Documentation: {{service.documentation}}</li>
-			  			<li class="list-group-item">wadl: {{service.wadl}}</li>
-			  			<li class="list-group-item">entry: {{service.entry}}</li>
-			  			</div>
-						<li class="list-group-item">uri:{{service.uri}}</li> 
-						<li class="list-group-item">groupid: {{service.groupId}}</li> 
-						<li class="list-group-item">name: {{service.name}}</li> 
-						<li class="list-group-item">version: {{service.version}}</li> 
-						<li class="list-group-item">description: {{service.description}}</li> 
-						<li class="list-group-item">keywords: {{service.tags}} </li> 
-						<li class="list-group-item">createdAt: {{service.createdAt}}</li> 
-						<li class="list-group-item">updatedAt: {{service.updatedAt}}</li> 
-						<li class="list-group-item">createdBy: {{service.createdBy}}</li> 
-						<li class="list-group-item">updatedBy: {{service.updatedBy}}</li>
-						<li class="list-group-item">score: {{req.score}}</li>
-					</ul>
-					<!--hard code-->
-					<ul class="list-group">
-			  			<li class="list-group-item">Type: Service Description</li>
-			  			<li class="list-group-item">Link to Domain Ontology: /AssetsRegistry/domainOntology/1.owl</li>
-			  			<li class="list-group-item">Belong to Project: Control Tower S-CASE</li>
-					  	<li class="list-group-item">Link: <a href='#'>/ControlTower/Api/</a></li>
-						<li class="list-group-item">uri:</li>
-						<li class="list-group-item">groupid: /AssetsRegistry/ctcode</li> 
-						<li class="list-group-item">name: S-CASE Control Tower API</li> 
-						<li class="list-group-item">version: 0.1</li> 
-						<li class="list-group-item">description: Service to authenticate through control tower of S-CASE</li> 
-						<li class="list-group-item">keywords: [Control Tower S-CASE, security, authentication, social media, Google, Github] </li> 
-						<li class="list-group-item">createdAt: 2015-06-30</li> 
-						<li class="list-group-item">updatedAt: 2015-06-30</li> 
-						<li class="list-group-item">createdBy: Themis</li> 
-			  			</div>
-					</ul>
-					<!--hardcode-->
-			  	</div>
-			</div> 
-			
-		<!-- OSRF Snippets -->
-        <div ng-show="tab.isSet(9)">
-			<div class="panel panel-info">
-		  		<div class="panel-heading">OSRF Snippets</div>
-			  	<div class="panel-body" ng-controller="SearchController">
-				  	<ul class="list-group" ng-repeat="snip in osrfsnippets">
-				  	  	<li class="list-group-item">Class Name: {{snip.className}}</li>
-					  	<li class="list-group-item">Source: {{snip.forge}} </li>
-					  	<li class="list-group-item">Belongs to Project: {{snip.projectName}}</li>
-						<li class="list-group-item">Link: <a ng-href="{{snip.url}}" target="_blank">{{snip.url}}</a></li>
-					  	<li class="list-group-item">Code: {{snip.sourceCode}}</li>
-						<li class="list-group-item">score: {{snip.similarityScore}}</li>
-					</ul>
-			  	</div>
-		  	</div>
-      	</div>
-			
-			
-			
-        </div>
-
-        
-  	</section>
-	
-	
-	
-</body>
+        <% include footer %>
+    </body>
 </html>
