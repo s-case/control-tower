@@ -1,45 +1,55 @@
 <!doctype html>
 <html>
-<% include header %>
-<% include navbar %>
-<body>
-<div class="container">
-	<div class="row">
-		<div class="col-sm-8 col-sm-offset-2">
-			<div class="well">
-				<div class="panel panel-default">
-				  	<!-- Default panel contents -->
-				  	<div class="panel-heading"><h3><span class="fa fa-github"></span> Projects I Collaborate on</h3></div>
-				  	<!-- Table of Projects I collaborate-->
-				  	<table class="table">
-				   		<thead>
-				          <tr>
-				            <th>#</th>
-				            <th>Project Name</th>
-				            <th></th>
-				          </tr>
-			        	</thead>
-			        	<tbody>
-				          	<% for (var i in projectnames) { %>
-								<tr>
-									<td><%= i%></td>
-									<td><%= projectnames[i].project_name%></td>
-									<td><% var manageurl="/collabprojects?project_name="+ projectnames[i].project_name%>
-							 		<a href=<%= manageurl %> class="btn btn-success btn-sm" style="color:white"><span class="fa fa-cogs"></span> Edit <%= projectnames[i].project_name%></a></td>
-									</tr>
-							<% } %>
-			         </tbody>
-				  </table>
-				</div>
-			</div>
+    <% include header %>
+    <body id="collaborations">
+	<!-- Begin Header -->
+	<header id="header">
+	    <% include navbar %>
+	</header>
+	<!-- End Header -->
+	<!-- Begin Main Content -->
+	<div class="content" id="main-content">
+	    <div class="container section">
+		<div class="row">
+		    <div class="col-md-10 col-md-offset-1 section-title">
+                        <h1 class="no-margin">Collaborations</h1>
+                    </div>
 		</div>
-	</div>
-	<div class="text-center">
-		<p>For more info about S-CASE visit: <a href="http://www.scasefp7.eu">http://www.scasefp7.eu</a>.</p>
-		<p> <a href="http://www.scasefp7.eu/news-blog/">S-CASE blog</a>.</p>
-	</div>
+		<div class="row">
+		    <div class="col-md-10 col-md-offset-1 section-body clearfix">
+			<!-- Table of Projects I collaborate -->
+			<% if(projectnames.length > 0) { %>
+			<table class="table table-striped table-bordered">
+    			    <thead>
+    				<tr>
+        			    <th>#</th>
+        			    <th>Project Name</th>
+        			    <th></th>
+    				</tr>
+    			    </thead>
+    			    <tbody>
+				<% for (var i in projectnames) { %>
+    			        <tr>
+    			            <td data-title="#"><%= i %></td>
+    				    <td data-title="Project Name"><%= projectnames[i].project_name %></td>
+    				    <!-- Βutton to edit the project's details-->
+    				    <td>
+					<% var manageurl="/collabprojects?project_name="+ projectnames[i].project_name %>
+					<a href=<%= manageurl %> class="btn btn-danger btn-sm">
+    					    <span class="fa fa-pencil"></span> Edit Project
+    					</a>
+    				    </td>
+				</tr>
+				<% } %>
+			    </tbody>
+    			</table>
+			<% } %>
+                    </div>
+		</div>
+	    </div>
+        </div>
+	<!-- End Main Content -->
 
-</div>
-<% include javascriptLoad %>
-</body>
+        <% include footer %>
+    </body>
 </html>
