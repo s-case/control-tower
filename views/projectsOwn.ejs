@@ -2,6 +2,9 @@
 <html>
     <% include header %>
     <body id="projects">
+
+	<% var errorFlag = errorflag %>
+
 	<!-- Begin Header -->
 	<header id="header">
 	    <% include navbar %>
@@ -25,6 +28,9 @@
                                 <input type="text" id="name" name="name" placeholder="Enter your project's name (not empty)" size="35">
                                 <button type="submit" class="btn btn-danger no-margin">Create Project</button>
                             </div>
+			    <% if(errorFlag) { %>
+				<div class="alert alert-danger margin-top-10">You must enter a valid project name.</div>
+			    <% } %>
                         </form>
                         <span class="space-20"></span>
 			<% if(projectnames.length > 0) { %>

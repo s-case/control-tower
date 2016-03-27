@@ -87,8 +87,8 @@ module.exports = function(app, passport) {
 				}
 	        }); 
 		}
-		else{
-			res.redirect('/profile');
+		else{ //the project name field is empty
+			res.redirect('/displayOwnprojects?error=1');
 		}
 	});
 };

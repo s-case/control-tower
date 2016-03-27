@@ -9,6 +9,8 @@ module.exports = function(app, passport) {
 	// =============================================================================
 	app.get('/displayOwnprojects', isLoggedIn, function(req, res) {
 		var user            = req.user;
+		var errorflag = req.param('error');//error flag
+
 		connection = connConstant.connection;
 		//query for the projects I own
 		var projectsOwnedQuery = "SELECT `project_name` FROM " + dbconfig.projects_table +" JOIN " + dbconfig.owners_table + " ON "+ dbconfig.projects_table+
@@ -16,7 +18,8 @@ module.exports = function(app, passport) {
 		connection.query(projectsOwnedQuery, function(err, rows){
             	res.render('projectsOwn.ejs', {
 					projectnames : rows,//I return the project names in order to be able to remove them
-					user: user
+					user: user,
+                                        errorflag: errorflag
 				});
         });
 	});

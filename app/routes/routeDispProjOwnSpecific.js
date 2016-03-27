@@ -29,6 +29,8 @@ module.exports = function(app, passport) {
 	app.get('/manageprojects', isLoggedIn, function(req, res) {
 		var user = req.user;
 		var proj_name = req.param('project_name');//name of the project to manage
+		var errorflag = req.param('error');//error flag
+
 		if(proj_name){
 			//flag that is going to be set to true only if own the project
 			//function to check if I own the project
@@ -100,7 +102,8 @@ module.exports = function(app, passport) {
 									username : user.github_name,//we return the active's User name (it is used in order be able to remove your own account from the project)
 									user: user,
 									domainset: domain_set,
-									subdomainset: subdomain_set
+									subdomainset: subdomain_set,
+									errorflag: errorflag
 								});
 							});
 						});

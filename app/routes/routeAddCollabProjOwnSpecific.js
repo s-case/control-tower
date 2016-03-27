@@ -31,6 +31,12 @@ module.exports = function(app, passport) {
 		var google_email;
 		var github_name;
 		var checkIfUserExistsQuery;//query to check if the provided github name or google email matches to an S-Case user
+		var errorflag = 0; //error flag
+		
+		if(name.length < 1) { //we check if the name field is empty
+			errorflag = 11;
+		}
+
 		if(name.indexOf('gmail.com')>-1){
 			google_email=name;
 			checkIfUserExistsQuery = "SELECT id FROM " + dbconfig.users_table + " WHERE " +
@@ -55,7 +61,7 @@ module.exports = function(app, passport) {
 						connection=connConstant.connection;//we get a new connection to the database
 						connection.query(getProjectId, function(err, rows){//we perform the query to get the project's id
 							if(err){
-								res.redirect('/manageprojects'+'?project_name='+proj_name);
+								res.redirect('/manageprojects'+'?project_name='+proj_name+'&error='+errorflag);
 							}
 							else{
 								var createCollabQuery = "INSERT INTO " +dbconfig.collaborators_table+ "(user_id,project_id)" +
@@ -70,7 +76,8 @@ module.exports = function(app, passport) {
 						});
 					}
 					else{
-						res.redirect('/manageprojects'+'?project_name='+proj_name);
+						if(errorflag != 11) errorflag = 21;
+						res.redirect('/manageprojects'+'?project_name='+proj_name+'&error='+errorflag);
 					}
 				});
 			}

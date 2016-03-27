@@ -5,8 +5,10 @@
 
 	<!-- We define a variable projectCurrent to contain the projectname -->
 	<% var projName = projectname %>
+	<% var errorFlag = errorflag %>
+	
 	<script> projectCurrent = "<%=projName%>";</script>
-        
+
 	<!-- Begin Header -->
 	<header id="header">
 	    <% include navbar %>
@@ -117,16 +119,23 @@
         		    <div class="panel-body">
 				<!-- If the user is an owner a form to add an owner will be displayed -->
 				<% if (ownerflag) { %>
-        			<form action="/addOwner" method="post">
+        			<form action="/addOwner" method="post" novalidate name="form" ng-class="{true: 'error'}[submitted && form.name.$invalid]">
     				    <fieldset>
     					<label for="name"></label>
     					<input type="hidden" id="project_name" name="project_name" value=<%= projectname %>>
-    					<input type="text" id="name" name="name" placeholder="Enter the Owner's Github Name or Google e-mail Account" size="54">
+    					<input type="text" id="name" name="name" ng-model="field" required placeholder="Enter the Owner's Github Name or Google e-mail Account" size="54">
     					<button type="submit" class="btn btn-danger">Add Owner</button>
     		        	    </fieldset>
+				    <% if(errorFlag) { %>
+					<% if(errorFlag == 10) { %>
+					    <div class="alert alert-danger margin-top-10">You must enter a valid username or email.</div>
+					<% } else if(errorFlag == 20) { %>
+					    <div class="alert alert-danger margin-top-10">The provided username or email does not match to a S-CASE user.</div>
+					<% } %>
+				    <% } %>
     		    		</form>
-				<% } %>
-    		    				
+				<% } %>	
+
     				<span class="space-20"></span>
     							
         			<!-- Table of Owners-->
@@ -192,6 +201,13 @@
             				<input type="text" id="name" name="name" placeholder="Enter the Collaborator's Github Name or Google e-mail Account" size="54">
 					<button type="submit" class="btn btn-danger">Add Collaborator</button>
                     		    </fieldset>
+				    <% if(errorFlag) { %>
+					<% if(errorFlag == 11) { %>
+					    <div class="alert alert-danger margin-top-10">You must enter a valid username or email.</div>
+					<% } else if(errorFlag == 21) { %>
+					    <div class="alert alert-danger margin-top-10">The provided username or email does not match to a S-CASE user.</div>
+					<% } %>
+				    <% } %>
         			</form>
 				<% } %>
         						
@@ -248,10 +264,14 @@
 			<% } %>
 		    </div>
 		</div>
+		
+
+				
 	    </div>
 	</div>
         <!-- End Main Content -->
 
         <% include footer %>
+
     </body>
 </html>

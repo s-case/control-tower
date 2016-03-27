@@ -6,6 +6,7 @@ module.exports = function(app, passport) {
 	var jwt = require('jsonwebtoken');//require json web token package
 	var connection;
 	var ownerflag;//flag used to check if the user is an owner
+
 	//function to check if the user is owner of a specific project
 	function checkIfOwner(user,proj_name,callback){
 		connection=connConstant.connection;
@@ -32,7 +33,13 @@ module.exports = function(app, passport) {
 		var google_email;
 		var github_name;
 		var checkIfUserExistsQuery;//query to check if the provided github name or google email matches to an S-Case user
-		if(name.indexOf('gmail.com')>-1){
+		var errorflag = 0; //error flag
+		 
+		if(name.length < 1) { //we check if the name field is empty
+			errorflag = 10;
+		}
+
+                if(name.indexOf('gmail.com')>-1){
 			google_email=name;
 			checkIfUserExistsQuery = "SELECT id FROM " + dbconfig.users_table + " WHERE " +
 						dbconfig.users_table +".google_email=" + "'" + google_email +"'";////check if the user's githubname exists			
@@ -55,7 +62,7 @@ module.exports = function(app, passport) {
 						connection=connConstant.connection;
 						connection.query(getProjectId, function(err, rows){
 							if(err){
-								res.redirect('/manageprojects'+'?project_name='+proj_name);
+								res.redirect('/manageprojects'+'?project_name='+proj_name+'&error='+errorflag);
 							}
 							else{
 								var createOwnerQuery = "INSERT INTO " +dbconfig.owners_table+ "(user_id,project_id)" +
@@ -68,7 +75,8 @@ module.exports = function(app, passport) {
 						});
 					}
 					else{
-						res.redirect('/manageprojects'+'?project_name='+proj_name);
+						if(errorflag != 10) errorflag = 20;
+						res.redirect('/manageprojects'+'?project_name='+proj_name+'&error='+errorflag);
 					}
 				});
 			}
