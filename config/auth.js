@@ -6,7 +6,7 @@ module.exports = {
 	'GithubAuth' : {
 		'clientID' 		: process.env.GITHUB_CLIENTID,
 		'clientSecret' 	: process.env.GITHUB_CLIENTSECRET,
-		'callbackURL' 	: 'http://109.231.126.133:3000/auth/github/callback'
+		'callbackURL' 	: 'http://app.scasefp7.com:3000/auth/github/callback'
 	},
 
 	'googleAuth' : {
