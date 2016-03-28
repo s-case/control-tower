@@ -91,6 +91,7 @@
 				    </ui-select-match>
 				    <!-- We create a variable for the current subdomain -->
 				    <% var subDomain = subdomain_set %>
+				    <script> subdomainCurrent = "<%= subDomain %>";</script>
 		            	    <ui-select-choices repeat="subdomain in domainCtrl.subdomains | filter: $select.search" value=window.subdomainCurrent>
 					<!-- We set the default value to the current subdomain -->
 					<div ng-bind-html="subdomain.Category | highlight: $select.search "></div>
@@ -107,6 +108,10 @@
     				      	</fieldset>
     				    </div>
     				</div>
+				<!-- Message for successful submission of domains and subdomains -->
+				<div ng-if="domainCtrl.DomainSubdomainSelectSuccess==1" class="alert alert-success" role="alert">Changes submitted successfully!</div>
+				<!-- Message for unsuccessful submission of domains and subdomains -->
+				<div ng-if="domainCtrl.DomainSubdomainSelectSuccess==2" class="alert alert-danger" role="alert">Changes failed to be submitted!</div>
 				<% } %>
         		    </div>
 			</div>
