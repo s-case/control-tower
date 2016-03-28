@@ -12,7 +12,7 @@ module.exports = {
 	'googleAuth' : {
 		'clientID' 		: process.env.GOOGLE_CLIENTID,
 		'clientSecret' 	: process.env.GOOGLE_CLIENTSECRET,
-		'callbackURL' 	: 'http://scouter.ee.auth.gr:3000/auth/google/callback'
+		'callbackURL' 	: 'http://app.scasefp7.com:3000/auth/google/callback'
 	}
 
 };
