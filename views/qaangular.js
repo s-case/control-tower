@@ -11,7 +11,7 @@
     //https://developers.google.com/adwords/api/docs/appendix/verticals
     //Domains with no parent are the domains in our case (var parentDomains below)
     //Domains with parents the domains with no parent are the subdomains in our case (var subdomains below)
-    loadMessage=false;
+    	loadMessage=false;
 	resMessage=false;
   	//controloller to perform the search to the S-CASE artefacts repo
   	app.controller('SearchController',['$http','$rootScope',function($http,$rootScope){
@@ -43,6 +43,7 @@
 	    this.doSearch = function(){
 	    	//alert('I am fetching results...Please close the window to get results!')
 	    	$rootScope.loadMessage=true;
+		$rootScope.resMessage=false;
 	    	console.log($rootScope.loadMessage)
 	    	//it will contain the current query because inside http "this" refers to http and not to the controller
 	    	var currentQuery = SearchPage.searchQuery;
@@ -52,7 +53,8 @@
 	    	}
 	    	if(domainString==undefined||domainString===""){
 	    		domainString="All";
-	    	}	    	
+	    	}	
+   	
 	    	var subdomainString="";
 	    	if(currentQuery.subdomainQuery){
 	    		subdomainString=currentQuery.subdomainQuery.Category;
@@ -69,9 +71,9 @@
 	    	$rootScope.storyboards=[]
 	    	$rootScope.sourcecodes=[]
 	    	$rootScope.scaseservices=[]
-			$rootScope.osrfsnippets=[];
+		$rootScope.osrfsnippets=[];
 	    	if(domainString!="All"&&subdomainString!="All"){
-	    		query = operations.replace(/,/g, '')
+	    		query = operations.replace(/,/g, '');
 	    		$http({
 		   			url: '/QAsearch',
 		   			method: "GET",
@@ -138,8 +140,9 @@
 			  			}
 			  		}
 			  		$rootScope.resMessage=true;
+					$rootScope.loadMessage=false;
 			  	}	
-			  	if (osrfdata.body){
+			  	if (osrfdata!=undefined && osrfdata.body){
 			  		var OSRFSearchResults=JSON.parse(osrfdata.body);//we get the data to the searchResults
 			  		OSRFSearchResults = OSRFSearchResults.result;
 			  		for(var i=0;i<OSRFSearchResults.length;i++){
@@ -231,9 +234,10 @@
 			  			}
 			  		}
 			  		$rootScope.resMessage=true;
+					$rootScope.loadMessage=false;
 			  	}
 
-			  	if (osrfdata.body){
+			  	if (osrfdata!=undefined && osrfdata.body){
 			  		var OSRFSearchResults=JSON.parse(osrfdata.body);//we get the data to the searchResults
 			  		OSRFSearchResults = OSRFSearchResults.result;
 			  		for(var i=0;i<OSRFSearchResults.length;i++){
@@ -328,8 +332,9 @@
 			  			}
 			  		}
 			  		$rootScope.resMessage=true;
+					$rootScope.loadMessage=false;
 			  	}
-			  	if (osrfdata.body){
+			  	if (osrfdata!=undefined && osrfdata.body){
 			  		var OSRFSearchResults=JSON.parse(osrfdata.body);//we get the data to the searchResults
 			  		OSRFSearchResults = OSRFSearchResults.result;
 			  		for(var i=0;i<OSRFSearchResults.length;i++){
@@ -337,9 +342,9 @@
 			  		}
 			  	}
 			  		
-			  		//alert('...I got results! Browse the tabs!')
+			  		//alert('...I got results! Browse the tabs!');
 			  		SearchPage.searchResults=[];//we reset the search results
-			  		$rootScope.requirements=reqs
+			  		$rootScope.requirements=reqs;
 			  		$rootScope.analysisclassdiagrams=anas;
 			  		$rootScope.activitydiagrams=acts;
 			  		$rootScope.storyboards=stos;
@@ -358,6 +363,7 @@
 	    this.TransformFreeText = function(){
 	    	//alert('I am fetching results...please close the window to get results!')
 	    	$rootScope.loadMessage=true;
+		$rootScope.resMessage=false;
 	    	//console.log($rootScope.loadMessage)
 	    	var currentQuery = SearchPage.searchQuery;
 	    	var quest = currentQuery.question;
@@ -489,9 +495,10 @@
 			  			}
 			  		}
 			  		$rootScope.resMessage=true;
+					$rootScope.loadMessage=false;
 			  	}
 
-			  	if (osrfdata.body){
+			  	if (osrfdata!=undefined && osrfdata.body){
 			  		var OSRFSearchResults=JSON.parse(osrfdata.body);//we get the data to the searchResults
 			  		OSRFSearchResults = OSRFSearchResults.result;
 			  		for(var i=0;i<OSRFSearchResults.length;i++){
@@ -596,7 +603,7 @@
   	});
   	
 	//controller to set the default tab value and to check if it is active
-  	app.controller('TabController',['$rootScope',function($rootScope){
+  	/*app.controller('TabController',['$rootScope',function($rootScope){
 	    this.tab=1;//default tab to be active
 
 	    //set the tab active on click
@@ -611,10 +618,10 @@
 	    this.isSet = function(checkTab){
 	      return this.tab===checkTab;
 	    };
-  	}]);
+  	}]);*/
 
   	//controller to set the default tab value and to check if it is active
-  	app.controller('SearchModeTabController',function(){
+  	/*app.controller('SearchModeTabController',function(){
 	    this.advancedTab=1;//default tab to be active
 	    //set the tab active on click
 	    this.setTab = function(setTab){
@@ -624,6 +631,6 @@
 	    this.isSet = function(checkTab){
 	      return this.advancedTab===checkTab;
 	    };
-  	});
+  	});*/
 
 })();

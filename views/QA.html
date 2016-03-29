@@ -40,7 +40,10 @@
                     				    </span>
                     				</div>
                     				<fieldset class="form-group">
-                    				    <input type="submit" class="btn btn-danger margin-top-15 pull-right" ng-click="searchCtrl.TransformFreeText()" value="Submit Query">
+                    				    <button type="submit" class="btn btn-danger margin-top-20 pull-right" ng-click="searchCtrl.TransformFreeText()">
+						        <span ng-if="!loadMessage">Submit Query</span>
+						        <span ng-if="loadMessage" class="spinner"><span class="glyphicon glyphicon-repeat"></span></span>
+						    </button>
                     				</fieldset>
                                             </div>
                                         </form>
@@ -95,19 +98,18 @@
                                                 <span class="space-20"></span>
                                                 
                 			        <fieldset class="form-group">
-                			            <input type="submit" class="btn btn-danger pull-right" ng-click="searchCtrl.doSearch()" value="Submit Query">
+                			            <button type="submit" class="btn btn-danger pull-right margin-top-20" ng-click="searchCtrl.doSearch()" value="Submit Query">
+							<span ng-if="!loadMessage">Submit Query</span>
+						        <span ng-if="loadMessage" class="spinner"><span class="glyphicon glyphicon-repeat"></span></span>
+						    </button>
                 			      	</fieldset>
                                             </div>
                     			</form>	
         			    </div>
         			</div>
         		    </div>
-			    <div class="text-center margin-top-30" ng-show="loadMessage && !resMessage">
-				<img src="assets/images/ajax-loader.gif" /> 
-				<span style="font-weight: 600;"> Loading...</span>
-			    </div>
-			    <div class="panel panel-default" id="results" ng-show="resMessage">
-                    	            <div class="panel-heading">Results</div>
+			    <div class="panel panel-default" id="results" ng-show="!loadMessage && resMessage">
+                    	            <div class="panel-heading"><h4>Results</h4></div>
         			    <div class="panel-body">
 				        <ul class="nav nav-pills nav-stacked col-lg-3 col-md-4">
 	                          	    <li class="active">
@@ -145,7 +147,7 @@
 	                                                    <div class="panel-heading">
 	                                                        <h5 class="panel-title">
 	                                                            <a data-toggle="collapse" href="#collapse1{{$index + 1}}" data-parent="#accordion-1">
-	                                                                {{req.artefact.name}} <span class="caret hidden-xs"></span>
+									Requirement #{{$index + 1}} <span class="caret hidden-xs"></span>
 	                                                            </a>
 	                                                        </h5>
 	                                                    </div>
@@ -167,7 +169,7 @@
 	                                    				    </tr>
 	                                    				    <tr>
 	                                    					<td>Link to File:</td>
-	                                    					<td>{req.link}}</td>
+	                                    					<td>{{req.link}}</td>
 	                                    				    </tr>
 	                                    				    <tr>
 	                                    					<td>Language:</td>
@@ -231,7 +233,7 @@
 	                                                    <div class="panel-heading">
 	                                                        <h5 class="panel-title">
 	                                                            <a data-toggle="collapse" href="#collapse2{{$index + 1}}" data-parent="#accordion-2">
-	                                                                {{usecasediagram.name}} <span class="caret hidden-xs"></span>
+	                                                                UseCaseDiagram #{{$index + 1}} <span class="caret hidden-xs"></span>
 	                                                            </a>
 	                                                        </h5>
 	                                                    </div>
@@ -333,7 +335,7 @@
                                                             <div class="panel-heading">
                                                                 <h5 class="panel-title">
                                                                     <a data-toggle="collapse" href="#collapse3{{$index + 1}}" data-parent="#accordion-3">
-                                                                        {{activitydiagram.name}} <span class="caret hidden-xs"></span>
+                                                                        ActivityDiagram #{{$index + 1}} <span class="caret hidden-xs"></span>
                                                                     </a>
                                                                 </h5>
                                                             </div>
@@ -427,7 +429,7 @@
                                                             <div class="panel-heading">
                                                                 <h5 class="panel-title">
                                                                     <a data-toggle="collapse" href="#collapse4{{$index + 1}}" data-parent="#accordion-4">
-                                                                        {{activitydiagram.name}} <span class="caret hidden-xs"></span>
+                                                                        AnalysisClassDiagram #{{$index + 1}} <span class="caret hidden-xs"></span>
                                                                     </a>
                                                                 </h5>
                                                             </div>
@@ -521,7 +523,7 @@
                                                             <div class="panel-heading">
                                                                 <h5 class="panel-title">
                                                                     <a data-toggle="collapse" href="#collapse5{{$index + 1}}" data-parent="#accordion-5">
-                                                                        {{storyboard.name}} <span class="caret hidden-xs"></span>
+                                                                        Storyboard #{{$index + 1}} <span class="caret hidden-xs"></span>
                                                                     </a>
                                                                 </h5>
                                                             </div>
@@ -615,7 +617,7 @@
                                                             <div class="panel-heading">
                                                                 <h5 class="panel-title">
                                                                     <a data-toggle="collapse" href="#collapse6{{$index + 1}}" data-parent="#accordion-6">
-                                                                        {{sourcecode.name}} <span class="caret hidden-xs"></span>
+                                                                        Sourcecode #{{$index + 1}} <span class="caret hidden-xs"></span>
                                                                     </a>
                                                                 </h5>
                                                             </div>
@@ -701,7 +703,7 @@
                                                             <div class="panel-heading">
                                                                 <h5 class="panel-title">
                                                                     <a data-toggle="collapse" href="#collapse7{{$index + 1}}" data-parent="#accordion-7">
-                                                                        {{service.name}} <span class="caret hidden-xs"></span>
+                                                                        Service #{{$index + 1}} <span class="caret hidden-xs"></span>
                                                                     </a>
                                                                 </h5>
                                                             </div>
@@ -843,7 +845,7 @@
                                                             <div class="panel-heading">
                                                                 <h5 class="panel-title">
                                                                     <a data-toggle="collapse" href="#collapse8{{$index + 1}}" data-parent="#accordion-8">
-                                                                        {{snip.className}} <span class="caret hidden-xs"></span>
+                                                                        OSRFSnippet #{{$index + 1}} <span class="caret hidden-xs"></span>
                                                                     </a>
                                                                 </h5>
                                                             </div>

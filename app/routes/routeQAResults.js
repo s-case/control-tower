@@ -53,7 +53,7 @@ module.exports = function(app, passport) {
 
 	});
 	app.get('/QAsearch', isLoggedIn, function(req,res){
-		//console.log(req.query)
+		//console.log(req.query);
 		var totalrespon = {};
 		q=req.query.q
 		domain=req.query.domain;
@@ -64,40 +64,52 @@ module.exports = function(app, passport) {
 		if (domain!=undefined && subdomain!=undefined){
 			request.get('http://109.231.121.125:8080/s-case/assetregistry/artefact/search?query='+q+'&subdomain='+subdomain+'&domain='+domain,{timeout:15000},function(err,respon){
 				totalrespon.QA = respon;
-				request({
+				/*request({
 					uri: 'http://109.231.121.244:8080/OSRF/assets/snippet?code=' + q,
   					method: "GET",
   					headers: {'Accept': 'application/json'}
 				}, function(theerr, therespon, thebod) {
 					totalrespon.OSRF = therespon;
 					res.send(totalrespon);
-				});
+				});*/
+
+				//to be deleted
+				totalrespon.OSRF = {};
+				res.send(totalrespon);
 			});
 		}
 		else if (subdomain!=undefined){
 			request.get('http://109.231.121.125:8080/s-case/assetregistry/artefact/search?query='+q+'&domain='+domain,{timeout:15000},function(err,respon){
 				totalrespon.QA = respon;
-				request({
+				/*request({
 					uri: 'http://109.231.121.244:8080/OSRF/assets/snippet?code=' + q,
   					method: "GET",
   					headers: {'Accept': 'application/json'}
 				}, function(theerr, therespon, thebod) {
 					totalrespon.OSRF = therespon;
 					res.send(totalrespon);
-				});
+				});*/
+				
+				//to be deleted
+				totalrespon.OSRF = {};
+				res.send(totalrespon);
 			});
 		}
 		else{
 			request.get('http://109.231.121.125:8080/s-case/assetregistry/artefact/search?query='+q,{timeout:15000},function(err,respon){
 				totalrespon.QA = respon;
-				request({
+				/*request({
 					uri: 'http://109.231.121.244:8080/OSRF/assets/snippet?code=' + q,
   					method: "GET",
   					headers: {'Accept': 'application/json'}
 				}, function(theerr, therespon, thebod) {
 					totalrespon.OSRF = therespon;
 					res.send(totalrespon);
-				});
+				});*/
+
+				//to be deleted
+				totalrespon.OSRF = {};
+				res.send(totalrespon);
 			});
 		}
 
