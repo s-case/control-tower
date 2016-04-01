@@ -608,11 +608,9 @@
 
 	    //set the tab active on click
 	    this.setTab = function(setTab){
-	      this.tab=setTab;
-	      if (setTab==1){
+	        this.tab=setTab;
 	      	$rootScope.resMessage=false;
-    		$rootScope.loadMessage=false;
-	      }
+		$rootScope.loadMessage=false;
 	    };
 	    //returns true/false checking if the tab is active
 	    this.isSet = function(checkTab){
