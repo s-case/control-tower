@@ -19,7 +19,6 @@ var session      = require('express-session');
 
 var configDB = require('./config/database.js');
 
-
 // configuration ===============================================================
 //mongoose.connect(configDB.url); // connect to our database
 
@@ -67,6 +66,8 @@ require('./app/routes/routeChangeProjectsPrivacy.js')(app, passport);//load the 
 require('./app/routes/routeChangeProjectsDomainSubdomain.js')(app, passport);//load the route for changing the domains and subdomains of a project I own 
 require('./app/routes/routeGetProjectsDomainSubdomain.js')(app, passport);//load the route for getting the domains and subdomains of a project I own
 require('./app/routes/routeQAResults.js') (app);//access the QA
+require('./app/routes/routeGetRequestsProxy.js') (app);
+require('./app/routes/routePostRequestsProxy.js') (app);
 //================API routes=============================
 require('./app/api/checkUserValidityAPI.js') (app);//check if a user is Valid (API) route
 require('./app/api/deleteAccAPI.js') (app);//delete account

@@ -41,38 +41,43 @@ module.exports = function(app, passport) {
 		connection=connConstant.connection;
 		if(!user_id){//at first we create a message with all the projects the user owns to alert about the potential deletion (the message is stored in the database and shown to the user)
 			connection.query(CheckOwnershipQuery, function(err, rows) {
-	         	if (err) throw err;
-	         	var newmessage;//we create the message that contains the projects that the user owns
-				for(var i in rows){
-					if(i==0){
-						newmessage =rows[i].project_name + " and ";
+			 	if (err) throw err;
+			 	var newmessage;//we create the message that contains the projects that the user owns
+				
+				for(var i in rows) {
+					if(i==0) {
+						newmessage = "\"" + rows[i].project_name + "\" , ";
 					}
 					else {
-						newmessage =newmessage+rows[i].project_name + " and ";
+						newmessage = newmessage + "\"" + rows[i].project_name + "\" , ";
 					}
 				}
-				if(newmessage!=null){//we are going to insert this message in the DB, in order to know that the user attempted to delete the profile
-					newmessage = newmessage.substring(0,newmessage.length-4);//remove the last "and"
-					connection=connConstant.connection;
-					var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'";
-					connection.query(selectUsersQuery, function(err, rows){
-	                    if (err){
-	                    	res.redirect('/profile');
-	                    }
-	                    if (rows.length > 0) {
-	                        var userProfile = rows[0];
-	                        userProfile.Message=newmessage;
-                            var updateQuery = "UPDATE " + dbconfig.users_table + " SET " +
-                                "`message` = '" + userProfile.Message + "' " +
-                                "WHERE `id` = '" + user.id + "' LIMIT 1";//query to insert the alert message in the user's profile in the db
-                            connection=connConstant.connection;//get a new connection
-                            connection.query(updateQuery, function(err, rows) {
-                            	res.redirect('/profile');
-                            });
-	                    }
-					});
-				}	
-				if(!rows[0]){//if the user does not own any project we are going to delete the account
+				
+				if(newmessage != undefined && newmessage.length > 0) newmessage = newmessage.substring(0,newmessage.length-2);//remove the last "and"
+				connection=connConstant.connection;
+				
+				var selectUsersQuery = "SELECT * FROM " + dbconfig.users_table + " WHERE id = '" + user.id + "'";
+				connection.query(selectUsersQuery, function(err, rows) {
+			            if (err){
+			            	res.redirect('/profile');
+			            }
+		            	    if (rows.length > 0) {
+
+		                	var userProfile = rows[0];
+					userProfile.Message = newmessage;
+	                    		var updateQuery = "UPDATE " + dbconfig.users_table + " SET " + "`message` = '" + userProfile.Message + "' " +
+	                        "WHERE `id` = '" + user.id + "' LIMIT 1";//query to insert the alert message in the user's profile in the db
+				    	connection=connConstant.connection;//get a new connection
+				    	connection.query(updateQuery, function(err, rows) {
+						res.render('profile.ejs', {
+							user : userProfile,
+							userMessageShow: true
+						});
+	                    		});
+		            	    }
+				});
+	
+				if(!rows[0]) {//if the user does not own any project we are going to delete the account
 					res.redirect('/delete?user_id='+user.id);
 				}
 			});

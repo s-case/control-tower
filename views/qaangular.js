@@ -603,7 +603,7 @@
   	});
   	
 	//controller to set the default tab value and to check if it is active
-  	/*app.controller('TabController',['$rootScope',function($rootScope){
+  	app.controller('TabController',['$rootScope',function($rootScope){
 	    this.tab=1;//default tab to be active
 
 	    //set the tab active on click
@@ -618,7 +618,7 @@
 	    this.isSet = function(checkTab){
 	      return this.tab===checkTab;
 	    };
-  	}]);*/
+  	}]);
 
   	//controller to set the default tab value and to check if it is active
   	/*app.controller('SearchModeTabController',function(){

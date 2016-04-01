@@ -17,7 +17,8 @@ module.exports = function(app, passport) {
 	app.get('/profile', isLoggedIn, function(req, res) {
 		connection = connConstant.connection;
 		res.render('profile.ejs', {
-			user : req.user
+			user: req.user,
+			userMessageShow: false
 		});
 	});
 	// LOGOUT ==============================

@@ -93,10 +93,10 @@
     						<% } %>
     				    </ul>
     				    <!-- Alert that I own some project(s) -->
-    				    <% if (user.Message != null && user.Message !== undefined && user.Message.length > 1) { %>
-        				    <div class="alert alert-danger" role="alert"> Alert: You still own <%= user.Message %></div>
+    				    <% if (user.Message != null && user.Message !== undefined && user.Message.length > 1 && userMessageShow) { %>
+        				    <div class="alert alert-danger margin-top-20" role="alert">You still own the following projects: <%= user.Message %></div>
         				    <% var url = "/delete?user_id=" + user.id %>
-        				    <a href=<%= url %> class="btn btn-danger"><span class="fa fa-chain-bomb"></span>Delete Account</a>
+        				    <a href=<%= url %> class="btn btn-danger"><span class="fa fa-chain-bomb"></span>Delete Anyway</a>
     				    <% } else { %>
     				        <!-- Delete account -->
     				        <a href="/delete" class="btn btn-danger" id="btn-delete><span class="fa fa-chain-bomb"></span>Delete Account</a>
@@ -121,13 +121,13 @@
 		    <div class="row">
 			<div class="col-md-10 col-md-offset-1 section-body clearfix">
     		        <!-- Alert that I own some project(s) -->
-    		        <% if (user.Message != null && user.Message != undefined && user.Message.length > 1) { %>
-        			<div class="alert alert-danger" role="alert"> Alert: You still own <%= user.Message %></div>
+    		        <% if (user.Message != null && user.Message != undefined && user.Message.length > 1 && userMessageShow) { %>
+        			<div class="alert alert-danger margin-top-20" role="alert">You still own the following projects: <%= user.Message %></div>
     			    <% var url = "/delete?user_id=" + user.id %>
     			    <a href=<%= url %> class="btn btn-danger"><span class="fa fa-chain-bomb"></span>Delete Account</a>
     			    <!-- Delete account -->
         			<% } else { %>
-			        <a href="/delete" class="btn btn-danger" id="btn-delete><span class="fa fa-chain-bomb"></span>Delete Account</a>
+			        <a href="/delete" class="btn btn-danger" id="btn-delete><span class="fa fa-chain-bomb"></span>Delete Anyway</a>
     			    <% } %>
 			    </div>
 			</div>

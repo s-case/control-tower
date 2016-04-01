@@ -78,7 +78,7 @@ module.exports = function(app, passport) {
 				res.send(totalrespon);
 			});
 		}
-		else if (subdomain!=undefined){
+		else if (domain!=undefined){
 			request.get('http://109.231.121.125:8080/s-case/assetregistry/artefact/search?query='+q+'&domain='+domain,{timeout:15000},function(err,respon){
 				totalrespon.QA = respon;
 				/*request({

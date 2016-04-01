@@ -17,14 +17,14 @@
                     </div>
 		</div>
 		<div class="row">
-		    <div class="col-md-10 col-md-offset-1 section-body clearfix">
+		    <div class="col-md-10 col-md-offset-1 section-body clearfix" ng-controller="TabController as tab">
 			<!-- The tabs of search modes -->
 			<ul class="nav nav-tabs">
                             <li class="active">
-                                <a data-toggle="tab" href="#text-search">Free Text Search</a>
+                                <a data-toggle="tab" href="#text-search" ng-click="tab.setTab(1)">Free Text Search</a>
                             </li>
                             <li>
-                                <a data-toggle="tab" href="#structured-search">Structured Search</a>
+                                <a data-toggle="tab" href="#structured-search" ng-click="tab.setTab(2)">Structured Search</a>
                             </li>
                         </ul>
 			<!--Controller for the search options-->
@@ -108,7 +108,7 @@
         			    </div>
         			</div>
         		    </div>
-			    <div class="panel panel-default" id="results" ng-show="!loadMessage && resMessage">
+			    <div class="panel panel-default" id="results" ng-if="!loadMessage && resMessage">
                     	            <div class="panel-heading"><h4>Results</h4></div>
         			    <div class="panel-body">
 				        <ul class="nav nav-pills nav-stacked col-lg-3 col-md-4">
@@ -168,48 +168,8 @@
 	                                    					<td>{{req.artefact.projectName}}</td>
 	                                    				    </tr>
 	                                    				    <tr>
-	                                    					<td>Link to File:</td>
-	                                    					<td>{{req.link}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>Language:</td>
-	                                    					<td>{{req.language}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>uri:</td>
-	                                    					<td>{{req.artefact.uri}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>groupid:</td>
-	                                    					<td>{{req.artefact.groupId}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
 	                                    					<td>name:</td>
 	                                    					<td>{{req.artefact.name}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>version:</td>
-	                                    					<td>{{req.artefact.version}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>keywords:</td>
-	                                    					<td>{{req.artefact.tags}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>createdAt:</td>
-	                                    				        <td>{{req.artefact.createdAt}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>updatedAt:</td>
-	                                    					<td>{{req.artefact.updatedAt}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>createdBy:</td>
-	                                    					<td>{{req.artefact.createdBy}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>updatedBy:</td>
-	                                    					<td>{{req.artefact.updatedBy}}</td>
 	                                    				    </tr>
 									    <tr>
 	                                    					<td>score:</td>
@@ -261,57 +221,9 @@
 	                                    					<td>Belong to Project:</td>
 	                                    					<td>{{usecasediagram.artefact.projectName}}</td>
 	                                    				    </tr>
-	                                				    <tr>
-	                                    					<td>Format:</td>
-	                                    					<td>{{usecasediagram.format}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>Link to File:</td>
-	                                    					<td>{{usecasediagram.link}}</td>
-	                                    				    </tr>
-									    <tr>
-	                                    					<td>Relation:</td>
-	                                    					<td>{{usecasediagram.relation}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>uri:</td>
-	                                    					<td>{{usecasediagram.uri}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>groupid:</td>
-	                                    					<td>{{usecasediagram.groupId}}</td>
-	                                    				    </tr>
 	                                    				    <tr>
 	                                    					<td>name:</td>
 	                                    					<td>{{usecasediagram.name}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>version:</td>
-	                                    					<td>{{usecasediagram.version}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>description:</td>
-	                                    					<td>{{usecasediagram.description}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>keywords:</td>
-	                                    					<td>{{usecasediagram.tags}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>createdAt:</td>
-	                                    				        <td>{{usecasediagram.createdAt}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>updatedAt:</td>
-	                                    					<td>{{usecasediagram.updatedAt}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>createdBy:</td>
-	                                    					<td>{{usecasediagram.createdBy}}</td>
-	                                    				    </tr>
-	                                    				    <tr>
-	                                    					<td>updatedBy:</td>
-	                                    					<td>{{usecasediagram.updatedBy}}</td>
 	                                    				    </tr>
 									    <tr>
 	                                    					<td>score:</td>
@@ -356,56 +268,8 @@
                             						        <td>{{activitydiagram.belongsTo}}</td>
                             						    </tr>
                             						    <tr>
-                            						        <td>Format:</td>
-                            						        <td>{{activitydiagram.format}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>Link to File:</td>
-                            						        <td>{{activitydiagram.link}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>Relation:</td>
-                            						        <td>{{activitydiagram.relation}}</td>
-                            						    </tr>
-									    <tr>
-                            						        <td>uri:</td>
-                            						        <td>{{activitydiagram.uri}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>groupid:</td>
-                            						        <td>{{activitydiagram.groupId}}</td>
-                            						    </tr>
-                            						    <tr>
                             						        <td>name:</td>
                             						        <td>{{activitydiagram.name}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>version:</td>
-                            						        <td>{{activitydiagram.version}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>description:</td>
-                            						        <td>{{activitydiagram.description}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>keywords:</td>
-                            						        <td>{{activitydiagram.tags}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>createdAt:</td>
-                            						        <td>{{activitydiagram.createdAt}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>updatedAt:</td>
-                            						        <td>{{activitydiagram.updatedAt}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>createdBy:</td>
-                            						        <td>{{activitydiagram.createdBy}}</td>
-                            						    </tr>
-									    <tr>
-                            						        <td>updatedBy:</td>
-                            						        <td>{{activitydiagram.updatedBy}}</td>
                             						    </tr>
 									    <tr>
                             						        <td>score:</td>
@@ -450,56 +314,8 @@
                             						        <td>{{classdiagram.belongsTo}}</td>
                             						    </tr>
                             						    <tr>
-                            						        <td>Format:</td>
-                            						        <td>{{classdiagram.format}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>Link to File:</td>
-                            						        <td>{{classdiagram.link}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>Relation:</td>
-                            						        <td>{{classdiagram.relation}}</td>
-                            						    </tr>
-									    <tr>
-                            						        <td>uri:</td>
-                            						        <td>{{classdiagram.uri}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>groupid:</td>
-                            						        <td>{{classdiagram.groupId}}</td>
-                            						    </tr>
-                            						    <tr>
                             						        <td>name:</td>
                             						        <td>{{classdiagram.name}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>version:</td>
-                            						        <td>{{classdiagram.version}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>description:</td>
-                            						        <td>{{classdiagram.description}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>keywords:</td>
-                            						        <td>{{classdiagram.tags}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>createdAt:</td>
-                            						        <td>{{classdiagram.createdAt}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>updatedAt:</td>
-                            						        <td>{{classdiagram.updatedAt}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>createdBy:</td>
-                            						        <td>{{classdiagram.createdBy}}</td>
-                            						    </tr>
-									    <tr>
-                            						        <td>updatedBy:</td>
-                            						        <td>{{classdiagram.updatedBy}}</td>
                             						    </tr>
 									    <tr>
                             						        <td>score:</td>
@@ -544,56 +360,8 @@
                             						        <td>{{storyboard.belongsTo}}</td>
                             						    </tr>
                             						    <tr>
-                            						        <td>Format:</td>
-                            						        <td>{{storyboard.format}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>Link to File:</td>
-                            						        <td>{{storyboard.link}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>Relation:</td>
-                            						        <td>{{storyboard.relation}}</td>
-                            						    </tr>
-									    <tr>
-                            						        <td>uri:</td>
-                            						        <td>{{storyboard.uri}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>groupid:</td>
-                            						        <td>{{storyboard.groupId}}</td>
-                            						    </tr>
-                            						    <tr>
                             						        <td>name:</td>
                             						        <td>{{storyboard.name}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>version:</td>
-                            						        <td>{{storyboard.version}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>description:</td>
-                            						        <td>{{storyboard.description}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>keywords:</td>
-                            						        <td>{{storyboard.tags}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>createdAt:</td>
-                            						        <td>{{storyboard.createdAt}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>updatedAt:</td>
-                            						        <td>{{storyboard.updatedAt}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>createdBy:</td>
-                            						        <td>{{storyboard.createdBy}}</td>
-                            						    </tr>
-									    <tr>
-                            						        <td>updatedBy:</td>
-                            						        <td>{{storyboard.updatedBy}}</td>
                             						    </tr>
 									    <tr>
                             						        <td>score:</td>
@@ -630,56 +398,8 @@
                             						        <td>{{sourcecode.belongsTo}}</td>
                             						    </tr>
                             						    <tr>
-                            						        <td>Format:</td>
-                            						        <td>{{sourcecode.format}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>Link to File:</td>
-                            						        <td>{{sourcecode.link}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>Relation:</td>
-                            						        <td>{{sourcecode.relation}}</td>
-                            						    </tr>
-									    <tr>
-                            						        <td>uri:</td>
-                            						        <td>{{sourcecode.uri}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>groupid:</td>
-                            						        <td>{{sourcecode.groupId}}</td>
-                            						    </tr>
-                            						    <tr>
                             						        <td>name:</td>
                             						        <td>{{sourcecode.name}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>version:</td>
-                            						        <td>{{sourcecode.version}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>description:</td>
-                            						        <td>{{sourcecode.description}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>keywords:</td>
-                            						        <td>{{sourcecode.tags}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>createdAt:</td>
-                            						        <td>{{sourcecode.createdAt}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>updatedAt:</td>
-                            						        <td>{{sourcecode.updatedAt}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>createdBy:</td>
-                            						        <td>{{sourcecode.createdBy}}</td>
-                            						    </tr>
-									    <tr>
-                            						        <td>updatedBy:</td>
-                            						        <td>{{sourcecode.updatedBy}}</td>
                             						    </tr>
 									    <tr>
                             						        <td>score:</td>
@@ -716,17 +436,9 @@
                             						        <td>{{service.type}}</td>
                             						    </tr>
 									    <div ng-if="service.type==='service description'">
-	                    						    <tr>
-	                    						        <td>Link to Domain Ontology:</td>
-	                    						        <td>{{service.domainOntology}}</td>
-	                    						    </tr>
 									    <tr>
 	                    						        <td>Belong to Project:</td>
 	                    						        <td>{{service.belongsTo}}</td>
-	                    						    </tr>
-	                    						    <tr>
-	                    						        <td>Link to File:</td>
-	                    						        <td>{{service.link}}</td>
 	                    						    </tr>
 									    </div>
 									    <div ng-if="service.type==='composite service description'">
@@ -735,26 +447,14 @@
                             						        <td>{{service.list}}</td>
                             						    </tr>
                             						    <tr>
-                            						        <td>Link to Workflow:</td>
-                            						        <td>{{service.workflow}}</td>
-                            						    </tr>
-                            						    <tr>
                             						        <td>Belong to Project:</td>
                             						        <td>{{service.belongsTo}}</td>
-                            						    </tr>
-									    <tr>
-                            						        <td>Link to File:</td>
-                            						        <td>{{service.link}}</td>
                             						    </tr>
 									    </div>
 									    <div ng-if="service.type==='service'">
                             						    <tr>
                             						        <td>Belong to Project:</td>
                             						        <td>{{service.belongsTo}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>Url:</td>
-                            						        <td>{{service.url}}</td>
                             						    </tr>
 									    <tr>
                             						        <td>wadl:</td>
@@ -770,10 +470,6 @@
                             						        <td>Belong to Project:</td>
                             						        <td>{{service.belongsTo}}</td>
                             						    </tr>
-                            						    <tr>
-                            						        <td>Documentation:</td>
-                            						        <td>{{service.documentation}}</td>
-                            						    </tr>
 									    <tr>
                             						        <td>wadl:</td>
                             						        <td>{{service.wadl}}</td>
@@ -783,45 +479,9 @@
                             						        <td>{{service.entry}}</td>
                             						    </tr>
 									    </div>
-                            						    <tr>
-                            						        <td>uri:</td>
-                            						        <td>{{service.uri}}</td>
-                            						    </tr>
-									    <tr>
-                            						        <td>groupid:</td>
-                            						        <td>{{service.groupId}}</td>
-                            						    </tr>
 									    <tr>
                             						        <td>name:</td>
                             						        <td>{{service.name}}</td>
-                            						    </tr>
-									    <tr>
-                            						        <td>version:</td>
-                            						        <td>score: {{service.version}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>description:</td>
-                            						        <td>{{service.description}}</td>
-                            						    </tr>
-									    <tr>
-                            						        <td>keywords:</td>
-                            						        <td>{{service.tags}}</td>
-                            						    </tr>
-									    <tr>
-                            						        <td>createdAt:</td>
-                            						        <td>{{service.createdAt}}</td>
-                            						    </tr>
-									    <tr>
-                            						        <td>updatedAt:</td>
-                            						        <td>{{service.updatedAt}}</td>
-                            						    </tr>
-									    <tr>
-                            						        <td>createdBy:</td>
-                            						        <td>{{service.createdBy}}</td>
-                            						    </tr>
-									    <tr>
-                            						        <td>updatedBy:</td>
-                            						        <td>{{service.updatedBy}}</td>
                             						    </tr>
 									    <tr>
                             						        <td>score:</td>
@@ -864,14 +524,6 @@
                             						    <tr>
                             						        <td>Belongs to Project:</td>
                             						        <td>{{snip.projectName}}</td>
-                            						    </tr>
-                            						    <tr>
-                            						        <td>Link:</td>
-                            						        <td><a ng-href="{{snip.url}}" target="_blank">{{snip.url}}</a></td>
-                            						    </tr>
-									    <tr>
-                            						        <td>Code:</td>
-                            						        <td>{{snip.sourceCode}}</td>
                             						    </tr>
                             						    <tr>
                             						        <td>score:</td>
