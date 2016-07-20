@@ -4,11 +4,12 @@ module.exports = function(app) {
 	var http = require('http');
 
 	app.get('/api/proxy/:server', isAuthorized, function(req, res) {
-		
+
 		var server = req.params.server;
 
 		var hosts = {
-			'nlpserver': 'http://nlp.scasefp7.eu:8010'
+			'nlpserver': 'http://nlp.scasefp7.eu:8010',
+			'assetregistry': 'http://109.231.121.125:8080/s-case/'
 		};
 
 		var options = {
@@ -17,7 +18,7 @@ module.exports = function(app) {
 		};
 
 		request(options, function(error, response, body) {
-			
+
 			if (!error && response.statusCode == 200) {
 				console.log(response.statusCode);
 				res.send(response);
@@ -32,12 +33,13 @@ module.exports = function(app) {
 
 
 	app.get('/api/proxy/:server/:endpoint', isAuthorized, function(req, res) {
-		
+
 		var server = req.params.server;
 		var endpoint = req.params.endpoint;
 
 		var hosts = {
-			'nlpserver': 'http://nlp.scasefp7.eu:8010'
+			'nlpserver': 'http://nlp.scasefp7.eu:8010',
+			'assetregistry': 'http://109.231.121.125:8080/s-case/'
 		};
 
 		var options = {
@@ -62,14 +64,14 @@ module.exports = function(app) {
 };
 
 var isAuthorized = function(req, res, next) {
-	
+
 	var mysql = require('mysql');
 	var dbconfig = require('../../config/database');
 	var connConstant = require('../../config/ConnectConstant');
 	var jwt = require('jsonwebtoken');
 
 	var auth = req.headers['authorization'];
-		
+
 	if(!auth) { // No Authorization header was passed in
 		res.send(401);
 	}
@@ -80,13 +82,13 @@ var isAuthorized = function(req, res, next) {
 		var creds = buffer.split(':');
 	        var token = creds[0];
 	        var signature = creds[1];
-		
+
 		connection = connConstant.connection;
 		connection.query('USE ' + dbconfig.database);
-		
+
 		// Query to get the secret of the user
 		var getSecretQuery = "SELECT " + dbconfig.users_table + ".`scase_secret` AS scaseSecret, " + dbconfig.users_table + ".`scase_token` AS scaseToken FROM "+ dbconfig.users_table + " WHERE " + dbconfig.users_table + ".`scase_token`= '"+ token + "'";
-		
+
 		connection.query(getSecretQuery, function(error, rows) {
 			if (error || rows.length < 1) { // Authorization failed
 				res.send(401);
@@ -108,4 +110,3 @@ var isAuthorized = function(req, res, next) {
 	}
 
 }
-

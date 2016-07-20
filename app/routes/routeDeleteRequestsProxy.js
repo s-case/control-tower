@@ -3,31 +3,30 @@ module.exports = function(app) {
 	var request = require('request');
 	var http = require('http');
 
-	app.post('/api/proxy/:server/:endpoint', isAuthorized, function(req, res) {
+	app.delete('/api/proxy/:server/:endpoint/:objectId', isAuthorized, function(req, res) {
 
 		var server = req.params.server;
 		var endpoint = req.params.endpoint;
-		var post_data = req.body;
+    var object = req.params.objectId;
 
 		var hosts = {
 			'nlpserver': 'http://nlp.scasefp7.eu:8010',
-			'assetregistry': 'http://109.231.121.125:8080/s-case/'
+      'assetregistry': 'http://109.231.121.125:8080/s-case/'
 		};
 
 		var options = {
-			uri: hosts[server] + '/' + server + '/' + endpoint,
-			method: 'POST',
-			json: post_data
+			uri: hosts[server] + '/' + server + '/' + endpoint + '/' + object,
+			method: 'DELETE'
 		};
 
 		request(options, function(error, response, body) {
 
 			if (!error && response.statusCode == 200) {
 				console.log(response.statusCode);
-				res.send(response.body);
+				res.send(response);
 			}
 			else {
-				console.log(response.statusCode);
+				console.log(response.statusCode)
 				res.send(response.statusCode);
 			}
 
@@ -75,7 +74,11 @@ var isAuthorized = function(req, res, next) {
 				else { // Authorization failed
 					res.send(401);
 				}
+
 			}
+
 		});
+
 	}
+
 }

@@ -58,16 +58,17 @@ require('./app/routes/routeDeleteProjOwnSpecific.js')(app, passport);//load the 
 require('./app/routes/routeDispProjCollab.js')(app, passport);//load the route for displaying the projects I collaborate
 require('./app/routes/routeDispProjCollabSpecific.js')(app, passport);//load the route for displaying the info of a a specific project I collaborate
 require('./app/routes/routeRemoveCollabProjOwnSpecific.js')(app, passport);//load the route for removing a collaborator from a project I own (or to remove myself as a collaborator)
-require('./app/routes/routeRemoveOwnProjOwnSpecific.js')(app, passport);//load the route for removing an owner from a project I own 
-require('./app/routes/routeCreateProjOwnSpecific.js')(app, passport);//load the route for creating a project I own 
-require('./app/routes/routeAddOwnProjOwnSpecific.js')(app, passport);//load the route for adding an owner in a project I own 
+require('./app/routes/routeRemoveOwnProjOwnSpecific.js')(app, passport);//load the route for removing an owner from a project I own
+require('./app/routes/routeCreateProjOwnSpecific.js')(app, passport);//load the route for creating a project I own
+require('./app/routes/routeAddOwnProjOwnSpecific.js')(app, passport);//load the route for adding an owner in a project I own
 require('./app/routes/routeAddCollabProjOwnSpecific.js')(app, passport);//load the route for adding a collaborator in a project I own
-require('./app/routes/routeChangeProjectsPrivacy.js')(app, passport);//load the route for changing the privacy level of a project I own 
-require('./app/routes/routeChangeProjectsDomainSubdomain.js')(app, passport);//load the route for changing the domains and subdomains of a project I own 
+require('./app/routes/routeChangeProjectsPrivacy.js')(app, passport);//load the route for changing the privacy level of a project I own
+require('./app/routes/routeChangeProjectsDomainSubdomain.js')(app, passport);//load the route for changing the domains and subdomains of a project I own
 require('./app/routes/routeGetProjectsDomainSubdomain.js')(app, passport);//load the route for getting the domains and subdomains of a project I own
 require('./app/routes/routeQAResults.js') (app);//access the QA
 require('./app/routes/routeGetRequestsProxy.js') (app);
 require('./app/routes/routePostRequestsProxy.js') (app);
+require('./app/routes/routeDeleteRequestsProxy.js') (app);
 //================API routes=============================
 require('./app/api/checkUserValidityAPI.js') (app);//check if a user is Valid (API) route
 require('./app/api/deleteAccAPI.js') (app);//delete account
