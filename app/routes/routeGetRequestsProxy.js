@@ -3,6 +3,12 @@ module.exports = function(app) {
 	var request = require('request');
 	var http = require('http');
 
+	app.get('/api/proxy/auth', isAuthorized, function(req, res) {
+
+		res.send(200);
+
+	});
+
 	app.get('/api/proxy/:server', isAuthorized, function(req, res) {
 
 		var server = req.params.server;
@@ -54,11 +60,12 @@ module.exports = function(app) {
 				res.send(response);
 			}
 			else {
-				console.log(response.statusCode)
+				console.log(response.statusCode);
 				res.send(response.statusCode);
 			}
 
 		});
+
 	});
 
 };
@@ -80,8 +87,8 @@ var isAuthorized = function(req, res, next) {
 		var authParts = auth.split(' ');
 		var buffer = new Buffer(authParts[1]).toString();
 		var creds = buffer.split(':');
-	        var token = creds[0];
-	        var signature = creds[1];
+	  var token = creds[0];
+	  var signature = creds[1];
 
 		connection = connConstant.connection;
 		connection.query('USE ' + dbconfig.database);
