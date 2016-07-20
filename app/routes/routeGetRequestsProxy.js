@@ -9,7 +9,7 @@ module.exports = function(app) {
 
 		var hosts = {
 			'nlpserver': 'http://nlp.scasefp7.eu:8010',
-			'assetregistry': 'http://109.231.121.125:8080/s-case/'
+			'assetregistry': 'http://109.231.121.125:8080/s-case'
 		};
 
 		var options = {
@@ -39,7 +39,7 @@ module.exports = function(app) {
 
 		var hosts = {
 			'nlpserver': 'http://nlp.scasefp7.eu:8010',
-			'assetregistry': 'http://109.231.121.125:8080/s-case/'
+			'assetregistry': 'http://109.231.121.125:8080/s-case'
 		};
 
 		var options = {
