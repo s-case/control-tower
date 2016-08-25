@@ -9,6 +9,37 @@ module.exports = function(app) {
 
 	});
 
+	app.get('/api/proxy/:server/:endpoint1/:endpoint2/:endpoint3', isAuthorized, function(req, res) {
+
+		var server = req.params.server;
+		var endpoint1 = req.params.endpoint1,
+			endpoint2 = req.params.endpoint2,
+			endpoint3 = req.params.endpoint3;
+
+		var hosts = {
+			'SCServer': 'http://109.231.127.61:8080'
+		};
+
+		var options = {
+			uri: hosts[server] + '/' + server + '/' + endpoint1 + '/' + endpoint2 + '/' + endpoint3,
+			method: 'GET'
+		};
+
+		request(options, function(error, response, body) {
+
+			if (!error && response.statusCode == 200) {
+				console.log(response.statusCode);
+				res.send(response);
+			}
+			else {
+				console.log(response.statusCode);
+				res.send(response.statusCode);
+			}
+
+		});
+
+	});
+
 	app.get('/api/proxy/:server', isAuthorized, function(req, res) {
 
 		var server = req.params.server;
