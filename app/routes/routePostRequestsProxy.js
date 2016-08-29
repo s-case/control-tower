@@ -3,35 +3,72 @@ module.exports = function(app) {
 	var request = require('request');
 	var http = require('http');
 
-	app.post('/api/proxy/:server/:endpoint', isAuthorized, function(req, res) {
+	app.post('/api/proxy/:server/*', isAuthorized, function(req, res) {
 
 		var server = req.params.server;
-		var endpoint = req.params.endpoint;
+		var path = req.params[0];
 		var post_data = req.body;
 
 		var hosts = {
 			'nlpserver': 'http://nlp.scasefp7.eu:8010',
-			'assetregistry': 'http://109.231.121.125:8080/s-case'
+			'assetregistry': 'http://109.231.121.125:8080/s-case',
+			'SCServer': 'http://109.231.127.61:8080',
+			'ontologies': 'http://109.231.126.165:8080'
 		};
+
+		var querystring = '',
+			i = 0;
+		for (var key in req.query) {
+			if (i === 0) {
+				querystring = '?' + key + '=' + req.query[key];
+			} else {
+				querystring += '&' + key + '=' + req.query[key];
+			}
+
+			i++;
+		}
 
 		var options = {
-			uri: hosts[server] + '/' + server + '/' + endpoint,
+			uri: hosts[server] + '/' + server + '/' + path + querystring,
 			method: 'POST',
-			json: post_data
 		};
 
-		request(options, function(error, response, body) {
+		if( Object.keys(post_data).length !== 0 ) {
+			options.json = post_data;
+		}
 
-			if (!error && response.statusCode == 200) {
-				console.log(response.statusCode);
-				res.send(response.body);
-			}
-			else {
-				console.log(response.statusCode);
-				res.send(response.statusCode);
-			}
+		if(req.headers['content-type'].startsWith('multipart')) {
 
-		});
+			req.pipe(request(options, function(error, response, body) {
+
+					if (!error && response.statusCode == 200) {
+						console.log(response.statusCode);
+						res.send(response.body);
+					}
+					else {
+						console.log(response.statusCode);
+						res.send(response.statusCode);
+					}
+
+				}));
+
+		} else {
+
+			request(options, function(error, response, body) {
+
+					if (!error && response.statusCode == 200) {
+						console.log(response.statusCode);
+						res.send(response.body);
+					}
+					else {
+						console.log(response.statusCode);
+						res.send(response.statusCode);
+					}
+
+				});
+
+		}
+
 	});
 
 };

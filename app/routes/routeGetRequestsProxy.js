@@ -9,37 +9,6 @@ module.exports = function(app) {
 
 	});
 
-	app.get('/api/proxy/:server/:endpoint1/:endpoint2/:endpoint3', isAuthorized, function(req, res) {
-
-		var server = req.params.server;
-		var endpoint1 = req.params.endpoint1,
-			endpoint2 = req.params.endpoint2,
-			endpoint3 = req.params.endpoint3;
-
-		var hosts = {
-			'SCServer': 'http://109.231.127.61:8080'
-		};
-
-		var options = {
-			uri: hosts[server] + '/' + server + '/' + endpoint1 + '/' + endpoint2 + '/' + endpoint3,
-			method: 'GET'
-		};
-
-		request(options, function(error, response, body) {
-
-			if (!error && response.statusCode == 200) {
-				console.log(response.statusCode);
-				res.send(response);
-			}
-			else {
-				console.log(response.statusCode);
-				res.send(response.statusCode);
-			}
-
-		});
-
-	});
-
 	app.get('/api/proxy/:server', isAuthorized, function(req, res) {
 
 		var server = req.params.server;
@@ -68,19 +37,31 @@ module.exports = function(app) {
 		});
 	});
 
-
-	app.get('/api/proxy/:server/:endpoint', isAuthorized, function(req, res) {
+	app.get('/api/proxy/:server/*', isAuthorized, function(req, res) {
 
 		var server = req.params.server;
-		var endpoint = req.params.endpoint;
+		var path = req.params[0];
 
 		var hosts = {
 			'nlpserver': 'http://nlp.scasefp7.eu:8010',
-			'assetregistry': 'http://109.231.121.125:8080/s-case'
+			'assetregistry': 'http://109.231.121.125:8080/s-case',
+			'SCServer': 'http://109.231.127.61:8080'
 		};
 
+		var querystring = '',
+			i = 0;
+		for (var key in req.query) {
+			if (i === 0) {
+				querystring = '?' + key + '=' + req.query[key];
+			} else {
+				querystring += '&' + key + '=' + req.query[key];
+			}
+
+			i++;
+		}
+
 		var options = {
-			uri: hosts[server] + '/' + server + '/' + endpoint,
+			uri: hosts[server] + '/' + server + '/' + path + querystring,
 			method: 'GET'
 		};
 
