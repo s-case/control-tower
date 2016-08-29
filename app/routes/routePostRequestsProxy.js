@@ -37,7 +37,7 @@ module.exports = function(app) {
 			options.json = post_data;
 		}
 
-		if(req.headers['content-type'].startsWith('multipart')) {
+		if(req.headers['content-type'].indexOf('multipart') !== -1) {
 
 			req.pipe(request(options, function(error, response, body) {
 
