@@ -45,7 +45,8 @@ module.exports = function(app) {
 		var hosts = {
 			'nlpserver': 'http://nlp.scasefp7.eu:8010',
 			'assetregistry': 'http://109.231.121.125:8080/s-case',
-			'SCServer': 'http://109.231.127.61:8080'
+			'SCServer': 'http://109.231.127.61:8080',
+			'ontologies': 'http://109.231.126.165:8080'
 		};
 
 		var querystring = '',
