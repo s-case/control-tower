@@ -13,11 +13,12 @@ module.exports = function(app) {
 			'nlpserver': 'http://nlp.scasefp7.eu:8010',
 			'assetregistry': 'http://109.231.121.125:8080/s-case',
 			'SCServer': 'http://109.231.127.61:8080',
-			'ontologies': 'http://109.231.126.165:8080'
+			'ontologies': 'http://109.231.126.165:8080',
+			'UMLServer': 'http://109.231.126.105:8080'
 		};
 
 		var querystring = '',
-			i = 0;
+		i = 0;
 		for (var key in req.query) {
 			if (i === 0) {
 				querystring = '?' + key + '=' + req.query[key];
