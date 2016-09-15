@@ -19,6 +19,17 @@ var session      = require('express-session');
 
 var configDB = require('./config/database.js');
 
+var fs = require('fs');
+
+var http = require('http');
+var https = require('https');
+
+var config = {
+	key: fs.readFileSync('../../https-certificate/archive/app.scasefp7.com/privkey1.pem'),
+  cert: fs.readFileSync('../../https-certificate/archive/app.scasefp7.com/fullchain1.pem'),
+  ca: fs.readFileSync('../../https-certificate/archive/app.scasefp7.com/chain1.pem')
+};
+
 // configuration ===============================================================
 //mongoose.connect(configDB.url); // connect to our database
 
@@ -45,6 +56,16 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 app.get('/ApiDocumentation', function(req, res) {
 		res.render('S-CASE control tower api.html')
 	});
+
+function ensureSecure(req, res, next){
+  if(req.secure){
+    return next();
+  };
+  res.redirect('https://'+req.host+':' + 8000 + req.url);
+};
+
+app.all('*', ensureSecure);
+
 // routes ======================================================================
 require('./app/routes/routes.js')(app, passport); // load our routes and pass in our app and fully configured passport
 require('./app/routes/routeAuth.js')(app, passport);//load the routes for the Authentication and authorization
@@ -69,6 +90,7 @@ require('./app/routes/routeQAResults.js') (app);//access the QA
 require('./app/routes/routeGetRequestsProxy.js') (app);
 require('./app/routes/routePostRequestsProxy.js') (app);
 require('./app/routes/routeDeleteRequestsProxy.js') (app);
+
 //================API routes=============================
 require('./app/api/checkUserValidityAPI.js') (app);//check if a user is Valid (API) route
 require('./app/api/deleteAccAPI.js') (app);//delete account
@@ -86,6 +108,9 @@ require('./app/api/createProjOwnAPI.js') (app);//create a project I own
 require('./app/api/changePrivacyProjOwnAPI.js') (app);//change privacy level in a project I own
 require('./app/api/changeDomainSubdomainProjOwnAPI.js') (app);//change domain and subdomain in a project I own
 require('./app/api/checkUserRoleForProjectAPI.js') (app);//check the role (Owner or Collaborator) of a user in a project
+
 // launch ======================================================================
-app.listen(port);
+http.createServer(app).listen(3000);
+https.createServer(config, app).listen(8000);
+
 console.log('The magic happens on port ' + port);
