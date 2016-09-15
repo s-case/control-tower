@@ -42,7 +42,7 @@ module.exports = function(app) {
 
 			req.pipe(request(options, function(error, response, body) {
 
-					if (!error && response.statusCode == 200) {
+					if (!error) {
 						console.log(response.statusCode);
 						res.send(response.body);
 					}
@@ -57,7 +57,7 @@ module.exports = function(app) {
 
 			request(options, function(error, response, body) {
 
-					if (!error && response.statusCode == 200) {
+					if (!error) {
 						console.log(response.statusCode);
 						res.send(response.body);
 					}
