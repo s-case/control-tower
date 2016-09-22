@@ -61,7 +61,7 @@ function ensureSecure(req, res, next){
   if(req.secure){
     return next();
   };
-  res.redirect('https://'+req.host+':' + 8000 + req.url);
+  res.redirect('https://'+req.host + req.url);
 };
 
 app.all('*', ensureSecure);
