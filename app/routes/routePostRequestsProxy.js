@@ -10,11 +10,11 @@ module.exports = function(app) {
 		var post_data = req.body;
 
 		var hosts = {
-			'nlpserver': 'http://nlp.scasefp7.eu:8010',
-			'assetregistry': 'http://109.231.121.125:8080/s-case',
-			'SCServer': 'http://109.231.127.61:8080',
-			'ontologies': 'http://109.231.126.165:8080',
-			'UMLServer': 'http://109.231.126.105:8080'
+			'nlpserver': 'http://nlp.scasefp7.eu:8080',
+			'assetregistry': 'http://109.231.122.232:8080/s-case',
+			'SCServer': 'http://wsc.scasefp7.com:8080',
+			'ontologies': 'http://repo.scasefp7.com:8080',
+			'UMLServer': 'http://uml.scasefp7.com:8080'
 		};
 
 		var querystring = '',
