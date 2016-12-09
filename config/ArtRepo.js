@@ -4,7 +4,7 @@
 module.exports = {
 	
 	'SCASEartRepo' : {
-		'URL' 		: 'http://109.231.121.125:8080/s-case/'
+		'URL' 		: 'http://109.231.122.232:8080/s-case/'
 		
 	}
 

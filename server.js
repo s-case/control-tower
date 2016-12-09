@@ -25,9 +25,9 @@ var http = require('http');
 var https = require('https');
 
 var config = {
-	key: fs.readFileSync('../../https-certificate/archive/app.scasefp7.com/privkey1.pem'),
-  cert: fs.readFileSync('../../https-certificate/archive/app.scasefp7.com/fullchain1.pem'),
-  ca: fs.readFileSync('../../https-certificate/archive/app.scasefp7.com/chain1.pem')
+  key: fs.readFileSync('../tls/privkey1.pem'),
+  cert: fs.readFileSync('../tls/fullchain1.pem'),
+  ca: fs.readFileSync('../tls/chain1.pem')
 };
 
 // configuration ===============================================================

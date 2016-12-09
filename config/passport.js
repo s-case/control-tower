@@ -38,12 +38,14 @@ module.exports = function(passport) {
 
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
+	console.log("serialize user");
         connection=connConstant.connection;
         done(null, user.id);
     });
 
     // used to deserialize the user
     passport.deserializeUser(function(id, done) {
+	console.log("deserialize user");
         connection=connConstant.connection;
         connection.query("SELECT * FROM " + dbconfig.users_table + " WHERE `id` = "+ id, function(err, rows){
             if(rows.length>0){
@@ -65,6 +67,7 @@ module.exports = function(passport) {
     },
     function(req, token, refreshToken, profile, done) {
         // asynchronous
+	console.log("strategy");
         process.nextTick(function() {
             // check if the user is already logged in
             if (!req.user) {
