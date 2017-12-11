@@ -76,8 +76,8 @@ In order for the Control Tower to be executed the following two commands can be 
 *	node server.js, standardized node.js server start command
 *	forever start server.js, the server is started using “forever” which is a simple CLI tool for ensuring that a given node script runs continuously (i.e. forever) (https://www.npmjs.com/package/forever)
 
-###Start with node server.js or node forever.js
+### Start with node server.js or node forever.js
 url: http://scouter.ee.auth.gr:3000
 
-###API details
+### API details
 https://github.com/s-case/control-tower/tree/master/docs
